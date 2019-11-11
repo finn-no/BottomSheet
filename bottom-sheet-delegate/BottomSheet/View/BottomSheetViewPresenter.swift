@@ -14,15 +14,9 @@ final class BottomSheetViewPresenter {
     // MARK: - Private properties
 
     private var models: [BottomSheetState: BottomSheetModel] = [:]
-    private var state: BottomSheetState = .compact
+    private(set) var state: BottomSheetState = .compact
     private var topConstraint: NSLayoutConstraint!
     private var containerView: UIView?
-
-    private lazy var handle: HandleView = {
-        let handle = HandleView(height: 20)
-        handle.translatesAutoresizingMaskIntoConstraints = false
-        return handle
-    }()
 
     private lazy var panGesture = UIPanGestureRecognizer(
         target: self,
@@ -34,41 +28,31 @@ final class BottomSheetViewPresenter {
         frequencyResponse: 0.4
     )
 
-    // MARK: - Presentation
+    // MARK: - Internal methods
 
     func present(_ presentedView: UIView, in containerView: UIView) {
         guard let compactModel = models[.compact] else { return }
 
         self.containerView = containerView
 
-        presentedView.layer.cornerRadius = 16
-        presentedView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        presentedView.layer.masksToBounds = true
-        presentedView.translatesAutoresizingMaskIntoConstraints = false
+        let bottomSheetView = BottomSheetView(contentView: presentedView)
+        bottomSheetView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(bottomSheetView)
 
-        handle.backgroundColor = presentedView.backgroundColor
-
-        containerView.addSubview(handle)
-        containerView.addSubview(presentedView)
-
-        topConstraint = presentedView.topAnchor.constraint(
-            equalTo: handle.bottomAnchor,
+        topConstraint = bottomSheetView.topAnchor.constraint(
+            equalTo: containerView.topAnchor,
             constant: containerView.frame.maxY
         )
 
         NSLayoutConstraint.activate([
-            handle.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            handle.topAnchor.constraint(equalTo: containerView.topAnchor),
-            handle.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-
             topConstraint,
-            presentedView.bottomAnchor.constraint(greaterThanOrEqualTo: containerView.bottomAnchor),
-            presentedView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            presentedView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            presentedView.heightAnchor.constraint(greaterThanOrEqualToConstant: compactModel.height)
+            bottomSheetView.bottomAnchor.constraint(greaterThanOrEqualTo: containerView.bottomAnchor),
+            bottomSheetView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            bottomSheetView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            bottomSheetView.heightAnchor.constraint(greaterThanOrEqualToConstant: compactModel.height)
         ])
 
-        presentedView.addGestureRecognizer(panGesture)
+        bottomSheetView.addGestureRecognizer(panGesture)
 
         springAnimator.addAnimation { [weak self] position in
             self?.topConstraint.constant = position.y
@@ -77,15 +61,24 @@ final class BottomSheetViewPresenter {
         containerView.layoutIfNeeded()
     }
 
-    // MARK: - Internal methods
-
     func addModel(_ model: BottomSheetModel?, for state: BottomSheetState) {
         models[state] = model
     }
 
-    // MARK: - Private methods
+    func animate(to position: CGPoint) {
+        springAnimator.fromPosition = CGPoint(x: 0, y: topConstraint.constant)
+        springAnimator.toPosition = position
+        springAnimator.initialVelocity = .zero
+        springAnimator.startAnimation()
+    }
 
-    private func transition(to state: BottomSheetState?) {
+    func addAnimationCompletion(_ completion: @escaping (Bool) -> Void) {
+        springAnimator.addCompletion { didComplete in
+            completion(didComplete)
+        }
+    }
+
+    func transition(to state: BottomSheetState?) {
         guard let state = state else {
             delegate?.bottomSheetViewPresenter(self, didTransitionTo: nil)
             return
@@ -103,12 +96,7 @@ final class BottomSheetViewPresenter {
         delegate?.bottomSheetViewPresenter(self, didTransitionTo: state)
     }
 
-    private func animate(to position: CGPoint) {
-        springAnimator.fromPosition = CGPoint(x: 0, y: topConstraint.constant)
-        springAnimator.toPosition = position
-        springAnimator.initialVelocity = .zero
-        springAnimator.startAnimation()
-    }
+    // MARK: - Private methods
 
     @objc private func handlePan(panGesture: UIPanGestureRecognizer) {
         switch panGesture.state {
