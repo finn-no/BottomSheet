@@ -41,6 +41,7 @@ final class BottomSheetView: UIView {
     // MARK: - Setup
 
     private func setup() {
+        clipsToBounds = true
         backgroundColor = contentView.backgroundColor
 
         layer.masksToBounds = false

@@ -51,7 +51,7 @@ class BottomSheetPresentationController: UIPresentationController {
             backgroundView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
         ])
 
-        presenter.present(presentedView, in: containerView)
+        presenter.addPresentedView(presentedView, to: containerView)
     }
 }
 

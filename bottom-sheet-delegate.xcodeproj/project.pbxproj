@@ -74,19 +74,11 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		CF3C457223798CC0007EE862 /* View */ = {
+		DA6C46C2237028BC00976ABA /* BottomSheet */ = {
 			isa = PBXGroup;
 			children = (
 				CF3C457323798CCB007EE862 /* BottomSheetView.swift */,
 				CF3C457723799738007EE862 /* BottomSheetViewPresenter.swift */,
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
-		DA6C46C2237028BC00976ABA /* BottomSheet */ = {
-			isa = PBXGroup;
-			children = (
-				CF3C457223798CC0007EE862 /* View */,
 				DA6C46CA23702C6600976ABA /* CGPoint.swift */,
 				DA7A62F123759A7400483E33 /* CGRect.swift */,
 				DA6C46C823702C1C00976ABA /* SpringAnimator.swift */,

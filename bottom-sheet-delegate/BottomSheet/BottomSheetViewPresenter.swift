@@ -13,10 +13,10 @@ final class BottomSheetViewPresenter {
 
     // MARK: - Private properties
 
-    private var models: [BottomSheetState: BottomSheetModel] = [:]
     private(set) var state: BottomSheetState = .compact
+    private var models: [BottomSheetState: BottomSheetModel] = [:]
     private var topConstraint: NSLayoutConstraint!
-    private var containerView: UIView?
+    private weak var containerView: UIView?
 
     private lazy var panGesture = UIPanGestureRecognizer(
         target: self,
@@ -30,7 +30,7 @@ final class BottomSheetViewPresenter {
 
     // MARK: - Internal methods
 
-    func present(_ presentedView: UIView, in containerView: UIView) {
+    public func addPresentedView(_ presentedView: UIView, to containerView: UIView) {
         guard let compactModel = models[.compact] else { return }
 
         self.containerView = containerView
