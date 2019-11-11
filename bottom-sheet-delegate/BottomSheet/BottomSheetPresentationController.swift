@@ -28,8 +28,8 @@ class BottomSheetPresentationController: UIPresentationController {
 
     private var topConstraint: NSLayoutConstraint!
 
-    private lazy var handle: BottomSheetHandle = {
-        let handle = BottomSheetHandle(height: 20)
+    private lazy var handle: HandleView = {
+        let handle = HandleView(height: 20)
         handle.translatesAutoresizingMaskIntoConstraints = false
         return handle
     }()
@@ -183,35 +183,5 @@ private extension BottomSheetPresentationController {
         let translation = panGesture.translation(in: containerView)
         topConstraint.constant += translation.y
         panGesture.setTranslation(.zero, in: containerView)
-    }
-}
-
-// MARK: - Bottom Sheet Handle
-private class BottomSheetHandle: UIView {
-
-    private lazy var handle: UIView = {
-        let view = UIView(frame: .zero)
-        view.layer.cornerRadius = 2
-        view.backgroundColor = .white
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-
-    init(height: CGFloat) {
-        super.init(frame: .zero)
-
-        addSubview(handle)
-
-        NSLayoutConstraint.activate([
-            heightAnchor.constraint(equalToConstant: height),
-            handle.widthAnchor.constraint(equalToConstant: 25),
-            handle.heightAnchor.constraint(equalToConstant: 4),
-            handle.centerXAnchor.constraint(equalTo: centerXAnchor),
-            handle.centerYAnchor.constraint(equalTo: centerYAnchor)
-        ])
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("Not implemented")
     }
 }
