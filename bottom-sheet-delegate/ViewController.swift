@@ -57,6 +57,21 @@ final class ViewController: UIViewController {
         viewController.view.backgroundColor = UIColor(hue: 0.5, saturation: 0.3, brightness: 0.6, alpha: 1.0)
         viewController.transitioningDelegate = bottomSheetTransitioningDelegate
         viewController.modalPresentationStyle = .custom
+
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Bottom Sheet"
+        label.textAlignment = .center
+        label.textColor = .white
+
+        viewController.view.addSubview(label)
+
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: viewController.view.topAnchor),
+            label.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor)
+        ])
+
         return viewController
     }()
 

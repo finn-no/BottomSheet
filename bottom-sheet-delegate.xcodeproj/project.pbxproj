@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		CF3C457423798CCB007EE862 /* BottomSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3C457323798CCB007EE862 /* BottomSheetView.swift */; };
 		CF3C457623798D6E007EE862 /* HandleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3C457523798D6E007EE862 /* HandleView.swift */; };
+		CF3C457823799738007EE862 /* BottomSheetViewPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3C457723799738007EE862 /* BottomSheetViewPresenter.swift */; };
 		DA6C46C4237028C500976ABA /* BottomSheetModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA6C46C3237028C500976ABA /* BottomSheetModels.swift */; };
 		DA6C46C923702C1C00976ABA /* SpringAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA6C46C823702C1C00976ABA /* SpringAnimator.swift */; };
 		DA6C46CB23702C6600976ABA /* CGPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA6C46CA23702C6600976ABA /* CGPoint.swift */; };
@@ -37,6 +38,7 @@
 /* Begin PBXFileReference section */
 		CF3C457323798CCB007EE862 /* BottomSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetView.swift; sourceTree = "<group>"; };
 		CF3C457523798D6E007EE862 /* HandleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandleView.swift; sourceTree = "<group>"; };
+		CF3C457723799738007EE862 /* BottomSheetViewPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetViewPresenter.swift; sourceTree = "<group>"; };
 		DA6C46C3237028C500976ABA /* BottomSheetModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetModels.swift; sourceTree = "<group>"; };
 		DA6C46C823702C1C00976ABA /* SpringAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpringAnimator.swift; sourceTree = "<group>"; };
 		DA6C46CA23702C6600976ABA /* CGPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGPoint.swift; sourceTree = "<group>"; };
@@ -79,6 +81,7 @@
 			children = (
 				CF3C457323798CCB007EE862 /* BottomSheetView.swift */,
 				CF3C457523798D6E007EE862 /* HandleView.swift */,
+				CF3C457723799738007EE862 /* BottomSheetViewPresenter.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -250,6 +253,7 @@
 				DADE85EA236C77F900542B94 /* BottomSheetTransitioningDelegate.swift in Sources */,
 				DADE85CA236C779300542B94 /* SceneDelegate.swift in Sources */,
 				DA7A62F223759A7400483E33 /* CGRect.swift in Sources */,
+				CF3C457823799738007EE862 /* BottomSheetViewPresenter.swift in Sources */,
 				DADE85EC236C785600542B94 /* BottomSheetPresentationController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
