@@ -11,7 +11,7 @@
 		CF3C457823799738007EE862 /* BottomSheetViewPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3C457723799738007EE862 /* BottomSheetViewPresenter.swift */; };
 		DA6C46C923702C1C00976ABA /* SpringAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA6C46C823702C1C00976ABA /* SpringAnimator.swift */; };
 		DA6C46CB23702C6600976ABA /* CGPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA6C46CA23702C6600976ABA /* CGPoint.swift */; };
-		DA7A62F223759A7400483E33 /* CGRect.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7A62F123759A7400483E33 /* CGRect.swift */; };
+		DA7A62F223759A7400483E33 /* CGFloat.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7A62F123759A7400483E33 /* CGFloat.swift */; };
 		DADE85C8236C779300542B94 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DADE85C7236C779300542B94 /* AppDelegate.swift */; };
 		DADE85CA236C779300542B94 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DADE85C9236C779300542B94 /* SceneDelegate.swift */; };
 		DADE85CC236C779300542B94 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DADE85CB236C779300542B94 /* ViewController.swift */; };
@@ -38,7 +38,7 @@
 		CF3C457723799738007EE862 /* BottomSheetViewPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetViewPresenter.swift; sourceTree = "<group>"; };
 		DA6C46C823702C1C00976ABA /* SpringAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpringAnimator.swift; sourceTree = "<group>"; };
 		DA6C46CA23702C6600976ABA /* CGPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGPoint.swift; sourceTree = "<group>"; };
-		DA7A62F123759A7400483E33 /* CGRect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGRect.swift; sourceTree = "<group>"; };
+		DA7A62F123759A7400483E33 /* CGFloat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGFloat.swift; sourceTree = "<group>"; };
 		DADE85C4236C779300542B94 /* bottom-sheet-delegate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "bottom-sheet-delegate.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DADE85C7236C779300542B94 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DADE85C9236C779300542B94 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -80,7 +80,7 @@
 				CF3C457323798CCB007EE862 /* BottomSheetView.swift */,
 				CF3C457723799738007EE862 /* BottomSheetViewPresenter.swift */,
 				DA6C46CA23702C6600976ABA /* CGPoint.swift */,
-				DA7A62F123759A7400483E33 /* CGRect.swift */,
+				DA7A62F123759A7400483E33 /* CGFloat.swift */,
 				DA6C46C823702C1C00976ABA /* SpringAnimator.swift */,
 			);
 			path = BottomSheet;
@@ -236,7 +236,7 @@
 				DA6C46CB23702C6600976ABA /* CGPoint.swift in Sources */,
 				DADE85EA236C77F900542B94 /* BottomSheetTransitioningDelegate.swift in Sources */,
 				DADE85CA236C779300542B94 /* SceneDelegate.swift in Sources */,
-				DA7A62F223759A7400483E33 /* CGRect.swift in Sources */,
+				DA7A62F223759A7400483E33 /* CGFloat.swift in Sources */,
 				CF3C457823799738007EE862 /* BottomSheetViewPresenter.swift in Sources */,
 				DADE85EC236C785600542B94 /* BottomSheetPresentationController.swift in Sources */,
 			);

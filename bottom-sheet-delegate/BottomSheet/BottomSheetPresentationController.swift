@@ -35,13 +35,7 @@ class BottomSheetPresentationController: UIPresentationController {
     // MARK: - Init
 
     init(presentedViewController: UIViewController, presenting: UIViewController?, preferredHeights: [CGFloat]) {
-        var preferredHeights = preferredHeights
-
-        if !preferredHeights.contains(.bottomSheetDismissed) {
-            preferredHeights.append(.bottomSheetDismissed)
-        }
-
-        presenter = BottomSheetViewPresenter(preferredHeights: preferredHeights + [0])
+        presenter = BottomSheetViewPresenter(preferredHeights: preferredHeights)
         super.init(presentedViewController: presentedViewController, presenting: presenting)
     }
 
@@ -94,9 +88,7 @@ extension BottomSheetPresentationController: UIViewControllerInteractiveTransiti
 
 // MARK: - BottomSheetViewPresenterDelegate
 extension BottomSheetPresentationController: BottomSheetViewPresenterDelegate {
-    func bottomSheetViewPresenter(_: BottomSheetViewPresenter, didTransitionToHeight height: CGFloat) {
-        if height == 0 {
-            presentedViewController.dismiss(animated: true)
-        }
+    func bottomSheetViewPresenterDidReachDismissArea(_ presenter: BottomSheetViewPresenter) {
+        presentedViewController.dismiss(animated: true)
     }
 }

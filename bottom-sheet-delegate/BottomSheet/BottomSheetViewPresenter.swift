@@ -4,43 +4,42 @@
 
 import UIKit
 
-protocol BottomSheetViewPresenterDelegate: AnyObject {
-    func bottomSheetViewPresenter(_: BottomSheetViewPresenter, didTransitionToHeight height: CGFloat)
+public protocol BottomSheetViewPresenterDelegate: AnyObject {
+    func bottomSheetViewPresenterDidReachDismissArea(_ presenter: BottomSheetViewPresenter)
 }
 
-final class BottomSheetViewPresenter {
-    weak var delegate: BottomSheetViewPresenterDelegate?
+public final class BottomSheetViewPresenter {
+    // MARK: - Public properties
+
+    public weak var delegate: BottomSheetViewPresenterDelegate?
 
     // MARK: - Private properties
 
-    private let states: [State]
+    private let preferredHeights: [CGFloat]
+    private var topConstraint: NSLayoutConstraint!
+    private var currentTargetOffset: CGFloat = 0
     private weak var presentedView: UIView?
     private weak var containerView: UIView?
-    private var topConstraint: NSLayoutConstraint!
+    private lazy var panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(panGesture:)))
+    private lazy var springAnimator = SpringAnimator(dampingRatio: 0.8, frequencyResponse: 0.4)
 
-    private lazy var panGesture = UIPanGestureRecognizer(
-        target: self,
-        action: #selector(handlePan(panGesture:))
-    )
-
-    private lazy var springAnimator = SpringAnimator(
-        dampingRatio: 0.8,
-        frequencyResponse: 0.4
-    )
+    private var targetOffsets: [CGFloat] {
+        preferredHeights.compactMap(offset(from:)).sorted()
+    }
 
     // MARK: - Init
 
-    init(preferredHeights: [CGFloat]) {
-        self.states = preferredHeights.map({ State(preferredHeight: $0) })
+    public init(preferredHeights: [CGFloat]) {
+        self.preferredHeights = preferredHeights
     }
 
-    convenience init<T: RawRepresentable>(preferredHeights: [T]) where T.RawValue == CGFloat {
+    public convenience init<T: RawRepresentable>(preferredHeights: [T]) where T.RawValue == CGFloat {
         self.init(preferredHeights: preferredHeights.map { $0.rawValue })
     }
 
-    // MARK: - Internal methods
+    // MARK: - API
 
-    func add(_ presentedView: UIView, to containerView: UIView) {
+    public func add(_ presentedView: UIView, to containerView: UIView) {
         self.presentedView = presentedView
         self.containerView = containerView
 
@@ -61,7 +60,8 @@ final class BottomSheetViewPresenter {
             bottomSheetView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
         ]
 
-        if let minHeight = states.minHeight(for: presentedView, in: containerView) {
+        if let maxOffset = targetOffsets.last {
+            let minHeight = containerView.frame.height - maxOffset
             constraints.append(presentedView.heightAnchor.constraint(greaterThanOrEqualToConstant: minHeight))
         }
 
@@ -74,20 +74,22 @@ final class BottomSheetViewPresenter {
         containerView.layoutIfNeeded()
     }
 
-    func show() {
-        guard let presentedView = presentedView, let containerView = containerView else { return }
-        guard let height = states.first?.preferredHeight(for: presentedView, in: containerView) else { return }
-        transition(to: height, presentedView: presentedView, containerView: containerView)
+    public func show() {
+        guard let maxOffset = targetOffsets.last else { return }
+        animate(to: maxOffset)
     }
 
-    func hide() {
-        guard let containerView = containerView else { return }
-        animate(to: containerView.frame.height)
+    public func hide() {
+        animate(to: containerView?.frame.height ?? 0)
     }
 
-    func transition<T: RawRepresentable>(to height: T) where T.RawValue == CGFloat {
-        guard let presentedView = presentedView, let containerView = containerView else { return }
-        transition(to: height.rawValue, presentedView: presentedView, containerView: containerView)
+    public func reset() {
+        animate(to: currentTargetOffset)
+    }
+
+    public func transition<T: RawRepresentable>(to height: T) where T.RawValue == CGFloat {
+        guard let offset = offset(from: height.rawValue) else { return }
+        animate(to: offset)
     }
 
     func addAnimationCompletion(_ completion: @escaping (Bool) -> Void) {
@@ -96,34 +98,32 @@ final class BottomSheetViewPresenter {
         }
     }
 
-    // MARK: - Private methods
-
-    private func transition(to height: CGFloat, presentedView: UIView, containerView: UIView) {
-        animate(to: containerView.frame.height - height)
-    }
+    // MARK: - Animations
 
     private func animate(to constant: CGFloat) {
+        if targetOffsets.contains(constant) {
+            currentTargetOffset = constant
+        }
+
         springAnimator.fromPosition = CGPoint(x: 0, y: topConstraint.constant)
         springAnimator.toPosition = CGPoint(x: 0, y: constant)
         springAnimator.initialVelocity = .zero
         springAnimator.startAnimation()
     }
 
-    @objc private func handlePan(panGesture: UIPanGestureRecognizer) {
-        guard let presentedView = presentedView, let containerView = containerView else { return }
+    // MARK: - UIPanGestureRecognizer
 
+    @objc private func handlePan(panGesture: UIPanGestureRecognizer) {
         switch panGesture.state {
         case .began:
             springAnimator.pauseAnimation()
         case .ended, .cancelled, .failed:
-            let location = CGPoint(x: 0, y: topConstraint.constant)
-
-            if let height = states.height(for: location, view: presentedView, in: containerView) {
-                if height == .bottomSheetDismissed {
-                    delegate?.bottomSheetViewPresenter(self, didTransitionToHeight: height)
-                } else {
-                    transition(to: height, presentedView: presentedView, containerView: containerView)
-                }
+            if let offset = targetOffset(for: topConstraint.constant, currentTargetOffset: currentTargetOffset) {
+                animate(to: offset)
+            } else if let delegate = delegate {
+                delegate.bottomSheetViewPresenterDidReachDismissArea(self)
+            } else {
+                animate(to: currentTargetOffset)
             }
         default:
             break
@@ -133,46 +133,39 @@ final class BottomSheetViewPresenter {
         topConstraint.constant += translation.y
         panGesture.setTranslation(.zero, in: containerView)
     }
-}
 
-private struct State: Equatable {
-    private let preferredHeight: CGFloat
+    // MARK: - Offset calculation
 
-    init(preferredHeight: CGFloat) {
-        self.preferredHeight = preferredHeight
+    private func targetOffset(for panOffset: CGFloat, currentTargetOffset: CGFloat) -> CGFloat? {
+        let threshold: CGFloat = 75
+        let previousArea = currentTargetOffset - threshold ... currentTargetOffset + threshold
+
+        if previousArea.contains(panOffset) {
+            return currentTargetOffset
+        } else if panOffset < currentTargetOffset {
+            return targetOffsets.first(where: { $0 < panOffset })
+        } else {
+            return targetOffsets.first(where: { $0 > panOffset })
+        }
     }
 
-    func preferredHeight(for view: UIView, in containerView: UIView) -> CGFloat {
-        guard preferredHeight == .bottomSheetAutomatic else {
-            return preferredHeight
+    private func offset(from height: CGFloat) -> CGFloat? {
+        guard let presentedView = presentedView, let containerView = containerView else { return nil }
+
+        func makeTargetHeight() -> CGFloat {
+            if height == .bottomSheetAutomatic {
+                let size = presentedView.systemLayoutSizeFitting(
+                    containerView.frame.size,
+                    withHorizontalFittingPriority: .required,
+                    verticalFittingPriority: .fittingSizeLevel
+                )
+
+                return size.height
+            } else {
+                return height
+            }
         }
 
-        let size = view.systemLayoutSizeFitting(
-            containerView.frame.size,
-            withHorizontalFittingPriority: .required,
-            verticalFittingPriority: .fittingSizeLevel
-        )
-
-        return size.height
+        return containerView.frame.height - makeTargetHeight()
     }
-}
-
-private extension Array where Element == State {
-    func height(for location: CGPoint, view: UIView, in containerView: UIView) -> CGFloat? {
-        let yPosition: (CGFloat) -> CGFloat = { abs(containerView.frame.height - $0 - location.y) }
-        return preferredHeights(for: view, in: containerView).min(by: { yPosition($0) < yPosition($1) })
-    }
-
-    func minHeight(for view: UIView, in containerView: UIView) -> CGFloat? {
-        preferredHeights(for: view, in: containerView).min()
-    }
-
-    private func preferredHeights(for view: UIView, in containerView: UIView) -> [CGFloat] {
-        self.map({ $0.preferredHeight(for: view, in: containerView) })
-    }
-}
-
-extension CGFloat {
-    static let bottomSheetAutomatic: CGFloat = -123456789
-    static let bottomSheetDismissed: CGFloat = 0
 }

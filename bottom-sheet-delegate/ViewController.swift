@@ -33,9 +33,7 @@ final class ViewController: UIViewController {
         return viewController
     }()
 
-    private lazy var bottomSheetViewPresenter = BottomSheetViewPresenter(
-        preferredHeights: [510, UIScreen.main.bounds.size.height - 64]
-    )
+    private lazy var bottomSheetViewPresenter = BottomSheetViewPresenter(preferredHeights: [100, 500])
 
     override func viewDidLoad() {
         super.viewDidLoad()
