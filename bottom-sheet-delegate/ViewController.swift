@@ -8,18 +8,10 @@
 
 import UIKit
 
-extension BottomSheetConfiguration {
-    static var `default`: BottomSheetConfiguration {
-        let screenSize = UIScreen.main.bounds.size
-        return BottomSheetConfiguration(states: [
-            BottomSheetState(id: 0, height: 510),
-            BottomSheetState(id: 1, height: screenSize.height - 64)
-        ])
-    }
-}
-
 final class ViewController: UIViewController {
-    private lazy var bottomSheetTransitioningDelegate = BottomSheetTransitioningDelegate(config: .default)
+    private lazy var bottomSheetTransitioningDelegate = BottomSheetTransitioningDelegate(
+        heights: [510, UIScreen.main.bounds.size.height - 64]
+    )
 
     private lazy var viewController: UIViewController = {
         let viewController = UIViewController()
@@ -40,7 +32,9 @@ final class ViewController: UIViewController {
         return viewController
     }()
 
-    private let bottomSheetViewPresenter = BottomSheetViewPresenter(config: .default)
+    private let bottomSheetViewPresenter = BottomSheetViewPresenter(
+        heights: [510, UIScreen.main.bounds.size.height - 64]
+    )
 
     override func viewDidLoad() {
         super.viewDidLoad()

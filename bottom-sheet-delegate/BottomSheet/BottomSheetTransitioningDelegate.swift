@@ -8,54 +8,24 @@
 
 import UIKit
 
-struct BottomSheetState: Equatable {
-    static let automatic = BottomSheetState(id: -123456789, height: 0)
-
-    let id: Int
-    let height: CGFloat
-
-    init(id: Int, height: CGFloat) {
-        self.id = id
-        self.height = height
-    }
-
-    func height(for view: UIView, targetSize: CGSize) -> CGFloat {
-        guard self == .automatic else {
-            return height
-        }
-
-        return view.systemLayoutSizeFitting(
-            targetSize,
-            withHorizontalFittingPriority: .required,
-            verticalFittingPriority: .defaultLow
-        ).height
-    }
-}
-
-struct BottomSheetConfiguration {
-    let states: [BottomSheetState]
-    let threshold: CGFloat
-
-    init(states: [BottomSheetState] = [.automatic], threshold: CGFloat = 75) {
-        self.states = states.isEmpty ? [.automatic] : states
-        self.threshold = threshold
-    }
-
-    func state(for location: CGPoint, in targetSize: CGSize) -> BottomSheetState? {
-        let value: (BottomSheetState) -> CGFloat = { abs(targetSize.height - $0.height - location.y) }
-        return states.min(by: { value($0) < value($1) })
-    }
-}
-
-class BottomSheetTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
-
-    private let config: BottomSheetConfiguration
+final class BottomSheetTransitioningDelegate: NSObject {
+    private let heights: [CGFloat]
     private var presentationController: BottomSheetPresentationController?
 
-    init(config: BottomSheetConfiguration) {
-        self.config = config
+    // MARK: - Init
+
+    init(heights: [CGFloat]) {
+        self.heights = heights
     }
 
+    convenience init<T: RawRepresentable>(heights: [T]) where T.RawValue == CGFloat {
+        self.init(heights: heights.map { $0.rawValue })
+    }
+}
+
+// MARK: - UIViewControllerTransitioningDelegate
+
+extension BottomSheetTransitioningDelegate: UIViewControllerTransitioningDelegate {
     func presentationController(
         forPresented presented: UIViewController,
         presenting: UIViewController?,
@@ -64,7 +34,7 @@ class BottomSheetTransitioningDelegate: NSObject, UIViewControllerTransitioningD
         presentationController = BottomSheetPresentationController(
             presentedViewController: presented,
             presenting: presenting,
-            config: config
+            heights: heights
         )
         return presentationController
     }

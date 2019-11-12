@@ -5,7 +5,7 @@
 import UIKit
 
 protocol BottomSheetViewPresenterDelegate: AnyObject {
-    func bottomSheetViewPresenter(_: BottomSheetViewPresenter, didTransitionTo state: BottomSheetState?)
+    func bottomSheetViewPresenter(_: BottomSheetViewPresenter, didTransitionTo height: BottomSheetHeight?)
 }
 
 final class BottomSheetViewPresenter {
@@ -15,8 +15,8 @@ final class BottomSheetViewPresenter {
 
     // MARK: - Private properties
 
-    private(set) var state: BottomSheetState
-    private let config: BottomSheetConfiguration
+    private var currentHeight: BottomSheetHeight
+    private let heights: [CGFloat]
     private var topConstraint: NSLayoutConstraint!
     private weak var containerView: UIView?
     private weak var bottomSheetView: UIView?
@@ -31,9 +31,15 @@ final class BottomSheetViewPresenter {
         frequencyResponse: 0.4
     )
 
-    init(config: BottomSheetConfiguration) {
-        self.config = config
-        self.state = config.states.first ?? .automatic
+    // MARK: - Init
+
+    init(heights: [CGFloat]) {
+        self.heights = heights.sorted()
+        self.currentHeight = heights.first ?? .bottomSheetAutomatic
+    }
+
+    convenience init<T: RawRepresentable>(heights: [T]) where T.RawValue == CGFloat {
+        self.init(heights: heights.map { $0.rawValue })
     }
 
     // MARK: - Internal methods
@@ -48,7 +54,7 @@ final class BottomSheetViewPresenter {
             constant: containerView.frame.maxY
         )
 
-        let height = state.height(for: bottomSheetView, targetSize: containerView.frame.size)
+        let height = currentHeight.value(for: bottomSheetView, targetSize: containerView.frame.size)
 
         NSLayoutConstraint.activate([
             topConstraint,
@@ -86,26 +92,24 @@ final class BottomSheetViewPresenter {
     }
 
     func present() {
-        transition(to: state)
+        transition(to: currentHeight)
     }
 
-    private func transition(to state: BottomSheetState?) {
+    private func transition(to height: BottomSheetHeight?) {
         guard let bottomSheetView = bottomSheetView, let containerView = containerView else {
             return
         }
 
-        guard let state = state else {
+        guard let height = height else {
             delegate?.bottomSheetViewPresenter(self, didTransitionTo: nil)
             return
         }
 
         let containerHeight = containerView.frame.height
+        currentHeight = height.value(for: bottomSheetView, targetSize: containerView.frame.size)
+        animate(to: CGPoint(x: 0, y: containerHeight - currentHeight))
 
-        self.state = state
-        let height = state.height(for: bottomSheetView, targetSize: containerView.frame.size)
-        animate(to: CGPoint(x: 0, y: containerHeight - height))
-
-        delegate?.bottomSheetViewPresenter(self, didTransitionTo: state)
+        delegate?.bottomSheetViewPresenter(self, didTransitionTo: currentHeight)
     }
 
     // MARK: - Private methods
@@ -120,8 +124,8 @@ final class BottomSheetViewPresenter {
             springAnimator.pauseAnimation()
         case .ended, .cancelled, .failed:
             let location = CGPoint(x: 0, y: topConstraint.constant)
-            let state = config.state(for: location, in: containerView.frame.size)
-            transition(to: state)
+            let height = heights.bottomSheetHeight(for: location, in: containerView.frame.size)
+            transition(to: height)
         default:
             break
         }
@@ -129,5 +133,30 @@ final class BottomSheetViewPresenter {
         let translation = panGesture.translation(in: containerView)
         topConstraint.constant += translation.y
         panGesture.setTranslation(.zero, in: containerView)
+    }
+
+
+}
+
+private extension Array where Element == BottomSheetHeight {
+    func bottomSheetHeight(for location: CGPoint, in targetSize: CGSize) -> BottomSheetHeight? {
+        let value: (Element) -> CGFloat = { abs(targetSize.height - $0 - location.y) }
+        return self.min(by: { value($0) < value($1) })
+    }
+}
+
+private extension BottomSheetHeight {
+    func value(for view: UIView, targetSize: CGSize) -> CGFloat {
+        guard self == BottomSheetHeight.bottomSheetAutomatic else {
+            return self
+        }
+
+        let size = view.systemLayoutSizeFitting(
+            targetSize,
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .defaultLow
+        )
+
+        return size.height
     }
 }

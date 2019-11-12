@@ -23,10 +23,10 @@ class BottomSheetPresentationController: UIPresentationController {
 
     // MARK: - Private properties
 
-    private let config: BottomSheetConfiguration
+    private let heights: [CGFloat]
 
     private lazy var presenter: BottomSheetViewPresenter = {
-        let presenter = BottomSheetViewPresenter(config: config)
+        let presenter = BottomSheetViewPresenter(heights: heights)
         presenter.delegate = self
         return presenter
     }()
@@ -40,8 +40,8 @@ class BottomSheetPresentationController: UIPresentationController {
 
     // MARK: - Init
 
-    init(presentedViewController: UIViewController, presenting: UIViewController?, config: BottomSheetConfiguration) {
-        self.config = config
+    init(presentedViewController: UIViewController, presenting: UIViewController?, heights: [CGFloat]) {
+        self.heights = heights
         super.init(presentedViewController: presentedViewController, presenting: presenting)
     }
 
@@ -98,8 +98,8 @@ extension BottomSheetPresentationController: UIViewControllerInteractiveTransiti
 
 // MARK: - BottomSheetViewPresenterDelegate
 extension BottomSheetPresentationController: BottomSheetViewPresenterDelegate {
-    func bottomSheetViewPresenter(_: BottomSheetViewPresenter, didTransitionTo state: BottomSheetState?) {
-        if state == nil {
+    func bottomSheetViewPresenter(_: BottomSheetViewPresenter, didTransitionTo height: BottomSheetHeight?) {
+        if height == nil {
             presentedViewController.dismiss(animated: true)
         }
     }
