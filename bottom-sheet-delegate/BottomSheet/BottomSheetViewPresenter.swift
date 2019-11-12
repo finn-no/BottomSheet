@@ -9,6 +9,8 @@ protocol BottomSheetViewPresenterDelegate: AnyObject {
 }
 
 final class BottomSheetViewPresenter {
+    private static let handleHeight: CGFloat = 20
+
     weak var delegate: BottomSheetViewPresenterDelegate?
 
     // MARK: - Private properties
@@ -49,7 +51,9 @@ final class BottomSheetViewPresenter {
             bottomSheetView.bottomAnchor.constraint(greaterThanOrEqualTo: containerView.bottomAnchor),
             bottomSheetView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             bottomSheetView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            bottomSheetView.heightAnchor.constraint(greaterThanOrEqualToConstant: compactModel.height)
+            bottomSheetView.heightAnchor.constraint(
+                greaterThanOrEqualToConstant: compactModel.height + BottomSheetViewPresenter.handleHeight
+            )
         ])
 
         bottomSheetView.addGestureRecognizer(panGesture)

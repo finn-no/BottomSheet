@@ -53,8 +53,8 @@ final class BottomSheetView: UIView {
         layer.cornerRadius = 16
         layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
 
-        addSubview(handleView)
         addSubview(contentView)
+        addSubview(handleView)
 
         contentView.translatesAutoresizingMaskIntoConstraints = false
 
