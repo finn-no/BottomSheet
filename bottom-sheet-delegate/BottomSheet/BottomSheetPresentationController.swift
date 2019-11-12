@@ -23,8 +23,10 @@ class BottomSheetPresentationController: UIPresentationController {
 
     // MARK: - Private properties
 
+    private let config: BottomSheetConfiguration
+
     private lazy var presenter: BottomSheetViewPresenter = {
-        let presenter = BottomSheetViewPresenter()
+        let presenter = BottomSheetViewPresenter(config: config)
         presenter.delegate = self
         return presenter
     }()
@@ -35,6 +37,13 @@ class BottomSheetPresentationController: UIPresentationController {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
+
+    // MARK: - Init
+
+    init(presentedViewController: UIViewController, presenting: UIViewController?, config: BottomSheetConfiguration) {
+        self.config = config
+        super.init(presentedViewController: presentedViewController, presenting: presenting)
+    }
 
     // MARK: - Transition life cycle
 
@@ -55,13 +64,6 @@ class BottomSheetPresentationController: UIPresentationController {
     }
 }
 
-// MARK: - Internal methods
-extension BottomSheetPresentationController {
-    func addModel(_ model: BottomSheetModel?, for state: BottomSheetState) {
-        presenter.addModel(model, for: state)
-    }
-}
-
 // MARK: - UIViewControllerAnimatedTransitioning
 extension BottomSheetPresentationController: UIViewControllerAnimatedTransitioning {
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
@@ -75,7 +77,7 @@ extension BottomSheetPresentationController: UIViewControllerAnimatedTransitioni
 
         switch transitionState {
         case .presenting:
-            presenter.transition(to: presenter.state)
+            presenter.present()
         case .dismissing:
             let point = CGPoint(
                 x: 0,

@@ -15,10 +15,11 @@ final class BottomSheetViewPresenter {
 
     // MARK: - Private properties
 
-    private(set) var state: BottomSheetState = .compact
-    private var models: [BottomSheetState: BottomSheetModel] = [:]
+    private(set) var state: BottomSheetState
+    private let config: BottomSheetConfiguration
     private var topConstraint: NSLayoutConstraint!
     private weak var containerView: UIView?
+    private weak var bottomSheetView: UIView?
 
     private lazy var panGesture = UIPanGestureRecognizer(
         target: self,
@@ -30,13 +31,14 @@ final class BottomSheetViewPresenter {
         frequencyResponse: 0.4
     )
 
+    init(config: BottomSheetConfiguration) {
+        self.config = config
+        self.state = config.states.first ?? .automatic
+    }
+
     // MARK: - Internal methods
 
     public func addPresentedView(_ presentedView: UIView, to containerView: UIView) {
-        guard let compactModel = models[.compact] else { return }
-
-        self.containerView = containerView
-
         let bottomSheetView = BottomSheetView(contentView: presentedView)
         bottomSheetView.translatesAutoresizingMaskIntoConstraints = false
         containerView.addSubview(bottomSheetView)
@@ -46,13 +48,15 @@ final class BottomSheetViewPresenter {
             constant: containerView.frame.maxY
         )
 
+        let height = state.height(for: bottomSheetView, targetSize: containerView.frame.size)
+
         NSLayoutConstraint.activate([
             topConstraint,
             bottomSheetView.bottomAnchor.constraint(greaterThanOrEqualTo: containerView.bottomAnchor),
             bottomSheetView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             bottomSheetView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
             bottomSheetView.heightAnchor.constraint(
-                greaterThanOrEqualToConstant: compactModel.height + BottomSheetViewPresenter.handleHeight
+                greaterThanOrEqualToConstant: height + BottomSheetViewPresenter.handleHeight
             )
         ])
 
@@ -62,11 +66,10 @@ final class BottomSheetViewPresenter {
             self?.topConstraint.constant = position.y
         }
 
-        containerView.layoutIfNeeded()
-    }
+        self.containerView = containerView
+        self.bottomSheetView = bottomSheetView
 
-    func addModel(_ model: BottomSheetModel?, for state: BottomSheetState) {
-        models[state] = model
+        containerView.layoutIfNeeded()
     }
 
     func animate(to position: CGPoint) {
@@ -82,20 +85,25 @@ final class BottomSheetViewPresenter {
         }
     }
 
-    func transition(to state: BottomSheetState?) {
+    func present() {
+        transition(to: state)
+    }
+
+    private func transition(to state: BottomSheetState?) {
+        guard let bottomSheetView = bottomSheetView, let containerView = containerView else {
+            return
+        }
+
         guard let state = state else {
             delegate?.bottomSheetViewPresenter(self, didTransitionTo: nil)
             return
         }
 
-        let containerHeight = containerView?.frame.height ?? 0
+        let containerHeight = containerView.frame.height
 
-        if let model = models[state] {
-            self.state = state
-            animate(to: CGPoint(x: 0, y: containerHeight - model.height))
-        } else if let model = models[self.state] {
-            animate(to: CGPoint(x: 0, y: containerHeight - model.height))
-        }
+        self.state = state
+        let height = state.height(for: bottomSheetView, targetSize: containerView.frame.size)
+        animate(to: CGPoint(x: 0, y: containerHeight - height))
 
         delegate?.bottomSheetViewPresenter(self, didTransitionTo: state)
     }
@@ -103,13 +111,16 @@ final class BottomSheetViewPresenter {
     // MARK: - Private methods
 
     @objc private func handlePan(panGesture: UIPanGestureRecognizer) {
+        guard let containerView = containerView else {
+            return
+        }
+
         switch panGesture.state {
         case .began:
             springAnimator.pauseAnimation()
         case .ended, .cancelled, .failed:
-            guard let model = models[state] else { return }
             let location = CGPoint(x: 0, y: topConstraint.constant)
-            let state = model.stateMap.state(for: location)
+            let state = config.state(for: location, in: containerView.frame.size)
             transition(to: state)
         default:
             break
