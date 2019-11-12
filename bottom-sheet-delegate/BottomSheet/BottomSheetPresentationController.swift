@@ -23,13 +23,7 @@ class BottomSheetPresentationController: UIPresentationController {
 
     // MARK: - Private properties
 
-    private let heights: [CGFloat]
-
-    private lazy var presenter: BottomSheetViewPresenter = {
-        let presenter = BottomSheetViewPresenter(heights: heights)
-        presenter.delegate = self
-        return presenter
-    }()
+    private let presenter: BottomSheetViewPresenter
 
     private lazy var backgroundView: UIView = {
         let view = UIView(frame: .zero)
@@ -40,8 +34,14 @@ class BottomSheetPresentationController: UIPresentationController {
 
     // MARK: - Init
 
-    init(presentedViewController: UIViewController, presenting: UIViewController?, heights: [CGFloat]) {
-        self.heights = heights
+    init(presentedViewController: UIViewController, presenting: UIViewController?, preferredHeights: [CGFloat]) {
+        var preferredHeights = preferredHeights
+
+        if !preferredHeights.contains(.bottomSheetDismissed) {
+            preferredHeights.append(.bottomSheetDismissed)
+        }
+
+        presenter = BottomSheetViewPresenter(preferredHeights: preferredHeights + [0])
         super.init(presentedViewController: presentedViewController, presenting: presenting)
     }
 
@@ -60,7 +60,8 @@ class BottomSheetPresentationController: UIPresentationController {
             backgroundView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
         ])
 
-        presenter.addPresentedView(presentedView, to: containerView)
+        presenter.delegate = self
+        presenter.add(presentedView, to: containerView)
     }
 }
 
@@ -77,14 +78,9 @@ extension BottomSheetPresentationController: UIViewControllerAnimatedTransitioni
 
         switch transitionState {
         case .presenting:
-            presenter.present()
+            presenter.show()
         case .dismissing:
-            let point = CGPoint(
-                x: 0,
-                y: containerView?.frame.height ?? 0
-            )
-
-            presenter.animate(to: point)
+            presenter.hide()
         }
     }
 }
@@ -98,8 +94,8 @@ extension BottomSheetPresentationController: UIViewControllerInteractiveTransiti
 
 // MARK: - BottomSheetViewPresenterDelegate
 extension BottomSheetPresentationController: BottomSheetViewPresenterDelegate {
-    func bottomSheetViewPresenter(_: BottomSheetViewPresenter, didTransitionTo height: BottomSheetHeight?) {
-        if height == nil {
+    func bottomSheetViewPresenter(_: BottomSheetViewPresenter, didTransitionToHeight height: CGFloat) {
+        if height == 0 {
             presentedViewController.dismiss(animated: true)
         }
     }

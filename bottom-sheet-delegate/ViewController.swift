@@ -10,7 +10,7 @@ import UIKit
 
 final class ViewController: UIViewController {
     private lazy var bottomSheetTransitioningDelegate = BottomSheetTransitioningDelegate(
-        heights: [510, UIScreen.main.bounds.size.height - 64]
+        heights: [.bottomSheetAutomatic, UIScreen.main.bounds.size.height - 64]
     )
 
     private lazy var viewController: UIViewController = {
@@ -26,14 +26,15 @@ final class ViewController: UIViewController {
             view.topAnchor.constraint(equalTo: viewController.view.topAnchor),
             view.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
             view.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
+            view.heightAnchor.constraint(equalToConstant: 400),
             view.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor)
         ])
 
         return viewController
     }()
 
-    private let bottomSheetViewPresenter = BottomSheetViewPresenter(
-        heights: [510, UIScreen.main.bounds.size.height - 64]
+    private lazy var bottomSheetViewPresenter = BottomSheetViewPresenter(
+        preferredHeights: [510, UIScreen.main.bounds.size.height - 64]
     )
 
     override func viewDidLoad() {
@@ -72,8 +73,8 @@ final class ViewController: UIViewController {
 
     @objc private func presentView() {
         let presentedView = UIView.makeView(withTitle: "UIView")
-        bottomSheetViewPresenter.addPresentedView(presentedView, to: view)
-        bottomSheetViewPresenter.present()
+        bottomSheetViewPresenter.add(presentedView, to: view)
+        bottomSheetViewPresenter.show()
     }
 }
 

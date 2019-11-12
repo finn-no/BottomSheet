@@ -5,6 +5,8 @@
 import UIKit
 
 final class BottomSheetView: UIView {
+    static let handleHeight: CGFloat = 20
+
     // MARK: - Private properties
 
     private let contentView: UIView
