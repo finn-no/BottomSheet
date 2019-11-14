@@ -23,9 +23,7 @@ public final class BottomSheetViewPresenter {
     private lazy var panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(panGesture:)))
     private lazy var springAnimator = SpringAnimator(dampingRatio: 0.8, frequencyResponse: 0.4)
 
-    private var targetOffsets: [CGFloat] {
-        preferredHeights.compactMap(offset(from:)).sorted()
-    }
+    private var targetOffsets = [CGFloat]()
 
     // MARK: - Init
 
@@ -60,6 +58,8 @@ public final class BottomSheetViewPresenter {
             bottomSheetView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
         ]
 
+        updateTargetOffsets()
+
         if let maxOffset = targetOffsets.last {
             let minHeight = containerView.frame.height - maxOffset
             constraints.append(presentedView.heightAnchor.constraint(greaterThanOrEqualToConstant: minHeight))
@@ -84,6 +84,7 @@ public final class BottomSheetViewPresenter {
     }
 
     public func reset() {
+        updateTargetOffsets()
         animate(to: currentTargetOffset)
     }
 
@@ -159,6 +160,10 @@ public final class BottomSheetViewPresenter {
                 isDismissible: targetOffset == nil
             )
         }
+    }
+
+    private func updateTargetOffsets() {
+        targetOffsets = preferredHeights.compactMap(offset(from:)).sorted()
     }
 
     private func offset(from height: CGFloat) -> CGFloat? {
