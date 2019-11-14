@@ -114,38 +114,50 @@ public final class BottomSheetViewPresenter {
     // MARK: - UIPanGestureRecognizer
 
     @objc private func handlePan(panGesture: UIPanGestureRecognizer) {
+        let state = translationState(for: panGesture)
+
         switch panGesture.state {
         case .began:
             springAnimator.pauseAnimation()
         case .ended, .cancelled, .failed:
-            if let offset = targetOffset(for: topConstraint.constant, currentTargetOffset: currentTargetOffset) {
-                animate(to: offset)
-            } else if let delegate = delegate {
-                delegate.bottomSheetViewPresenterDidReachDismissArea(self)
-            } else {
-                animate(to: currentTargetOffset)
+            animate(to: state.targetOffset)
+
+            if state.isDismissible {
+                delegate?.bottomSheetViewPresenterDidReachDismissArea(self)
             }
         default:
             break
         }
 
-        let translation = panGesture.translation(in: containerView)
-        topConstraint.constant += translation.y
+        topConstraint.constant = state.nextOffset
         panGesture.setTranslation(.zero, in: containerView)
     }
 
     // MARK: - Offset calculation
 
-    private func targetOffset(for panOffset: CGFloat, currentTargetOffset: CGFloat) -> CGFloat? {
+    private func translationState(for panGesture: UIPanGestureRecognizer) -> TranslationState {
         let threshold: CGFloat = 75
-        let previousArea = currentTargetOffset - threshold ... currentTargetOffset + threshold
+        let currentArea = currentTargetOffset - threshold ... currentTargetOffset + threshold
+        let currentConstant = topConstraint.constant
+        let translation = panGesture.translation(in: containerView)
+        let dragConstant = topConstraint.constant + translation.y
 
-        if previousArea.contains(panOffset) {
-            return currentTargetOffset
-        } else if panOffset < currentTargetOffset {
-            return targetOffsets.first(where: { $0 < panOffset })
+        if currentArea.contains(dragConstant) {
+            return TranslationState(nextOffset: dragConstant, targetOffset: currentTargetOffset, isDismissible: false)
+        } else if dragConstant < currentTargetOffset {
+            let targetOffset = targetOffsets.first(where: { $0 < dragConstant })
+            return TranslationState(
+                nextOffset: targetOffset == nil ? currentConstant : dragConstant,
+                targetOffset: targetOffset ?? currentTargetOffset,
+                isDismissible: false
+            )
         } else {
-            return targetOffsets.first(where: { $0 > panOffset })
+            let targetOffset = targetOffsets.first(where: { $0 > dragConstant })
+            return TranslationState(
+                nextOffset: dragConstant,
+                targetOffset: targetOffset ?? currentTargetOffset,
+                isDismissible: targetOffset == nil
+            )
         }
     }
 
@@ -168,4 +180,12 @@ public final class BottomSheetViewPresenter {
 
         return containerView.frame.height - makeTargetHeight()
     }
+}
+
+// MARK: - Private types
+
+private struct TranslationState {
+    let nextOffset: CGFloat
+    let targetOffset: CGFloat
+    let isDismissible: Bool
 }

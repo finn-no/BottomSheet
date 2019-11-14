@@ -10,7 +10,7 @@ import UIKit
 
 final class ViewController: UIViewController {
     private lazy var bottomSheetTransitioningDelegate = BottomSheetTransitioningDelegate(
-        heights: [.bottomSheetAutomatic, UIScreen.main.bounds.size.height - 64]
+        heights: [.bottomSheetAutomatic, UIScreen.main.bounds.size.height - 200]
     )
 
     private lazy var viewController: UIViewController = {
