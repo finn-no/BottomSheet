@@ -13,17 +13,30 @@ public final class BottomSheetViewPresenter {
 
     public weak var delegate: BottomSheetViewPresenterDelegate?
 
+    public var isDimViewHidden: Bool {
+        get { dimView.isHidden }
+        set { dimView.isHidden = newValue }
+    }
+
     // MARK: - Private properties
 
     private let preferredHeights: [CGFloat]
     private var topConstraint: NSLayoutConstraint!
     private var currentTargetOffset: CGFloat = 0
+    private var targetOffsets = [CGFloat]()
     private weak var presentedView: UIView?
     private weak var containerView: UIView?
     private lazy var panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(panGesture:)))
     private lazy var springAnimator = SpringAnimator(dampingRatio: 0.8, frequencyResponse: 0.4)
 
-    private var targetOffsets = [CGFloat]()
+    private lazy var dimView: UIView = {
+        let view = UIView(frame: .zero)
+        view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.backgroundColor = UIColor(white: 0, alpha: 0.4)
+        view.isHidden = true
+        view.alpha = 0
+        return view
+    }()
 
     // MARK: - Init
 
@@ -44,11 +57,14 @@ public final class BottomSheetViewPresenter {
         let bottomSheetView = BottomSheetView(contentView: presentedView)
         bottomSheetView.translatesAutoresizingMaskIntoConstraints = false
         bottomSheetView.addGestureRecognizer(panGesture)
+
+        containerView.addSubview(dimView)
         containerView.addSubview(bottomSheetView)
+        dimView.frame = containerView.bounds
 
         topConstraint = bottomSheetView.topAnchor.constraint(
             equalTo: containerView.topAnchor,
-            constant: containerView.frame.maxY
+            constant: containerView.frame.height
         )
 
         var constraints: [NSLayoutConstraint] = [
@@ -63,6 +79,10 @@ public final class BottomSheetViewPresenter {
         if let maxOffset = targetOffsets.last {
             let minHeight = containerView.frame.height - maxOffset
             constraints.append(presentedView.heightAnchor.constraint(greaterThanOrEqualToConstant: minHeight))
+
+            springAnimator.addAnimation { [weak self] position in
+                self?.updateDimViewAlpha(for: position.y)
+            }
         }
 
         NSLayoutConstraint.activate(constraints)
@@ -112,6 +132,12 @@ public final class BottomSheetViewPresenter {
         springAnimator.startAnimation()
     }
 
+    private func updateDimViewAlpha(for offset: CGFloat) {
+        if let maxOffset = targetOffsets.last {
+            dimView.alpha = min(1, maxOffset / offset)
+        }
+    }
+
     // MARK: - UIPanGestureRecognizer
 
     @objc private func handlePan(panGesture: UIPanGestureRecognizer) {
@@ -131,6 +157,7 @@ public final class BottomSheetViewPresenter {
         }
 
         topConstraint.constant = state.nextOffset
+        updateDimViewAlpha(for: state.nextOffset)
         panGesture.setTranslation(.zero, in: containerView)
     }
 

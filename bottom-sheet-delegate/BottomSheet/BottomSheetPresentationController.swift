@@ -25,17 +25,11 @@ class BottomSheetPresentationController: UIPresentationController {
 
     private let presenter: BottomSheetViewPresenter
 
-    private lazy var backgroundView: UIView = {
-        let view = UIView(frame: .zero)
-        view.backgroundColor = UIColor(white: 0, alpha: 0.5)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-
     // MARK: - Init
 
     init(presentedViewController: UIViewController, presenting: UIViewController?, preferredHeights: [CGFloat]) {
         presenter = BottomSheetViewPresenter(preferredHeights: preferredHeights)
+        presenter.isDimViewHidden = false
         super.init(presentedViewController: presentedViewController, presenting: presenting)
     }
 
@@ -45,14 +39,12 @@ class BottomSheetPresentationController: UIPresentationController {
         guard let containerView = containerView else { return }
         guard let presentedView = presentedView else { return }
 
-        containerView.addSubview(backgroundView)
-
-        NSLayoutConstraint.activate([
-            backgroundView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            backgroundView.topAnchor.constraint(equalTo: containerView.topAnchor),
-            backgroundView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            backgroundView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
-        ])
+//        NSLayoutConstraint.activate([
+//            backgroundView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+//            backgroundView.topAnchor.constraint(equalTo: containerView.topAnchor),
+//            backgroundView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+//            backgroundView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+//        ])
 
         presenter.delegate = self
         presenter.add(presentedView, to: containerView)
@@ -65,6 +57,7 @@ class BottomSheetPresentationController: UIPresentationController {
 }
 
 // MARK: - UIViewControllerAnimatedTransitioning
+
 extension BottomSheetPresentationController: UIViewControllerAnimatedTransitioning {
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return 0
@@ -85,6 +78,7 @@ extension BottomSheetPresentationController: UIViewControllerAnimatedTransitioni
 }
 
 // MARK: - UIViewControllerInteractiveTransitioning
+
 extension BottomSheetPresentationController: UIViewControllerInteractiveTransitioning {
     func startInteractiveTransition(_ transitionContext: UIViewControllerContextTransitioning) {
         animateTransition(using: transitionContext)
@@ -92,6 +86,7 @@ extension BottomSheetPresentationController: UIViewControllerInteractiveTransiti
 }
 
 // MARK: - BottomSheetViewPresenterDelegate
+
 extension BottomSheetPresentationController: BottomSheetViewPresenterDelegate {
     func bottomSheetViewPresenterDidReachDismissArea(_ presenter: BottomSheetViewPresenter) {
         presentedViewController.dismiss(animated: true)
