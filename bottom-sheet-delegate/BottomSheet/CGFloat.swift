@@ -4,6 +4,7 @@
 
 import UIKit
 
-public extension CGFloat {
-    static let bottomSheetAutomatic: CGFloat = -123456789
+extension CGFloat {
+    public static let bottomSheetAutomatic: CGFloat = -123456789
+    static let translationThreshold: CGFloat = 75
 }

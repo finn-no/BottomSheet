@@ -27,7 +27,7 @@ class BottomSheetPresentationController: UIPresentationController {
 
     private lazy var backgroundView: UIView = {
         let view = UIView(frame: .zero)
-//        view.backgroundColor = UIColor(white: 0, alpha: 0.5)
+        view.backgroundColor = UIColor(white: 0, alpha: 0.5)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -56,6 +56,11 @@ class BottomSheetPresentationController: UIPresentationController {
 
         presenter.delegate = self
         presenter.add(presentedView, to: containerView)
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: { _ in self.presenter.reset() }, completion: nil)
     }
 }
 

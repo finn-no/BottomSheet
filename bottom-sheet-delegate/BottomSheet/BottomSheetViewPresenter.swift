@@ -85,7 +85,7 @@ public final class BottomSheetViewPresenter {
 
     public func reset() {
         updateTargetOffsets()
-        animate(to: currentTargetOffset)
+        show()
     }
 
     public func transition<T: RawRepresentable>(to height: T) where T.RawValue == CGFloat {
@@ -137,8 +137,7 @@ public final class BottomSheetViewPresenter {
     // MARK: - Offset calculation
 
     private func translationState(for panGesture: UIPanGestureRecognizer) -> TranslationState {
-        let threshold: CGFloat = 75
-        let currentArea = currentTargetOffset - threshold ... currentTargetOffset + threshold
+        let currentArea = currentTargetOffset - .translationThreshold ... currentTargetOffset + .translationThreshold
         let currentConstant = topConstraint.constant
         let translation = panGesture.translation(in: containerView)
         let dragConstant = topConstraint.constant + translation.y
@@ -183,7 +182,10 @@ public final class BottomSheetViewPresenter {
             }
         }
 
-        return containerView.frame.height - makeTargetHeight()
+        let targetHeight = makeTargetHeight()
+        let minOffset: CGFloat = .translationThreshold
+
+        return max(containerView.frame.height - max(targetHeight, minOffset), minOffset)
     }
 }
 
