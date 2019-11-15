@@ -78,6 +78,11 @@ public final class BottomSheetView: UIView {
 
     // MARK: - Public API
 
+    /// Presents bottom sheet view from the bottom of the given container view.
+    ///
+    /// - Parameters:
+    ///   - view: the container for the bottom sheet view
+    ///   - completion: a closure to be executed when the animation ends
     public func present(in superview: UIView, completion: ((Bool) -> Void)? = nil) {
         superview.addSubview(dimView)
         superview.addSubview(self)
@@ -108,7 +113,11 @@ public final class BottomSheetView: UIView {
         animate(to: targetOffsets.last ?? 0)
     }
 
-    public func hide(completion: ((Bool) -> Void)? = nil) {
+    /// Animates bottom sheet view out of the screen bounds and removes it from the superview on completion.
+    ///
+    /// - Parameters:
+    ///   - completion: a closure to be executed when the animation ends
+    public func dismiss(completion: ((Bool) -> Void)? = nil) {
         springAnimator.addCompletion { [weak self] didComplete in
             if didComplete {
                 self?.dimView.removeFromSuperview()
@@ -121,11 +130,17 @@ public final class BottomSheetView: UIView {
         animate(to: superview?.frame.height ?? 0)
     }
 
+    /// Recalculates target offsets and animates to the minimum one.
+    /// Call this method e.g. when orientation change is detected.
     public func reset() {
         updateTargetOffsets()
         animate(to: targetOffsets.last ?? 0)
     }
 
+    /// Animates bottom sheet view to the given height.
+    ///
+    /// - Parameters:
+    ///   - height: the height of the bottom sheet view.
     public func transition<T: RawRepresentable>(to height: T) where T.RawValue == CGFloat {
         guard let offset = offset(from: height.rawValue) else { return }
         animate(to: offset)
@@ -166,13 +181,13 @@ public final class BottomSheetView: UIView {
 
     // MARK: - Animations
 
-    private func animate(to constant: CGFloat) {
-        if targetOffsets.contains(constant) {
-            currentTargetOffset = constant
+    private func animate(to offset: CGFloat) {
+        if targetOffsets.contains(offset) {
+            currentTargetOffset = offset
         }
 
         springAnimator.fromPosition = CGPoint(x: 0, y: topConstraint.constant)
-        springAnimator.toPosition = CGPoint(x: 0, y: constant)
+        springAnimator.toPosition = CGPoint(x: 0, y: offset)
         springAnimator.initialVelocity = .zero
         springAnimator.startAnimation()
     }
@@ -214,9 +229,11 @@ public final class BottomSheetView: UIView {
         let dragConstant = topConstraint.constant + translation.y
 
         if currentArea.contains(dragConstant) {
+            // Within the area of the current target offset, allow dragging.
             return TranslationState(nextOffset: dragConstant, targetOffset: currentTargetOffset, isDismissible: false)
         } else if dragConstant < currentTargetOffset {
             let targetOffset = targetOffsets.first(where: { $0 < dragConstant })
+            // Above the area of the current target offset, allow dragging if the next target offset is found.
             return TranslationState(
                 nextOffset: targetOffset == nil ? currentConstant : dragConstant,
                 targetOffset: targetOffset ?? currentTargetOffset,
@@ -224,6 +241,8 @@ public final class BottomSheetView: UIView {
             )
         } else {
             let targetOffset = targetOffsets.first(where: { $0 > dragConstant })
+            // Below the area of the current target offset,
+            // allow dragging and set as dismissable if the next target offset is not found.
             return TranslationState(
                 nextOffset: dragConstant,
                 targetOffset: targetOffset ?? currentTargetOffset,
@@ -263,7 +282,10 @@ public final class BottomSheetView: UIView {
 // MARK: - Private types
 
 private struct TranslationState {
+    /// The offset to be set for the current pan gesture translation.
     let nextOffset: CGFloat
+    /// The offset to be set when the pan gesture ended, cancelled or failed.
     let targetOffset: CGFloat
+    /// A flag indicating whether the view is ready to be dismissed.
     let isDismissible: Bool
 }

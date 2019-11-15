@@ -64,7 +64,7 @@ extension BottomSheetPresentationController: UIViewControllerAnimatedTransitioni
         case .presenting:
             bottomSheetView?.present(in: transitionContext.containerView, completion: completion)
         case .dismissing:
-            bottomSheetView?.hide(completion: completion)
+            bottomSheetView?.dismiss(completion: completion)
         }
     }
 }
