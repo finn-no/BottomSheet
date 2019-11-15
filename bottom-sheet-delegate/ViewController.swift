@@ -33,7 +33,10 @@ final class ViewController: UIViewController {
         return viewController
     }()
 
-    private lazy var bottomSheetViewPresenter = BottomSheetViewPresenter(preferredHeights: [100, 500])
+    private lazy var bottomSheetView = BottomSheetView(
+        contentView: UIView.makeView(withTitle: "UIView"),
+        preferredHeights: [100, 500]
+    )
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -70,9 +73,7 @@ final class ViewController: UIViewController {
     }
 
     @objc private func presentView() {
-        let presentedView = UIView.makeView(withTitle: "UIView")
-        bottomSheetViewPresenter.add(presentedView, to: view)
-        bottomSheetViewPresenter.show()
+        bottomSheetView.present(in: view)
     }
 }
 
