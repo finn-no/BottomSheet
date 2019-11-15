@@ -39,13 +39,6 @@ class BottomSheetPresentationController: UIPresentationController {
         guard let containerView = containerView else { return }
         guard let presentedView = presentedView else { return }
 
-//        NSLayoutConstraint.activate([
-//            backgroundView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-//            backgroundView.topAnchor.constraint(equalTo: containerView.topAnchor),
-//            backgroundView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-//            backgroundView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
-//        ])
-
         presenter.delegate = self
         presenter.add(presentedView, to: containerView)
     }

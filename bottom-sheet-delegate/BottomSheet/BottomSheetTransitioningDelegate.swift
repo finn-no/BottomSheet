@@ -9,17 +9,17 @@
 import UIKit
 
 final class BottomSheetTransitioningDelegate: NSObject {
-    private let heights: [CGFloat]
+    private let preferredHeights: [CGFloat]
     private var presentationController: BottomSheetPresentationController?
 
     // MARK: - Init
 
-    init(heights: [CGFloat]) {
-        self.heights = heights
+    init(preferredHeights: [CGFloat]) {
+        self.preferredHeights = preferredHeights
     }
 
-    convenience init<T: RawRepresentable>(heights: [T]) where T.RawValue == CGFloat {
-        self.init(heights: heights.map { $0.rawValue })
+    convenience init<T: RawRepresentable>(preferredHeights: [T]) where T.RawValue == CGFloat {
+        self.init(preferredHeights: preferredHeights.map { $0.rawValue })
     }
 }
 
@@ -34,7 +34,7 @@ extension BottomSheetTransitioningDelegate: UIViewControllerTransitioningDelegat
         presentationController = BottomSheetPresentationController(
             presentedViewController: presented,
             presenting: presenting,
-            preferredHeights: heights
+            preferredHeights: preferredHeights
         )
         return presentationController
     }
@@ -58,8 +58,4 @@ extension BottomSheetTransitioningDelegate: UIViewControllerTransitioningDelegat
     ) -> UIViewControllerInteractiveTransitioning? {
         return presentationController
     }
-
-//    func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-//        return nil
-//    }
 }
