@@ -4,12 +4,22 @@
 
 import UIKit
 
+// MARK: - Public extensions
+
+extension CGFloat {
+    public static let bottomSheetAutomatic: CGFloat = -123456789
+    static let translationThreshold: CGFloat = 75
+}
+
+// MARK: - Delegate
+
 public protocol BottomSheetViewDelegate: AnyObject {
     func bottomSheetViewDidReachDismissArea(_ view: BottomSheetView)
 }
 
+// MARK: - View
+
 public final class BottomSheetView: UIView {
-    // MARK: - Public properties
     public weak var delegate: BottomSheetViewDelegate?
 
     public var isDimViewHidden: Bool {
