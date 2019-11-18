@@ -8,33 +8,42 @@
 
 import UIKit
 
-struct BottomSheetConfiguration {
-    let compactModel: BottomSheetModel
-    let expandedModel: BottomSheetModel?
-}
-
-class BottomSheetTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
-
-    private let configuration: BottomSheetConfiguration
+final class BottomSheetTransitioningDelegate: NSObject {
+    private let preferredHeights: [CGFloat]
     private var presentationController: BottomSheetPresentationController?
 
-    init(configuration: BottomSheetConfiguration) {
-        self.configuration = configuration
+    // MARK: - Init
+
+    init(preferredHeights: [CGFloat]) {
+        self.preferredHeights = preferredHeights
     }
 
-    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+    convenience init<T: RawRepresentable>(preferredHeights: [T]) where T.RawValue == CGFloat {
+        self.init(preferredHeights: preferredHeights.map { $0.rawValue })
+    }
+}
+
+// MARK: - UIViewControllerTransitioningDelegate
+
+extension BottomSheetTransitioningDelegate: UIViewControllerTransitioningDelegate {
+    func presentationController(
+        forPresented presented: UIViewController,
+        presenting: UIViewController?,
+        source: UIViewController
+    ) -> UIPresentationController? {
         presentationController = BottomSheetPresentationController(
             presentedViewController: presented,
-            presenting: presenting
+            presenting: presenting,
+            preferredHeights: preferredHeights
         )
-
-        presentationController?.addModel(configuration.compactModel, for: .compact)
-        presentationController?.addModel(configuration.expandedModel, for: .expanded)
-
         return presentationController
     }
 
-    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    func animationController(
+        forPresented presented: UIViewController,
+        presenting: UIViewController,
+        source: UIViewController
+    ) -> UIViewControllerAnimatedTransitioning? {
         presentationController?.transitionState = .presenting
         return presentationController
     }
@@ -44,11 +53,9 @@ class BottomSheetTransitioningDelegate: NSObject, UIViewControllerTransitioningD
         return presentationController
     }
 
-    func interactionControllerForPresentation(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+    func interactionControllerForPresentation(
+        using animator: UIViewControllerAnimatedTransitioning
+    ) -> UIViewControllerInteractiveTransitioning? {
         return presentationController
     }
-
-//    func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-//        return nil
-//    }
 }

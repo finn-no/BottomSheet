@@ -8,47 +8,9 @@
 
 import UIKit
 
-extension BottomSheetConfiguration {
-    static var `default`: BottomSheetConfiguration {
-        let screenSize = UIScreen.main.bounds.size
-        return BottomSheetConfiguration(
-            compactModel: BottomSheetModel(
-                height: 510,
-                stateMap: BottomSheetStateMap(
-                    areas: [
-                        BottomSheetStateArea(
-                            bounds: CGRect(minX: 0, minY: 64,
-                                           maxX: screenSize.width, maxY: screenSize.height - 510 - 75),
-                            state: .expanded),
-                        BottomSheetStateArea(
-                            bounds: CGRect(minX: 0, minY: screenSize.height - 510 - 75,
-                                           maxX: screenSize.width, maxY: screenSize.height - 510 + 75),
-                            state: .compact)
-                    ]
-                )
-            ),
-            expandedModel: BottomSheetModel(
-                height: screenSize.height - 64,
-                stateMap: BottomSheetStateMap(
-                    areas: [
-                        BottomSheetStateArea(
-                            bounds: CGRect(minX: 0, minY: -100,
-                                           maxX: screenSize.width, maxY: 139),
-                            state: .expanded),
-                        BottomSheetStateArea(
-                            bounds: CGRect(minX: 0, minY: 139,
-                                           maxX: screenSize.width, maxY: screenSize.height - 510 + 75),
-                            state: .compact)
-                    ]
-                )
-            )
-        )
-    }
-}
-
 final class ViewController: UIViewController {
     private lazy var bottomSheetTransitioningDelegate = BottomSheetTransitioningDelegate(
-        configuration: .default
+        preferredHeights: [.bottomSheetAutomatic, UIScreen.main.bounds.size.height - 200]
     )
 
     private lazy var viewController: UIViewController = {
@@ -64,19 +26,17 @@ final class ViewController: UIViewController {
             view.topAnchor.constraint(equalTo: viewController.view.topAnchor),
             view.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
             view.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
+            view.heightAnchor.constraint(equalToConstant: 400),
             view.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor)
         ])
 
         return viewController
     }()
 
-    private let bottomSheetViewPresenter: BottomSheetViewPresenter = {
-        let presenter = BottomSheetViewPresenter()
-        let configuration = BottomSheetConfiguration.default
-        presenter.addModel(configuration.compactModel, for: .compact)
-        presenter.addModel(configuration.expandedModel, for: .expanded)
-        return presenter
-    }()
+    private lazy var bottomSheetView = BottomSheetView(
+        contentView: UIView.makeView(withTitle: "UIView"),
+        preferredHeights: [100, 500]
+    )
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -113,9 +73,7 @@ final class ViewController: UIViewController {
     }
 
     @objc private func presentView() {
-        let presentedView = UIView.makeView(withTitle: "UIView")
-        bottomSheetViewPresenter.addPresentedView(presentedView, to: view)
-        bottomSheetViewPresenter.transition(to: .compact)
+        bottomSheetView.present(in: view)
     }
 }
 
