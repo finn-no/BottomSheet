@@ -35,6 +35,7 @@ DerivedData
 # SPM
 /.build
 /Packages
+/.swiftpm
 
 # Bundler
 bin/

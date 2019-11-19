@@ -109,7 +109,6 @@ public final class BottomSheetView: UIView {
 
         superview.layoutIfNeeded()
         addGestureRecognizer(panGesture)
-        
         animate(to: targetOffsets.last ?? 0)
     }
 
