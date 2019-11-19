@@ -192,8 +192,8 @@ public final class BottomSheetView: UIView {
     }
 
     private func updateDimViewAlpha(for offset: CGFloat) {
-        if let maxOffset = targetOffsets.last {
-            dimView.alpha = min(1, maxOffset / offset)
+        if let superview = superview, let maxOffset = targetOffsets.last {
+            dimView.alpha = min(1, (superview.frame.height - offset) / (superview.frame.height - maxOffset))
         }
     }
 
