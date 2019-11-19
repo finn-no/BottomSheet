@@ -12,6 +12,12 @@
 - [x] Support for automatic view height based on Auto Layout constraints
 - [x] Beatiful spring animation
 
+## Demo
+
+<p align="center">
+  <img src="/GitHub/demo.gif"/>
+</p>
+
 ## Installation
 
 **BottomSheet** is available through [Carthage](https://github.com/Carthage/Carthage). Append this line to your `Cartfile`:
