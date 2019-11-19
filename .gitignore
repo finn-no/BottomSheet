@@ -32,6 +32,10 @@ DerivedData
 # Appcode
 .idea/
 
+# SPM
+/.build
+/Packages
+
 # Bundler
 bin/
 bundler/

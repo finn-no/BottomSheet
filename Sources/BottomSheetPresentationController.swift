@@ -1,9 +1,5 @@
 //
-//  BottomSheetPresentationController.swift
-//  bottom-sheet-delegate
-//
-//  Created by Granheim Brustad , Henrik on 01/11/2019.
-//  Copyright © 2019 Henrik Brustad. All rights reserved.
+//  Copyright © FINN.no AS, Inc. All rights reserved.
 //
 
 import UIKit
@@ -15,7 +11,7 @@ extension BottomSheetPresentationController {
     }
 }
 
-class BottomSheetPresentationController: UIPresentationController {
+final class BottomSheetPresentationController: UIPresentationController {
 
     // MARK: - Internal properties
 

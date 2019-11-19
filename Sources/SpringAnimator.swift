@@ -1,5 +1,5 @@
 //
-//  Copyright © 2018 FINN.no. All rights reserved.
+//  Copyright © FINN.no AS, Inc. All rights reserved.
 //
 
 import UIKit
@@ -11,7 +11,6 @@ extension SpringAnimator {
 }
 
 class SpringAnimator: NSObject {
-
     var fromPosition: CGPoint = .zero {
         didSet {
             position = toPosition - fromPosition
@@ -30,8 +29,8 @@ class SpringAnimator: NSObject {
         }
     }
 
-    var state: State = .stopped
-    var isRunning: Bool = false
+    private var state: State = .stopped
+    private var isRunning: Bool = false
 
     // MARK: - Spring physics
     private var dampingRatio: CGFloat = 0
@@ -48,7 +47,8 @@ class SpringAnimator: NSObject {
     private lazy var displayLink = CADisplayLink(target: self, selector: #selector(step(displayLink:)))
     private let scale = 1 / UIScreen.main.scale
 
-    // MARK: - Setup
+    // MARK: - Init
+
     init(dampingRatio: CGFloat, frequencyResponse: CGFloat) {
         super.init()
         set(dampingRatio: dampingRatio, frequencyResponse: frequencyResponse)
@@ -63,6 +63,7 @@ class SpringAnimator: NSObject {
     }
 
     // MARK: - ViewAnimating
+
     func addAnimation(_ animation: @escaping (CGPoint) -> Void) {
         animations.append(animation)
     }
@@ -73,6 +74,7 @@ class SpringAnimator: NSObject {
 
     func startAnimation() {
         guard !isRunning else { return }
+
         switch state {
         case .stopped:
             displayLink.add(to: .current, forMode: .common)
@@ -81,12 +83,14 @@ class SpringAnimator: NSObject {
         default:
             break
         }
+
         isRunning = true
         state = .active
     }
 
     func pauseAnimation() {
         guard isRunning else { return }
+
         displayLink.isPaused = true
         isRunning = false
         state = .inactive
@@ -94,6 +98,7 @@ class SpringAnimator: NSObject {
 
     func stopAnimation(_ withoutFinishing: Bool) {
         guard isRunning else { return }
+
         displayLink.remove(from: .current, forMode: .common)
         isRunning = false
         state = .stopped
@@ -116,5 +121,42 @@ private extension SpringAnimator {
         animations.forEach { animation in
             animation(toPosition - position)
         }
+    }
+}
+
+// MARK: - Private extensions
+
+private extension CGPoint {
+    static prefix func - (point: CGPoint) -> CGPoint {
+        return CGPoint(x: -point.x, y: -point.y)
+    }
+
+    static func * (point: CGPoint, scalar: CGFloat) -> CGPoint {
+        return CGPoint(x: point.x * scalar, y: point.y * scalar)
+    }
+
+    static func / (point: CGPoint, scalar: CGFloat) -> CGPoint {
+        return CGPoint(x: point.x / scalar, y: point.y / scalar)
+    }
+
+    static func + (lhs: CGPoint, rhs: CGPoint) -> CGPoint {
+        return CGPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
+    }
+
+    static func - (lhs: CGPoint, rhs: CGPoint) -> CGPoint {
+        return CGPoint(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
+    }
+
+    static func += (lhs: inout CGPoint, rhs: CGPoint) {
+        lhs.x += rhs.x
+        lhs.y += rhs.y
+    }
+
+    static func < (point: CGPoint, scalar: CGFloat) -> Bool {
+        return point.length < scalar
+    }
+
+    var length: CGFloat {
+        return sqrt(pow(x, 2) + pow(y, 2))
     }
 }

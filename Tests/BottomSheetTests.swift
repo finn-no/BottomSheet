@@ -1,16 +1,11 @@
 //
-//  bottom_sheet_delegateTests.swift
-//  bottom-sheet-delegateTests
-//
-//  Created by Granheim Brustad , Henrik on 01/11/2019.
-//  Copyright © 2019 Henrik Brustad. All rights reserved.
+//  Copyright © FINN.no AS, Inc. All rights reserved.
 //
 
 import XCTest
-@testable import bottom_sheet_delegate
+@testable import BottomSheet
 
-class bottom_sheet_delegateTests: XCTestCase {
-
+class BottomSheetTests: XCTestCase {
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -30,5 +25,4 @@ class bottom_sheet_delegateTests: XCTestCase {
             // Put the code you want to measure the time of here.
         }
     }
-
 }
