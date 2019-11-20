@@ -87,7 +87,7 @@ public final class BottomSheetView: UIView {
     /// - Parameters:
     ///   - view: the container for the bottom sheet view
     ///   - completion: a closure to be executed when the animation ends
-    public func present(in superview: UIView, targetIndex: Int? = nil, completion: ((Bool) -> Void)? = nil) {
+    public func present(in superview: UIView, targetIndex: Int = 0, completion: ((Bool) -> Void)? = nil) {
         superview.addSubview(dimView)
         superview.addSubview(self)
 
@@ -112,7 +112,8 @@ public final class BottomSheetView: UIView {
         superview.layoutIfNeeded()
         addGestureRecognizer(panGesture)
 
-        reset()
+        updateTargetOffsets()
+        transition(to: targetIndex)
     }
 
     /// Animates bottom sheet view out of the screen bounds and removes it from the superview on completion.
@@ -144,7 +145,7 @@ public final class BottomSheetView: UIView {
     /// - Parameters:
     ///   - index: the index of the target height
     public func transition(to index: Int) {
-        guard index > 0 && index <= targetHeights.count else {
+        guard index >= 0 && index < targetHeights.count else {
             assertionFailure("Provided index is out of bounds of the array with target heights.")
             return
         }
@@ -276,6 +277,8 @@ public final class BottomSheetView: UIView {
     private func offset(from height: CGFloat) -> CGFloat? {
         guard let superview = superview else { return nil }
 
+        let handleHeight: CGFloat = 20
+
         func makeTargetHeight() -> CGFloat {
             if height == .bottomSheetAutomatic {
                 let size = contentView.systemLayoutSizeFitting(
@@ -283,16 +286,13 @@ public final class BottomSheetView: UIView {
                     withHorizontalFittingPriority: .required,
                     verticalFittingPriority: .fittingSizeLevel
                 )
-                return size.height
+                return size.height + handleHeight
             } else {
                 return height
             }
         }
 
-        let handleHeight: CGFloat = 20
-        let targetHeight = makeTargetHeight() + handleHeight
-
-        return max(superview.frame.height - targetHeight, handleHeight)
+        return max(superview.frame.height - makeTargetHeight(), handleHeight)
     }
 }
 

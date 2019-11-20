@@ -7,7 +7,7 @@ import BottomSheet
 
 final class DemoViewController: UIViewController {
     private lazy var bottomSheetTransitioningDelegate = BottomSheetTransitioningDelegate(
-        preferredHeights: [.bottomSheetAutomatic, UIScreen.main.bounds.size.height - 200]
+        targetHeights: [.bottomSheetAutomatic, UIScreen.main.bounds.size.height - 200]
     )
 
     // MARK: - Lifecycle

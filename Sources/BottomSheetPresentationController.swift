@@ -20,12 +20,19 @@ final class BottomSheetPresentationController: UIPresentationController {
     // MARK: - Private properties
 
     private let targetHeights: [CGFloat]
+    private let startTargetIndex: Int
     private var bottomSheetView: BottomSheetView?
 
     // MARK: - Init
 
-    init(presentedViewController: UIViewController, presenting: UIViewController?, targetHeights: [CGFloat]) {
+    init(
+        presentedViewController: UIViewController,
+        presenting: UIViewController?,
+        targetHeights: [CGFloat],
+        startTargetIndex: Int = 0
+    ) {
         self.targetHeights = targetHeights
+        self.startTargetIndex = startTargetIndex
         super.init(presentedViewController: presentedViewController, presenting: presenting)
     }
 
@@ -58,7 +65,11 @@ extension BottomSheetPresentationController: UIViewControllerAnimatedTransitioni
 
         switch transitionState {
         case .presenting:
-            bottomSheetView?.present(in: transitionContext.containerView, completion: completion)
+            bottomSheetView?.present(
+                in: transitionContext.containerView,
+                targetIndex: startTargetIndex,
+                completion: completion
+            )
         case .dismissing:
             bottomSheetView?.dismiss(completion: completion)
         }
