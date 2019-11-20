@@ -29,7 +29,7 @@ final class BottomSheetPresentationController: UIPresentationController {
         presentedViewController: UIViewController,
         presenting: UIViewController?,
         targetHeights: [CGFloat],
-        startTargetIndex: Int = 0
+        startTargetIndex: Int
     ) {
         self.targetHeights = targetHeights
         self.startTargetIndex = startTargetIndex

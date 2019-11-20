@@ -88,6 +88,8 @@ public final class BottomSheetView: UIView {
     ///   - view: the container for the bottom sheet view
     ///   - completion: a closure to be executed when the animation ends
     public func present(in superview: UIView, targetIndex: Int = 0, completion: ((Bool) -> Void)? = nil) {
+        guard self.superview != superview else { return }
+
         superview.addSubview(dimView)
         superview.addSubview(self)
 
