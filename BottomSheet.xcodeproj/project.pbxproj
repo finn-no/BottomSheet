@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		CF1539C72382F20E001687C1 /* BottomSheet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF1539BD2382F20E001687C1 /* BottomSheet.framework */; };
-		CF1539CC2382F20E001687C1 /* BottomSheetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF1539CB2382F20E001687C1 /* BottomSheetTests.swift */; };
+		CF1539CC2382F20E001687C1 /* BottomSheetCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF1539CB2382F20E001687C1 /* BottomSheetCalculatorTests.swift */; };
 		CF1539CE2382F20E001687C1 /* BottomSheet.h in Headers */ = {isa = PBXBuildFile; fileRef = CF1539C02382F20E001687C1 /* BottomSheet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CF1539DE2382F3F6001687C1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF1539DD2382F3F6001687C1 /* AppDelegate.swift */; };
 		CF1539E72382F3F7001687C1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CF1539E62382F3F7001687C1 /* Assets.xcassets */; };
@@ -59,7 +59,7 @@
 		CF1539C02382F20E001687C1 /* BottomSheet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BottomSheet.h; sourceTree = "<group>"; };
 		CF1539C12382F20E001687C1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CF1539C62382F20E001687C1 /* BottomSheetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BottomSheetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		CF1539CB2382F20E001687C1 /* BottomSheetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetTests.swift; sourceTree = "<group>"; };
+		CF1539CB2382F20E001687C1 /* BottomSheetCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetCalculatorTests.swift; sourceTree = "<group>"; };
 		CF1539CD2382F20E001687C1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CF1539DB2382F3F6001687C1 /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF1539DD2382F3F6001687C1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -127,11 +127,11 @@
 			children = (
 				CF1539C02382F20E001687C1 /* BottomSheet.h */,
 				CF1539C12382F20E001687C1 /* Info.plist */,
+				CF46A3812385902100FFCB9F /* BottomSheetCalculator.swift */,
 				CF1539F12382F621001687C1 /* BottomSheetPresentationController.swift */,
 				CF1539F32382F621001687C1 /* BottomSheetTransitioningDelegate.swift */,
 				CF1539F52382F621001687C1 /* BottomSheetView.swift */,
 				CF1539F42382F621001687C1 /* SpringAnimator.swift */,
-				CF46A3812385902100FFCB9F /* BottomSheetCalculator.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -139,7 +139,7 @@
 		CF1539CA2382F20E001687C1 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				CF1539CB2382F20E001687C1 /* BottomSheetTests.swift */,
+				CF1539CB2382F20E001687C1 /* BottomSheetCalculatorTests.swift */,
 				CF1539CD2382F20E001687C1 /* Info.plist */,
 			);
 			path = Tests;
@@ -339,7 +339,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CF1539CC2382F20E001687C1 /* BottomSheetTests.swift in Sources */,
+				CF1539CC2382F20E001687C1 /* BottomSheetCalculatorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

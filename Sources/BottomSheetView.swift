@@ -248,7 +248,7 @@ public final class BottomSheetView: UIView {
             BottomSheetCalculator.offset(for: contentView, in: superview, height: $0)
         }).sorted()
 
-        targetThresholds = BottomSheetCalculator.targetThresholds(for: targetOffsets)
+        targetThresholds = BottomSheetCalculator.thresholds(for: targetOffsets, in: superview)
     }
 }
 

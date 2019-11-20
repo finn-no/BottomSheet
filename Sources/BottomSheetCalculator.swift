@@ -43,19 +43,15 @@ struct BottomSheetCalculator {
     ///   - contentView: the content view of the bottom sheet
     ///   - superview: the bottom sheet container view
     ///   - height: preferred height for the content view
-    static func targetThresholds(for targetOffsets: [CGFloat]) -> [CGFloat] {
+    static func thresholds(for targetOffsets: [CGFloat], in superview: UIView) -> [CGFloat] {
+        guard !targetOffsets.isEmpty else { return [] }
+
         let maxThreshold: CGFloat = 75
-        var thresholds = zip(targetOffsets.dropFirst(), targetOffsets).map {
+        let targetOffsets = [0] + targetOffsets + [superview.frame.height]
+
+        return zip(targetOffsets.dropFirst(), targetOffsets).map {
             min(abs(($0 - $1) * 0.25), maxThreshold)
         }
-
-        // First and last target offsets have equal botom and top thresholds
-        if let first = thresholds.first, let last = thresholds.last {
-            thresholds.insert(first, at: 0)
-            thresholds.append(last)
-        }
-
-        return thresholds
     }
 
     static func translationState(
