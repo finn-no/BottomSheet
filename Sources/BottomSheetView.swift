@@ -32,7 +32,7 @@ public final class BottomSheetView: UIView {
     private let targetHeights: [CGFloat]
     private var topConstraint: NSLayoutConstraint!
     private var targetOffsets = [CGFloat]()
-    private var thresholds = [CGFloat]()
+    private var targetThresholds = [CGFloat]()
     private var currentTargetOffsetIndex: Int = 0
     private var currentTargetOffset: CGFloat {
         return targetOffsets[currentTargetOffsetIndex]
@@ -151,7 +151,9 @@ public final class BottomSheetView: UIView {
             assertionFailure("Provided index is out of bounds of the array with target heights.")
             return
         }
-        guard let offset = offset(from: targetHeights[index]) else { return }
+        guard let superview = superview else { return }
+
+        let offset = BottomSheetCalculator.offset(for: contentView, in: superview, height: targetHeights[index])
         animate(to: offset)
     }
 
@@ -210,7 +212,15 @@ public final class BottomSheetView: UIView {
     // MARK: - UIPanGestureRecognizer
 
     @objc private func handlePan(panGesture: UIPanGestureRecognizer) {
-        let state = translationState(for: panGesture)
+        guard let state = BottomSheetCalculator.translationState(
+            from: topConstraint.constant,
+            to: topConstraint.constant + panGesture.translation(in: superview).y,
+            targetOffsets: targetOffsets,
+            thresholds: targetThresholds,
+            currentTargetOffsetIndex: currentTargetOffsetIndex
+        ) else {
+            return
+        }
 
         switch panGesture.state {
         case .began:
@@ -231,80 +241,15 @@ public final class BottomSheetView: UIView {
 
     // MARK: - Offset calculation
 
-    private func translationState(for panGesture: UIPanGestureRecognizer) -> TranslationState {
-        let lowerBound = currentTargetOffset - thresholds[currentTargetOffsetIndex]
-        let upperBound = currentTargetOffset + thresholds[currentTargetOffsetIndex + 1]
-        let currentArea = lowerBound ... upperBound
-        let currentConstant = topConstraint.constant
-        let translation = panGesture.translation(in: superview)
-        let dragConstant = topConstraint.constant + translation.y
-
-        if currentArea.contains(dragConstant) {
-            // Within the area of the current target offset, allow dragging.
-            return TranslationState(nextOffset: dragConstant, targetOffset: currentTargetOffset, isDismissible: false)
-        } else if dragConstant < currentTargetOffset {
-            let targetOffset = targetOffsets.first(where: { $0 < dragConstant })
-            // Above the area of the current target offset, allow dragging if the next target offset is found.
-            return TranslationState(
-                nextOffset: targetOffset == nil ? currentConstant : dragConstant,
-                targetOffset: targetOffset ?? currentTargetOffset,
-                isDismissible: false
-            )
-        } else {
-            let targetOffset = targetOffsets.first(where: { $0 > dragConstant })
-            // Below the area of the current target offset,
-            // allow dragging and set as dismissable if the next target offset is not found.
-            return TranslationState(
-                nextOffset: dragConstant,
-                targetOffset: targetOffset ?? currentTargetOffset,
-                isDismissible: targetOffset == nil
-            )
-        }
-    }
-
     private func updateTargetOffsets() {
-        targetOffsets = targetHeights.compactMap(offset(from:)).sorted()
+        guard let superview = superview else { return }
 
-        // Update thresholds
-        let maxThreshold: CGFloat = 75
-        thresholds = zip(targetOffsets.dropFirst(), targetOffsets).map { min(abs(($0 - $1) * 0.25), maxThreshold) }
+        targetOffsets = targetHeights.map({
+            BottomSheetCalculator.offset(for: contentView, in: superview, height: $0)
+        }).sorted()
 
-        // First and last target offsets have equal botom and top thresholds
-        if let first = thresholds.first, let last = thresholds.last {
-            thresholds.insert(first, at: 0)
-            thresholds.append(last)
-        }
+        targetThresholds = BottomSheetCalculator.targetThresholds(for: targetOffsets)
     }
-
-    private func offset(from height: CGFloat) -> CGFloat? {
-        guard let superview = superview else { return nil }
-
-        let handleHeight: CGFloat = 20
-
-        func makeTargetHeight() -> CGFloat {
-            if height == .bottomSheetAutomatic {
-                let size = contentView.systemLayoutSizeFitting(
-                    superview.frame.size,
-                    withHorizontalFittingPriority: .required,
-                    verticalFittingPriority: .fittingSizeLevel
-                )
-                return size.height + handleHeight
-            } else {
-                return height
-            }
-        }
-
-        return max(superview.frame.height - makeTargetHeight(), handleHeight)
-    }
-}
-
-private struct TranslationState {
-    /// The offset to be set for the current pan gesture translation.
-    let nextOffset: CGFloat
-    /// The offset to be set when the pan gesture ended, cancelled or failed.
-    let targetOffset: CGFloat
-    /// A flag indicating whether the view is ready to be dismissed.
-    let isDismissible: Bool
 }
 
 // MARK: - Private extensions
