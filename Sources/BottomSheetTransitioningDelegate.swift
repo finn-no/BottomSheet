@@ -30,7 +30,7 @@ extension BottomSheetTransitioningDelegate: UIViewControllerTransitioningDelegat
         presentationController = BottomSheetPresentationController(
             presentedViewController: presented,
             presenting: presenting,
-            preferredHeights: preferredHeights
+            targetHeights: preferredHeights
         )
         return presentationController
     }

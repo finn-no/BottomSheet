@@ -19,13 +19,13 @@ final class BottomSheetPresentationController: UIPresentationController {
 
     // MARK: - Private properties
 
-    private let preferredHeights: [CGFloat]
+    private let targetHeights: [CGFloat]
     private var bottomSheetView: BottomSheetView?
 
     // MARK: - Init
 
-    init(presentedViewController: UIViewController, presenting: UIViewController?, preferredHeights: [CGFloat]) {
-        self.preferredHeights = preferredHeights
+    init(presentedViewController: UIViewController, presenting: UIViewController?, targetHeights: [CGFloat]) {
+        self.targetHeights = targetHeights
         super.init(presentedViewController: presentedViewController, presenting: presenting)
     }
 
@@ -33,7 +33,7 @@ final class BottomSheetPresentationController: UIPresentationController {
 
     override func presentationTransitionWillBegin() {
         guard let presentedView = presentedView else { return }
-        bottomSheetView = BottomSheetView(contentView: presentedView, preferredHeights: preferredHeights)
+        bottomSheetView = BottomSheetView(contentView: presentedView, targetHeights: targetHeights)
         bottomSheetView?.delegate = self
         bottomSheetView?.isDimViewHidden = false
     }

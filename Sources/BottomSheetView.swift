@@ -29,7 +29,7 @@ public final class BottomSheetView: UIView {
     // MARK: - Private properties
 
     private let contentView: UIView
-    private let preferredHeights: [CGFloat]
+    private let targetHeights: [CGFloat]
     private var topConstraint: NSLayoutConstraint!
     private var targetOffsets = [CGFloat]()
     private var thresholds = [CGFloat]()
@@ -60,9 +60,9 @@ public final class BottomSheetView: UIView {
 
     // MARK: - Init
 
-    public init(contentView: UIView, preferredHeights: [CGFloat]) {
+    public init(contentView: UIView, targetHeights: [CGFloat]) {
         self.contentView = contentView
-        self.preferredHeights = preferredHeights.isEmpty ? [.bottomSheetAutomatic] : preferredHeights
+        self.targetHeights = targetHeights.isEmpty ? [.bottomSheetAutomatic] : targetHeights
         super.init(frame: .zero)
         setup()
     }
@@ -144,11 +144,11 @@ public final class BottomSheetView: UIView {
     /// - Parameters:
     ///   - index: the index of the target height
     public func transition(to index: Int) {
-        guard index > 0 && index <= preferredHeights.count else {
+        guard index > 0 && index <= targetHeights.count else {
             assertionFailure("Provided index is out of bounds of the array with target heights.")
             return
         }
-        guard let offset = offset(from: preferredHeights[index]) else { return }
+        guard let offset = offset(from: targetHeights[index]) else { return }
         animate(to: offset)
     }
 
@@ -260,7 +260,7 @@ public final class BottomSheetView: UIView {
     }
 
     private func updateTargetOffsets() {
-        targetOffsets = preferredHeights.compactMap(offset(from:)).sorted()
+        targetOffsets = targetHeights.compactMap(offset(from:)).sorted()
 
         // Update thresholds
         let maxThreshold: CGFloat = 75
