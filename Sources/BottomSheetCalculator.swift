@@ -31,14 +31,6 @@ struct BottomSheetCalculator {
     }
 
     /// Calculates bottom and top thresholds for the given target offsets.
-    /// For example:
-    ///     targetsOffsets = [100, 250, 500],
-    ///     targetThresholds = [
-    ///         min((250 - 100) * 0.25), 75),
-    ///         min((250 - 100) * 0.25), 75), // same as on index 0,
-    ///         min((500 - 250) * 0.25), 75),
-    ///         min((500 - 250) * 0.25), 75) // same as on index 2
-    ///     ]
     /// - Parameters:
     ///   - contentView: the content view of the bottom sheet
     ///   - superview: the bottom sheet container view
