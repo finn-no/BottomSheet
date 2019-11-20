@@ -8,7 +8,6 @@ import UIKit
 
 extension CGFloat {
     public static let bottomSheetAutomatic: CGFloat = -123456789
-    static let translationThreshold: CGFloat = 75
 }
 
 // MARK: - Delegate
@@ -32,15 +31,20 @@ public final class BottomSheetView: UIView {
     private let contentView: UIView
     private let preferredHeights: [CGFloat]
     private var topConstraint: NSLayoutConstraint!
-    private var currentTargetOffset: CGFloat = 0
     private var targetOffsets = [CGFloat]()
+    private var thresholds = [CGFloat]()
+    private var currentTargetOffsetIndex: Int = 0
+    private var currentTargetOffset: CGFloat {
+        return targetOffsets[currentTargetOffsetIndex]
+    }
+
     private lazy var panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(panGesture:)))
     private lazy var springAnimator = SpringAnimator(dampingRatio: 0.8, frequencyResponse: 0.4)
 
     private lazy var handleView: UIView = {
         let view = UIView(frame: .zero)
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .white
+        view.backgroundColor = .handle
         view.layer.cornerRadius = 2
         return view
     }()
@@ -58,7 +62,7 @@ public final class BottomSheetView: UIView {
 
     public init(contentView: UIView, preferredHeights: [CGFloat]) {
         self.contentView = contentView
-        self.preferredHeights = preferredHeights
+        self.preferredHeights = preferredHeights.isEmpty ? [.bottomSheetAutomatic] : preferredHeights
         super.init(frame: .zero)
         setup()
     }
@@ -83,13 +87,11 @@ public final class BottomSheetView: UIView {
     /// - Parameters:
     ///   - view: the container for the bottom sheet view
     ///   - completion: a closure to be executed when the animation ends
-    public func present(in superview: UIView, completion: ((Bool) -> Void)? = nil) {
+    public func present(in superview: UIView, targetIndex: Int? = nil, completion: ((Bool) -> Void)? = nil) {
         superview.addSubview(dimView)
         superview.addSubview(self)
 
         translatesAutoresizingMaskIntoConstraints = false
-
-        updateTargetOffsets()
         dimView.frame = superview.bounds
         topConstraint = topAnchor.constraint(equalTo: superview.topAnchor, constant: superview.frame.height)
 
@@ -109,7 +111,8 @@ public final class BottomSheetView: UIView {
 
         superview.layoutIfNeeded()
         addGestureRecognizer(panGesture)
-        animate(to: targetOffsets.last ?? 0)
+
+        reset()
     }
 
     /// Animates bottom sheet view out of the screen bounds and removes it from the superview on completion.
@@ -133,15 +136,19 @@ public final class BottomSheetView: UIView {
     /// Call this method e.g. when orientation change is detected.
     public func reset() {
         updateTargetOffsets()
-        animate(to: targetOffsets.last ?? 0)
+        animate(to: currentTargetOffset)
     }
 
     /// Animates bottom sheet view to the given height.
     ///
     /// - Parameters:
-    ///   - height: the height of the bottom sheet view.
-    public func transition<T: RawRepresentable>(to height: T) where T.RawValue == CGFloat {
-        guard let offset = offset(from: height.rawValue) else { return }
+    ///   - index: the index of the target height
+    public func transition(to index: Int) {
+        guard index > 0 && index <= preferredHeights.count else {
+            assertionFailure("Provided index is out of bounds of the array with target heights.")
+            return
+        }
+        guard let offset = offset(from: preferredHeights[index]) else { return }
         animate(to: offset)
     }
 
@@ -181,8 +188,8 @@ public final class BottomSheetView: UIView {
     // MARK: - Animations
 
     private func animate(to offset: CGFloat) {
-        if targetOffsets.contains(offset) {
-            currentTargetOffset = offset
+        if let index = targetOffsets.firstIndex(of: offset) {
+            currentTargetOffsetIndex = index
         }
 
         springAnimator.fromPosition = CGPoint(x: 0, y: topConstraint.constant)
@@ -222,7 +229,9 @@ public final class BottomSheetView: UIView {
     // MARK: - Offset calculation
 
     private func translationState(for panGesture: UIPanGestureRecognizer) -> TranslationState {
-        let currentArea = currentTargetOffset - .translationThreshold ... currentTargetOffset + .translationThreshold
+        let lowerBound = currentTargetOffset - thresholds[currentTargetOffsetIndex]
+        let upperBound = currentTargetOffset + thresholds[currentTargetOffsetIndex + 1]
+        let currentArea = lowerBound ... upperBound
         let currentConstant = topConstraint.constant
         let translation = panGesture.translation(in: superview)
         let dragConstant = topConstraint.constant + translation.y
@@ -252,6 +261,16 @@ public final class BottomSheetView: UIView {
 
     private func updateTargetOffsets() {
         targetOffsets = preferredHeights.compactMap(offset(from:)).sorted()
+
+        // Update thresholds
+        let maxThreshold: CGFloat = 75
+        thresholds = zip(targetOffsets.dropFirst(), targetOffsets).map { min(abs(($0 - $1) * 0.25), maxThreshold) }
+
+        // First and last target offsets have equal botom and top thresholds
+        if let first = thresholds.first, let last = thresholds.last {
+            thresholds.insert(first, at: 0)
+            thresholds.append(last)
+        }
     }
 
     private func offset(from height: CGFloat) -> CGFloat? {
@@ -272,13 +291,10 @@ public final class BottomSheetView: UIView {
 
         let handleHeight: CGFloat = 20
         let targetHeight = makeTargetHeight() + handleHeight
-        let minOffset: CGFloat = .translationThreshold
 
-        return max(superview.frame.height - max(targetHeight, minOffset), minOffset)
+        return max(superview.frame.height - targetHeight, handleHeight)
     }
 }
-
-// MARK: - Private types
 
 private struct TranslationState {
     /// The offset to be set for the current pan gesture translation.
@@ -287,4 +303,27 @@ private struct TranslationState {
     let targetOffset: CGFloat
     /// A flag indicating whether the view is ready to be dismissed.
     let isDismissible: Bool
+}
+
+// MARK: - Private extensions
+
+private extension UIColor {
+    class var handle: UIColor {
+        let defaultColor = UIColor(red: 195/255, green: 204/255, blue: 217/255, alpha: 1)
+
+        if #available(iOS 13.0, *) {
+            #if swift(>=5.1)
+            return UIColor { traitCollection -> UIColor in
+                switch traitCollection.userInterfaceStyle {
+                case .dark:
+                    return UIColor(red: 67/255, green: 67/255, blue: 89/255, alpha: 1)
+                default:
+                    return defaultColor
+                }
+            }
+            #endif
+        }
+
+        return defaultColor
+    }
 }
