@@ -6,16 +6,14 @@ import UIKit
 
 public final class BottomSheetTransitioningDelegate: NSObject {
     private let preferredHeights: [CGFloat]
+    private let startTargetIndex: Int
     private var presentationController: BottomSheetPresentationController?
 
     // MARK: - Init
 
-    public init(preferredHeights: [CGFloat]) {
-        self.preferredHeights = preferredHeights
-    }
-
-    public convenience init<T: RawRepresentable>(preferredHeights: [T]) where T.RawValue == CGFloat {
-        self.init(preferredHeights: preferredHeights.map { $0.rawValue })
+    public init(targetHeights: [CGFloat], startTargetIndex: Int = 0) {
+        self.preferredHeights = targetHeights
+        self.startTargetIndex = startTargetIndex
     }
 }
 
@@ -30,7 +28,8 @@ extension BottomSheetTransitioningDelegate: UIViewControllerTransitioningDelegat
         presentationController = BottomSheetPresentationController(
             presentedViewController: presented,
             presenting: presenting,
-            preferredHeights: preferredHeights
+            targetHeights: preferredHeights,
+            startTargetIndex: startTargetIndex
         )
         return presentationController
     }

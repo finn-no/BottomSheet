@@ -44,7 +44,8 @@ View controller -based presentation:
 
 ```swift
 let transitioningDelegate = BottomSheetTransitioningDelegate(
-    preferredHeights: [.bottomSheetAutomatic, UIScreen.main.bounds.size.height - 200]
+    targetHeights: [.bottomSheetAutomatic, UIScreen.main.bounds.size.height - 200],
+    startTargetIndex: 0
 )
 let viewController = UIViewController()
 viewController.transitioningDelegate = transitioningDelegate
@@ -61,8 +62,9 @@ contentView.backgroundColor = .red
 
 let bottomSheetView = BottomSheetView(
     contentView: contentView,
-    preferredHeights: [100, 500]
+    targetHeights: [100, 500]
 )
 
-bottomSheetView.present(in: viewController.view) // Can be presented in any UIView subclass
+// Can be presented in any UIView subclass
+bottomSheetView.present(in: viewController.view, targetIndex: 0) 
 ```
