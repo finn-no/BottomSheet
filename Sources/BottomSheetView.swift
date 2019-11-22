@@ -140,7 +140,13 @@ public final class BottomSheetView: UIView {
     /// Call this method e.g. when orientation change is detected.
     public func reset() {
         updateTargetOffsets()
-        transition(to: 0)
+
+        guard let superview = superview, let index = targetOffsets.firstIndex(where: { $0 < superview.frame.height }) else {
+            return
+        }
+
+        currentTargetOffsetIndex = index
+        transition(to: index)
     }
 
     /// Animates bottom sheet view to the given height.
@@ -207,7 +213,7 @@ public final class BottomSheetView: UIView {
     }
 
     private func updateDimViewAlpha(for offset: CGFloat) {
-        if let superview = superview, let mainOffset = targetOffsets.first(where: { $0 < super.frame.height }) {
+        if let superview = superview, let mainOffset = targetOffsets.first(where: { $0 < superview.frame.height }) {
             dimView.alpha = min(1, (superview.frame.height - offset) / (superview.frame.height - mainOffset))
         }
     }
