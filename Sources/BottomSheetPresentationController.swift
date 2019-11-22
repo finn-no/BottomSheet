@@ -31,6 +31,7 @@ final class BottomSheetPresentationController: UIPresentationController {
         targetHeights: [CGFloat],
         startTargetIndex: Int
     ) {
+        // Add 0 height for dismiss target height
         self.targetHeights = [0] + targetHeights
         self.startTargetIndex = startTargetIndex + 1
         super.init(presentedViewController: presentedViewController, presenting: presenting)

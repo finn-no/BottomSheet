@@ -30,12 +30,12 @@ struct BottomSheetCalculator {
         return max(superview.frame.height - makeTargetHeight(), handleHeight)
     }
 
-    /// Creates the layout of the BottomSheet based on the target offsets and the current target offset
+    /// Creates the layout of the BottomSheetView based on the target offsets and the current target offset
     ///
     /// - Parameters:
-    ///   - targetOffsets: array containing the different target offsets a BottomSheet can transition between
-    ///   - currentTargetIndex: index of the current target offset of the BottomSheet
-    ///   - isDismissable: flag specifying whether the last two offsets should dismiss the BottomSheet
+    ///   - targetOffsets: array containing the different target offsets a BottomSheetView can transition between
+    ///   - currentTargetIndex: index of the current target offset of the BottomSheetView
+    ///   - isDismissable: flag specifying whether the last two offsets should dismiss the BottomSheetView
     static func createLayout(for targetOffsets: [CGFloat], at currentTargetIndex: Int, isDismissible: Bool) -> [BottomSheetModel] {
         guard !targetOffsets.isEmpty else { return [] }
 
