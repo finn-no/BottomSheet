@@ -28,15 +28,14 @@ public final class BottomSheetView: UIView {
 
     // MARK: - Private properties
 
+    private let isDismissable: Bool
     private let contentView: UIView
-    private let targetHeights: [CGFloat]
     private var topConstraint: NSLayoutConstraint!
+    private let targetHeights: [CGFloat]
     private var targetOffsets = [CGFloat]()
-    private var targetThresholds = [CGFloat]()
     private var currentTargetOffsetIndex: Int = 0
-    private var currentTargetOffset: CGFloat {
-        return targetOffsets[currentTargetOffsetIndex]
-    }
+    private var models = [BottomSheetModel]()
+    private var initialOffset: CGFloat = 0
 
     private lazy var panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(panGesture:)))
     private lazy var springAnimator = SpringAnimator(dampingRatio: 0.8, frequencyResponse: 0.4)
@@ -60,9 +59,10 @@ public final class BottomSheetView: UIView {
 
     // MARK: - Init
 
-    public init(contentView: UIView, targetHeights: [CGFloat]) {
+    public init(contentView: UIView, targetHeights: [CGFloat], isDismissible: Bool = false) {
         self.contentView = contentView
         self.targetHeights = targetHeights.isEmpty ? [.bottomSheetAutomatic] : targetHeights
+        self.isDismissable = isDismissible
         super.init(frame: .zero)
         setup()
     }
@@ -114,6 +114,7 @@ public final class BottomSheetView: UIView {
         superview.layoutIfNeeded()
         addGestureRecognizer(panGesture)
 
+        currentTargetOffsetIndex = targetIndex
         updateTargetOffsets()
         transition(to: targetIndex)
     }
@@ -139,7 +140,7 @@ public final class BottomSheetView: UIView {
     /// Call this method e.g. when orientation change is detected.
     public func reset() {
         updateTargetOffsets()
-        animate(to: currentTargetOffset)
+        transition(to: 0)
     }
 
     /// Animates bottom sheet view to the given height.
@@ -147,14 +148,16 @@ public final class BottomSheetView: UIView {
     /// - Parameters:
     ///   - index: the index of the target height
     public func transition(to index: Int) {
-        guard index >= 0 && index < targetHeights.count else {
+        guard targetHeights.indices.contains(index) else {
             assertionFailure("Provided index is out of bounds of the array with target heights.")
             return
         }
-        guard let superview = superview else { return }
+        // Adds one to compansate for limit model at beginning
+        guard models.indices.contains(index + 1) else {
+            return
+        }
 
-        let offset = BottomSheetCalculator.offset(for: contentView, in: superview, height: targetHeights[index])
-        animate(to: offset)
+        animate(to: models[index + 1].targetOffset)
     }
 
     // MARK: - Setup
@@ -204,39 +207,44 @@ public final class BottomSheetView: UIView {
     }
 
     private func updateDimViewAlpha(for offset: CGFloat) {
-        if let superview = superview, let maxOffset = targetOffsets.last {
-            dimView.alpha = min(1, (superview.frame.height - offset) / (superview.frame.height - maxOffset))
+        if let superview = superview, let mainOffset = targetOffsets.first(where: { $0 < super.frame.height }) {
+            dimView.alpha = min(1, (superview.frame.height - offset) / (superview.frame.height - mainOffset))
         }
     }
 
     // MARK: - UIPanGestureRecognizer
 
     @objc private func handlePan(panGesture: UIPanGestureRecognizer) {
-        guard let state = BottomSheetCalculator.translationState(
-            from: topConstraint.constant,
-            to: topConstraint.constant + panGesture.translation(in: superview).y,
-            targetOffsets: targetOffsets,
-            thresholds: targetThresholds,
-            currentTargetOffsetIndex: currentTargetOffsetIndex
-        ) else {
-            return
-        }
-
         switch panGesture.state {
         case .began:
             springAnimator.pauseAnimation()
+            initialOffset = topConstraint.constant
+
+        case .changed:
+            let translation = panGesture.translation(in: superview)
+            let location = initialOffset + translation.y
+
+            guard let model = models[location] else { return }
+
+            updateDimViewAlpha(for: location)
+            topConstraint.constant = model.nextOffset(for: location)
+
         case .ended, .cancelled, .failed:
-            animate(to: state.targetOffset)
-            if state.isDismissible {
+            let translation = panGesture.translation(in: superview)
+            let location = initialOffset + translation.y
+
+            guard let model = models[location] else { return }
+
+            if model.isDismissible {
                 delegate?.bottomSheetViewDidReachDismissArea(self)
+            } else {
+                animate(to: model.targetOffset)
+                updateTargetOffsets()
             }
+
         default:
             break
         }
-
-        topConstraint.constant = state.nextOffset
-        updateDimViewAlpha(for: state.nextOffset)
-        panGesture.setTranslation(.zero, in: superview)
     }
 
     // MARK: - Offset calculation
@@ -244,15 +252,27 @@ public final class BottomSheetView: UIView {
     private func updateTargetOffsets() {
         guard let superview = superview else { return }
 
-        targetOffsets = targetHeights.map({
+        targetOffsets = targetHeights.map {
             BottomSheetCalculator.offset(for: contentView, in: superview, height: $0)
-        }).sorted()
+        }
 
-        targetThresholds = BottomSheetCalculator.thresholds(for: targetOffsets, in: superview)
+        models = BottomSheetCalculator.createLayout(
+            for: targetOffsets,
+            at: currentTargetOffsetIndex,
+            isDismissible: isDismissable
+        )
     }
 }
 
 // MARK: - Private extensions
+
+private extension Array where Element == BottomSheetModel {
+    subscript(offset: CGFloat) -> BottomSheetModel? {
+        first { model -> Bool in
+            model.contains(offset: offset)
+        }
+    }
+}
 
 private extension UIColor {
     class var handle: UIColor {

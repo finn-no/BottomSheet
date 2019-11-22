@@ -31,8 +31,8 @@ final class BottomSheetPresentationController: UIPresentationController {
         targetHeights: [CGFloat],
         startTargetIndex: Int
     ) {
-        self.targetHeights = targetHeights
-        self.startTargetIndex = startTargetIndex
+        self.targetHeights = [0] + targetHeights
+        self.startTargetIndex = startTargetIndex + 1
         super.init(presentedViewController: presentedViewController, presenting: presenting)
     }
 
@@ -40,7 +40,13 @@ final class BottomSheetPresentationController: UIPresentationController {
 
     override func presentationTransitionWillBegin() {
         guard let presentedView = presentedView else { return }
-        bottomSheetView = BottomSheetView(contentView: presentedView, targetHeights: targetHeights)
+
+        bottomSheetView = BottomSheetView(
+            contentView: presentedView,
+            targetHeights: targetHeights,
+            isDismissible: true
+        )
+
         bottomSheetView?.delegate = self
         bottomSheetView?.isDimViewHidden = false
     }

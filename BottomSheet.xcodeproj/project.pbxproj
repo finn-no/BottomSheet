@@ -21,6 +21,8 @@
 		CF153A022382F88E001687C1 /* BottomSheet.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CF1539BD2382F20E001687C1 /* BottomSheet.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CF153A062382F938001687C1 /* DemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF1539E12382F3F6001687C1 /* DemoViewController.swift */; };
 		CF46A383238593AD00FFCB9F /* BottomSheetCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF46A3812385902100FFCB9F /* BottomSheetCalculator.swift */; };
+		DA1152522387EAF5002E2F40 /* BottomSheetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1152502387EACE002E2F40 /* BottomSheetModel.swift */; };
+		DA11525523880010002E2F40 /* BottomSheetModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA11525323880010002E2F40 /* BottomSheetModelTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +74,8 @@
 		CF1539F42382F621001687C1 /* SpringAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpringAnimator.swift; sourceTree = "<group>"; };
 		CF1539F52382F621001687C1 /* BottomSheetView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BottomSheetView.swift; sourceTree = "<group>"; };
 		CF46A3812385902100FFCB9F /* BottomSheetCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetCalculator.swift; sourceTree = "<group>"; };
+		DA1152502387EACE002E2F40 /* BottomSheetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetModel.swift; sourceTree = "<group>"; };
+		DA11525323880010002E2F40 /* BottomSheetModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +131,7 @@
 			children = (
 				CF1539C02382F20E001687C1 /* BottomSheet.h */,
 				CF1539C12382F20E001687C1 /* Info.plist */,
+				DA1152502387EACE002E2F40 /* BottomSheetModel.swift */,
 				CF46A3812385902100FFCB9F /* BottomSheetCalculator.swift */,
 				CF1539F12382F621001687C1 /* BottomSheetPresentationController.swift */,
 				CF1539F32382F621001687C1 /* BottomSheetTransitioningDelegate.swift */,
@@ -139,6 +144,7 @@
 		CF1539CA2382F20E001687C1 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				DA11525323880010002E2F40 /* BottomSheetModelTests.swift */,
 				CF1539CB2382F20E001687C1 /* BottomSheetCalculatorTests.swift */,
 				CF1539CD2382F20E001687C1 /* Info.plist */,
 			);
@@ -327,6 +333,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DA1152522387EAF5002E2F40 /* BottomSheetModel.swift in Sources */,
 				CF1539FB2382F62A001687C1 /* BottomSheetPresentationController.swift in Sources */,
 				CF46A383238593AD00FFCB9F /* BottomSheetCalculator.swift in Sources */,
 				CF1539FC2382F62A001687C1 /* BottomSheetTransitioningDelegate.swift in Sources */,
@@ -339,6 +346,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DA11525523880010002E2F40 /* BottomSheetModelTests.swift in Sources */,
 				CF1539CC2382F20E001687C1 /* BottomSheetCalculatorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

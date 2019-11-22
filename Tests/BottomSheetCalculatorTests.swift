@@ -26,105 +26,69 @@ final class BottomSheetCalculatorTests: XCTestCase {
         XCTAssertEqual(BottomSheetCalculator.offset(for: view, in: superview, height: 0), 400) // Superview height
     }
 
-    func testThresholdsWithEmptyTargetOffsets() {
-        XCTAssertTrue(BottomSheetCalculator.thresholds(for: [], in: superview).isEmpty)
+    func testLayoutWithEmptyOffsets() {
+        XCTAssertTrue(BottomSheetCalculator.createLayout(for: [], at: 0, isDismissible: false).isEmpty)
     }
 
-    func testThresholdsWithSingleTargetOffset() {
-        XCTAssertEqual(BottomSheetCalculator.thresholds(for: [100], in: superview), [25, 75])
+    func testLayoutModelsWithSingleOffset() {
+        let models = BottomSheetCalculator.createLayout(for: [500], at: 0, isDismissible: false)
+
+        XCTAssertEqual(models.count, 3)
+        XCTAssertTrue(models[0] is LimitModel)
+        XCTAssertTrue(models[1] is RangeModel)
+        XCTAssertTrue(models[2] is LimitModel)
     }
 
-    func testThresholdsWithMultipleTargetOffset() {
-        XCTAssertEqual(BottomSheetCalculator.thresholds(for: [56, 200], in: superview), [14, 36, 50])
-        XCTAssertEqual(BottomSheetCalculator.thresholds(for: [100, 250, 500], in: superview), [25.0, 37.5, 62.5, 25.0])
+    func testLayoutModelsWithMultipleOffsets() {
+        let models = BottomSheetCalculator.createLayout(for: [700, 300, 100], at: 0, isDismissible: false)
+
+        XCTAssertEqual(models.count, 5)
+        XCTAssertTrue(models.first is LimitModel)
+        XCTAssertTrue(models.last is LimitModel)
     }
 
-    func testThresholdsWithBigDistanceBetweenTargetOffsets() {
-        XCTAssertEqual(BottomSheetCalculator.thresholds(for: [100, 1000], in: superview), [25.0, 75.0, 75.0])
+    func testLayoutModelsWhenContainingOffset() {
+        let models = BottomSheetCalculator.createLayout(for: [700, 300, 100], at: 0, isDismissible: false)
+
+        XCTAssertTrue(models[0].contains(offset: 800))
+        XCTAssertTrue(models[1].contains(offset: 690))
+        XCTAssertTrue(models[2].contains(offset: 300))
+        XCTAssertTrue(models[3].contains(offset: 100))
+        XCTAssertTrue(models[4].contains(offset: 20))
+
     }
 
-    func testTranslationStateWithinCurrentArea() {
-        let targetOffsets: [CGFloat] = [56, 200]
-        let thresholds: [CGFloat] = [36, 36, 36]
-
-        let state = BottomSheetCalculator.translationState(
-            from: 60,
-            to: 70,
-            targetOffsets: targetOffsets,
-            thresholds: thresholds,
-            currentTargetOffsetIndex: 0
-        )
-
-        XCTAssertEqual(state?.nextOffset, 70)
-        XCTAssertEqual(state?.targetOffset, 56)
-        XCTAssertEqual(state?.isDismissible, false)
+    func testLayoutModelsWhenNotContainingOffset() {
+        let models = BottomSheetCalculator.createLayout(for: [700, 300, 100], at: 0, isDismissible: false)
+        XCTAssertFalse(models[0].contains(offset: 600))
+        XCTAssertFalse(models[1].contains(offset: 300))
+        XCTAssertFalse(models[2].contains(offset: 100))
+        XCTAssertFalse(models[3].contains(offset: 20))
+        XCTAssertFalse(models[4].contains(offset: 100))
     }
 
-    func testTranslationStateToAreaBelow() {
-        let targetOffsets: [CGFloat] = [56, 200]
-        let thresholds: [CGFloat] = [36, 36, 36]
+    func testLayoutThresholds() {
+        let models = BottomSheetCalculator.createLayout(for: [700, 600, 400], at: 1, isDismissible: false)
 
-        let state = BottomSheetCalculator.translationState(
-            from: 60,
-            to: 120,
-            targetOffsets: targetOffsets,
-            thresholds: thresholds,
-            currentTargetOffsetIndex: 0
-        )
+        guard let firstModel = models[1] as? RangeModel else {
+            return
+        }
 
-        XCTAssertEqual(state?.nextOffset, 120)
-        XCTAssertEqual(state?.targetOffset, 200)
-        XCTAssertEqual(state?.isDismissible, false)
-    }
+        XCTAssertEqual(firstModel.range.lowerBound, 600 + 25)
+        XCTAssertEqual(firstModel.range.upperBound, 700 - 0)
 
-    func testTranslationStateWhenThereIsNoAreaBelow() {
-        let targetOffsets: [CGFloat] = [56, 200]
-        let thresholds: [CGFloat] = [36, 36, 36]
+        guard let secondModel = models[2] as? RangeModel else {
+            return
+        }
 
-        let state = BottomSheetCalculator.translationState(
-            from: 200,
-            to: 250,
-            targetOffsets: targetOffsets,
-            thresholds: thresholds,
-            currentTargetOffsetIndex: 1
-        )
+        XCTAssertEqual(secondModel.range.lowerBound, 600 - 50)
+        XCTAssertEqual(secondModel.range.upperBound, 600 + 25)
 
-        XCTAssertEqual(state?.nextOffset, 250)
-        XCTAssertEqual(state?.targetOffset, 200)
-        XCTAssertEqual(state?.isDismissible, true)
-    }
+        guard let thirdModel = models[3] as? RangeModel else {
+            return
+        }
 
-    func testTranslationStateToAreaAbove() {
-        let targetOffsets: [CGFloat] = [56, 200]
-        let thresholds: [CGFloat] = [36, 36, 36]
-
-        let state = BottomSheetCalculator.translationState(
-            from: 190,
-            to: 140,
-            targetOffsets: targetOffsets,
-            thresholds: thresholds,
-            currentTargetOffsetIndex: 1
-        )
-
-        XCTAssertEqual(state?.nextOffset, 140)
-        XCTAssertEqual(state?.targetOffset, 56)
-        XCTAssertEqual(state?.isDismissible, false)
-    }
-
-    func testTranslationStateWhenThereIsNoAreaAbove() {
-        let targetOffsets: [CGFloat] = [56, 200]
-        let thresholds: [CGFloat] = [36, 36, 36]
-
-        let state = BottomSheetCalculator.translationState(
-            from: 56,
-            to: 10,
-            targetOffsets: targetOffsets,
-            thresholds: thresholds,
-            currentTargetOffsetIndex: 0
-        )
-
-        XCTAssertEqual(state?.nextOffset, 56)
-        XCTAssertEqual(state?.targetOffset, 56)
-        XCTAssertEqual(state?.isDismissible, false)
+        XCTAssertEqual(thirdModel.range.lowerBound, 400 - 0)
+        XCTAssertEqual(thirdModel.range.upperBound, 600 - 50)
     }
 }
