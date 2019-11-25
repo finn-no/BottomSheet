@@ -8,7 +8,7 @@ import XCTest
 final class BottomSheetModelTests: XCTestCase {
 
     func testRangeModel() {
-        let rangeModel = RangeModel(
+        let rangeModel = RangeTarget(
             targetOffset: 500,
             range: 300 ..< 600,
             isDismissible: false
@@ -23,7 +23,7 @@ final class BottomSheetModelTests: XCTestCase {
     func testLowerLimitModel() {
         let targetOffset: CGFloat = 200
 
-        let lowerLimitModel = LimitModel(
+        let lowerLimitModel = LimitTarget(
             targetOffset: targetOffset,
             isDismissible: false,
             compare: <
@@ -37,7 +37,7 @@ final class BottomSheetModelTests: XCTestCase {
     func testUpperLimitModel() {
         let targetOffset: CGFloat = 700
 
-        let upperLimitModel = LimitModel(
+        let upperLimitModel = LimitTarget(
             targetOffset: targetOffset,
             isDismissible: false,
             compare: >=
