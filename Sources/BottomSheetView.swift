@@ -202,14 +202,14 @@ public final class BottomSheetView: UIView {
 
     // MARK: - Animations
 
-    private func animate(to offset: CGFloat, with initialVelocity: CGPoint) {
+    private func animate(to offset: CGFloat, with initialVelocity: CGPoint = .zero) {
         if let index = targetOffsets.firstIndex(of: offset) {
             currentTargetOffsetIndex = index
         }
 
         springAnimator.fromPosition = CGPoint(x: 0, y: topConstraint.constant)
         springAnimator.toPosition = CGPoint(x: 0, y: offset)
-        springAnimator.initialVelocity = -initialVelocity
+        springAnimator.initialVelocity = initialVelocity
         springAnimator.startAnimation()
     }
 
@@ -241,7 +241,6 @@ public final class BottomSheetView: UIView {
 
         case .ended, .cancelled, .failed:
             initialOffset = nil
-
 
             if translationTarget.isDismissible {
                 delegate?.bottomSheetViewDidReachDismissArea(self)

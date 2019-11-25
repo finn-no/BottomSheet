@@ -7,7 +7,7 @@ import XCTest
 
 final class BottomSheetModelTests: XCTestCase {
 
-    func testRangeModel() {
+    func testRangeTarget() {
         let rangeModel = RangeTarget(
             targetOffset: 500,
             range: 300 ..< 600,
@@ -20,11 +20,13 @@ final class BottomSheetModelTests: XCTestCase {
         XCTAssertEqual(rangeModel.nextOffset(for: 400), 400)
     }
 
-    func testLowerLimitModel() {
+    func testLowerLimitTargetWithStopBehaviour() {
         let targetOffset: CGFloat = 200
 
         let lowerLimitModel = LimitTarget(
             targetOffset: targetOffset,
+            bound: targetOffset,
+            behavior: .stop,
             isDismissible: false,
             compare: <
         )
@@ -34,17 +36,40 @@ final class BottomSheetModelTests: XCTestCase {
         XCTAssertEqual(lowerLimitModel.nextOffset(for: 100), targetOffset)
     }
 
-    func testUpperLimitModel() {
+    func testLowerLimitTargetWithRubberBandBehaviour() {
+        let bound: CGFloat = 300
+        let radius: CGFloat = 75
+
+        let lowerLimitModel = LimitTarget(
+            targetOffset: bound,
+            bound: bound,
+            behavior: .rubberBand(radius: radius),
+            isDismissible: false,
+            compare: <
+        )
+
+        XCTAssertTrue(lowerLimitModel.contains(offset: 200))
+        XCTAssertFalse(lowerLimitModel.contains(offset: 500))
+
+        let offset: CGFloat = 200
+        let distance = offset - bound
+        let nextOffset = radius * (1 - exp(-abs(distance) / radius))
+        XCTAssertEqual(lowerLimitModel.nextOffset(for: offset), bound - nextOffset)
+    }
+
+    func testUpperLimitTargetWithLinearBehaviour() {
         let targetOffset: CGFloat = 700
 
         let upperLimitModel = LimitTarget(
             targetOffset: targetOffset,
+            bound: 700,
+            behavior: .linear,
             isDismissible: false,
             compare: >=
         )
 
         XCTAssertFalse(upperLimitModel.contains(offset: 300))
         XCTAssertTrue(upperLimitModel.contains(offset: 800))
-        XCTAssertEqual(upperLimitModel.nextOffset(for: 800), targetOffset)
+        XCTAssertEqual(upperLimitModel.nextOffset(for: 800), 800)
     }
 }

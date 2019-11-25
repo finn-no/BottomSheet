@@ -35,7 +35,8 @@ struct BottomSheetCalculator {
     /// - Parameters:
     ///   - targetOffsets: array containing the different target offsets a BottomSheetView can transition between
     ///   - currentTargetIndex: index of the current target offset of the BottomSheetView
-    ///   - isDismissable: flag specifying whether the last two offsets should dismiss the BottomSheetView
+    ///   - superview: the bottom sheet container view
+    ///   - isDismissable: flag specifying whether the last translation target should dismiss the BottomSheetView
     static func createTranslationTargets(
         for targetOffsets: [CGFloat],
         at currentTargetIndex: Int,
@@ -55,8 +56,8 @@ struct BottomSheetCalculator {
         // We add a zero threshold at the end to make the BottomSheetView stop at its biggest height.
         let highestThreshold: CGFloat = 0
         // Calculate all the offsets in between
-        let thresholds = [lowestThreshold] + targetOffsets.mapPar { (first, second) -> CGFloat in
-            min((abs(second - first) * 0.25), maxThreshold)
+        let thresholds = [lowestThreshold] + zip(targetOffsets.dropFirst(), targetOffsets).map {
+            min((abs($1 - $0) * 0.25), maxThreshold)
         } + [highestThreshold]
 
         // Calculate lower bounds
@@ -106,28 +107,5 @@ struct BottomSheetCalculator {
         models.append(topModel)
 
         return models
-    }
-}
-
-// MARK: - Helper types
-
-private extension Sequence {
-
-    /// Iterate through array two elements at a time
-    ///
-    func mapPar<T>(_ transform: (Element, Element) -> T) -> [T] {
-        var iterator = makeIterator()
-        var transformed = [T]()
-
-        guard var first = iterator.next() else {
-            return []
-        }
-
-        while let second = iterator.next() {
-            transformed.append(transform(first, second))
-            first = second
-        }
-
-        return transformed
     }
 }

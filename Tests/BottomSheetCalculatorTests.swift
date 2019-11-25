@@ -27,28 +27,28 @@ final class BottomSheetCalculatorTests: XCTestCase {
     }
 
     func testLayoutWithEmptyOffsets() {
-        XCTAssertTrue(BottomSheetCalculator.createLayout(for: [], at: 0, isDismissible: false).isEmpty)
+        XCTAssertTrue(BottomSheetCalculator.createTranslationTargets(for: [], at: 0, in: superview, isDismissible: false).isEmpty)
     }
 
     func testLayoutModelsWithSingleOffset() {
-        let models = BottomSheetCalculator.createLayout(for: [500], at: 0, isDismissible: false)
+        let models = BottomSheetCalculator.createTranslationTargets(for: [500], at: 0, in: superview, isDismissible: false)
 
         XCTAssertEqual(models.count, 3)
-        XCTAssertTrue(models[0] is LimitModel)
-        XCTAssertTrue(models[1] is RangeModel)
-        XCTAssertTrue(models[2] is LimitModel)
+        XCTAssertTrue(models[0] is LimitTarget)
+        XCTAssertTrue(models[1] is RangeTarget)
+        XCTAssertTrue(models[2] is LimitTarget)
     }
 
     func testLayoutModelsWithMultipleOffsets() {
-        let models = BottomSheetCalculator.createLayout(for: [700, 300, 100], at: 0, isDismissible: false)
+        let models = BottomSheetCalculator.createTranslationTargets(for: [700, 300, 100], at: 0, in: superview, isDismissible: false)
 
         XCTAssertEqual(models.count, 5)
-        XCTAssertTrue(models.first is LimitModel)
-        XCTAssertTrue(models.last is LimitModel)
+        XCTAssertTrue(models.first is LimitTarget)
+        XCTAssertTrue(models.last is LimitTarget)
     }
 
     func testLayoutModelsWhenContainingOffset() {
-        let models = BottomSheetCalculator.createLayout(for: [700, 300, 100], at: 0, isDismissible: false)
+        let models = BottomSheetCalculator.createTranslationTargets(for: [700, 300, 100], at: 0, in: superview, isDismissible: false)
 
         XCTAssertTrue(models[0].contains(offset: 800))
         XCTAssertTrue(models[1].contains(offset: 690))
@@ -59,7 +59,7 @@ final class BottomSheetCalculatorTests: XCTestCase {
     }
 
     func testLayoutModelsWhenNotContainingOffset() {
-        let models = BottomSheetCalculator.createLayout(for: [700, 300, 100], at: 0, isDismissible: false)
+        let models = BottomSheetCalculator.createTranslationTargets(for: [700, 300, 100], at: 0, in: superview, isDismissible: false)
         XCTAssertFalse(models[0].contains(offset: 600))
         XCTAssertFalse(models[1].contains(offset: 300))
         XCTAssertFalse(models[2].contains(offset: 100))
@@ -68,23 +68,23 @@ final class BottomSheetCalculatorTests: XCTestCase {
     }
 
     func testLayoutThresholds() {
-        let models = BottomSheetCalculator.createLayout(for: [700, 600, 400], at: 1, isDismissible: false)
+        let models = BottomSheetCalculator.createTranslationTargets(for: [700, 600, 400], at: 1, in: superview, isDismissible: false)
 
-        guard let firstModel = models[1] as? RangeModel else {
+        guard let firstModel = models[1] as? RangeTarget else {
             return
         }
 
         XCTAssertEqual(firstModel.range.lowerBound, 600 + 25)
         XCTAssertEqual(firstModel.range.upperBound, 700 - 0)
 
-        guard let secondModel = models[2] as? RangeModel else {
+        guard let secondModel = models[2] as? RangeTarget else {
             return
         }
 
         XCTAssertEqual(secondModel.range.lowerBound, 600 - 50)
         XCTAssertEqual(secondModel.range.upperBound, 600 + 25)
 
-        guard let thirdModel = models[3] as? RangeModel else {
+        guard let thirdModel = models[3] as? RangeTarget else {
             return
         }
 
