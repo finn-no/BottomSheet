@@ -40,7 +40,13 @@ final class BottomSheetPresentationController: UIPresentationController {
 
     override func presentationTransitionWillBegin() {
         guard let presentedView = presentedView else { return }
-        bottomSheetView = BottomSheetView(contentView: presentedView, targetHeights: targetHeights)
+
+        bottomSheetView = BottomSheetView(
+            contentView: presentedView,
+            targetHeights: targetHeights,
+            isDismissible: true
+        )
+
         bottomSheetView?.delegate = self
         bottomSheetView?.isDimViewHidden = false
     }

@@ -28,15 +28,15 @@ public final class BottomSheetView: UIView {
 
     // MARK: - Private properties
 
+    private let isDismissable: Bool
     private let contentView: UIView
-    private let targetHeights: [CGFloat]
     private var topConstraint: NSLayoutConstraint!
+    private let targetHeights: [CGFloat]
     private var targetOffsets = [CGFloat]()
-    private var targetThresholds = [CGFloat]()
     private var currentTargetOffsetIndex: Int = 0
-    private var currentTargetOffset: CGFloat {
-        return targetOffsets[currentTargetOffsetIndex]
-    }
+
+    private var initialOffset: CGFloat?
+    private var translationTargets = [TranslationTarget]()
 
     private lazy var panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(panGesture:)))
     private lazy var springAnimator = SpringAnimator(dampingRatio: 0.8, frequencyResponse: 0.4)
@@ -60,9 +60,10 @@ public final class BottomSheetView: UIView {
 
     // MARK: - Init
 
-    public init(contentView: UIView, targetHeights: [CGFloat]) {
+    public init(contentView: UIView, targetHeights: [CGFloat], isDismissible: Bool = false) {
         self.contentView = contentView
         self.targetHeights = targetHeights.isEmpty ? [.bottomSheetAutomatic] : targetHeights
+        self.isDismissable = isDismissible
         super.init(frame: .zero)
         setup()
     }
@@ -114,6 +115,7 @@ public final class BottomSheetView: UIView {
         superview.layoutIfNeeded()
         addGestureRecognizer(panGesture)
 
+        currentTargetOffsetIndex = targetIndex
         updateTargetOffsets()
         transition(to: targetIndex)
     }
@@ -139,7 +141,12 @@ public final class BottomSheetView: UIView {
     /// Call this method e.g. when orientation change is detected.
     public func reset() {
         updateTargetOffsets()
-        animate(to: currentTargetOffset)
+
+        guard let maxOffset = targetHeights.max() else {
+            return
+        }
+
+        animate(to: maxOffset)
     }
 
     /// Animates bottom sheet view to the given height.
@@ -147,11 +154,14 @@ public final class BottomSheetView: UIView {
     /// - Parameters:
     ///   - index: the index of the target height
     public func transition(to index: Int) {
-        guard index >= 0 && index < targetHeights.count else {
+        guard targetHeights.indices.contains(index) else {
             assertionFailure("Provided index is out of bounds of the array with target heights.")
             return
         }
-        guard let superview = superview else { return }
+
+        guard let superview = superview else {
+            return
+        }
 
         let offset = BottomSheetCalculator.offset(for: contentView, in: superview, height: targetHeights[index])
         animate(to: offset)
@@ -192,19 +202,19 @@ public final class BottomSheetView: UIView {
 
     // MARK: - Animations
 
-    private func animate(to offset: CGFloat) {
+    private func animate(to offset: CGFloat, with initialVelocity: CGPoint = .zero) {
         if let index = targetOffsets.firstIndex(of: offset) {
             currentTargetOffsetIndex = index
         }
 
         springAnimator.fromPosition = CGPoint(x: 0, y: topConstraint.constant)
         springAnimator.toPosition = CGPoint(x: 0, y: offset)
-        springAnimator.initialVelocity = .zero
+        springAnimator.initialVelocity = initialVelocity
         springAnimator.startAnimation()
     }
 
     private func updateDimViewAlpha(for offset: CGFloat) {
-        if let superview = superview, let maxOffset = targetOffsets.last {
+        if let superview = superview, let maxOffset = targetOffsets.max() {
             dimView.alpha = min(1, (superview.frame.height - offset) / (superview.frame.height - maxOffset))
         }
     }
@@ -212,31 +222,35 @@ public final class BottomSheetView: UIView {
     // MARK: - UIPanGestureRecognizer
 
     @objc private func handlePan(panGesture: UIPanGestureRecognizer) {
-        guard let state = BottomSheetCalculator.translationState(
-            from: topConstraint.constant,
-            to: topConstraint.constant + panGesture.translation(in: superview).y,
-            targetOffsets: targetOffsets,
-            thresholds: targetThresholds,
-            currentTargetOffsetIndex: currentTargetOffsetIndex
-        ) else {
+        initialOffset = initialOffset ?? topConstraint.constant
+        let translation = panGesture.translation(in: superview)
+        let location = initialOffset! + translation.y
+
+        guard let translationTarget = translationTargets.first(where: { $0.contains(offset: location) }) else {
             return
         }
 
         switch panGesture.state {
         case .began:
             springAnimator.pauseAnimation()
+
+        case .changed:
+            updateDimViewAlpha(for: location)
+            topConstraint.constant = translationTarget.nextOffset(for: location)
+
         case .ended, .cancelled, .failed:
-            animate(to: state.targetOffset)
-            if state.isDismissible {
+            initialOffset = nil
+
+            if translationTarget.isDismissible {
                 delegate?.bottomSheetViewDidReachDismissArea(self)
+            } else {
+                animate(to: translationTarget.targetOffset)
+                createTranslationTargets()
             }
+
         default:
             break
         }
-
-        topConstraint.constant = state.nextOffset
-        updateDimViewAlpha(for: state.nextOffset)
-        panGesture.setTranslation(.zero, in: superview)
     }
 
     // MARK: - Offset calculation
@@ -244,11 +258,22 @@ public final class BottomSheetView: UIView {
     private func updateTargetOffsets() {
         guard let superview = superview else { return }
 
-        targetOffsets = targetHeights.map({
+        targetOffsets = targetHeights.map {
             BottomSheetCalculator.offset(for: contentView, in: superview, height: $0)
-        }).sorted()
+        }.sorted(by: >)
 
-        targetThresholds = BottomSheetCalculator.thresholds(for: targetOffsets, in: superview)
+        createTranslationTargets()
+    }
+
+    private func createTranslationTargets() {
+        guard let superview = superview else { return }
+
+        translationTargets = BottomSheetCalculator.createTranslationTargets(
+            for: targetOffsets,
+            at: currentTargetOffsetIndex,
+            in: superview,
+            isDismissible: isDismissable
+        )
     }
 }
 

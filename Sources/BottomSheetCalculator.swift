@@ -30,68 +30,84 @@ struct BottomSheetCalculator {
         return max(superview.frame.height - makeTargetHeight(), handleHeight)
     }
 
-    /// Calculates bottom and top thresholds for the given target offsets.
+    /// Creates the translation targets of a BottomSheetView based on an array of target offsets and the current target offset
+    ///
     /// - Parameters:
-    ///   - contentView: the content view of the bottom sheet
+    ///   - targetOffsets: array containing the different target offsets a BottomSheetView can transition between
+    ///   - currentTargetIndex: index of the current target offset of the BottomSheetView
     ///   - superview: the bottom sheet container view
-    ///   - height: preferred height for the content view
-    static func thresholds(for targetOffsets: [CGFloat], in superview: UIView) -> [CGFloat] {
+    ///   - isDismissable: flag specifying whether the last translation target should dismiss the BottomSheetView
+    static func createTranslationTargets(
+        for targetOffsets: [CGFloat],
+        at currentTargetIndex: Int,
+        in superview: UIView,
+        isDismissible: Bool
+    ) -> [TranslationTarget] {
         guard !targetOffsets.isEmpty else { return [] }
 
-        let maxThreshold: CGFloat = 75
-        let targetOffsets = [0] + targetOffsets + [superview.frame.height]
+        let minOffset = targetOffsets.last ?? 0
+        let maxOffset = targetOffsets.first ?? 0
 
-        return zip(targetOffsets.dropFirst(), targetOffsets).map {
-            min(abs(($0 - $1) * 0.25), maxThreshold)
+        // Thresholds is how long you need to translate from one translation target to another
+        // Calculates the threshold between two offsets
+        func threshold(_ offsetA: CGFloat, _ offsetB: CGFloat) -> CGFloat {
+            let maxThreshold: CGFloat = 75
+            return min(abs(offsetB - offsetA) * 0.25, maxThreshold)
         }
-    }
+        // If the BottomSheetView is dismissible we want the user to translate a certain amount before transitioning to the dismiss translation target
+        // If not, make it stop at the smallest target height by setting the first threshold to zero.
+        let lowestThreshold = isDismissible ? threshold(superview.frame.height, maxOffset) : 0
+        // We add a zero threshold at the end to make the BottomSheetView stop at its biggest height.
+        let highestThreshold: CGFloat = 0
+        // Calculate all the offsets in between
+        let thresholds = [lowestThreshold] + zip(targetOffsets.dropFirst(), targetOffsets).map { threshold($0, $1) } + [highestThreshold]
 
-    static func translationState(
-        from source: CGFloat,
-        to destination: CGFloat,
-        targetOffsets: [CGFloat],
-        thresholds: [CGFloat],
-        currentTargetOffsetIndex: Int
-    ) -> TranslationState? {
-        guard currentTargetOffsetIndex >= 0 && currentTargetOffsetIndex < targetOffsets.count else { return nil }
-        guard thresholds.count == targetOffsets.count + 1 else { return nil }
+        // Calculate lower bounds
+        let lowerOffsets = targetOffsets[currentTargetIndex...]
+        let lowerThresholds = thresholds[(currentTargetIndex + 1)...]
+        let lowerBounds = zip(lowerOffsets, lowerThresholds).map(-)
 
-        let currentTargetOffset = targetOffsets[currentTargetOffsetIndex]
-        let lowerBound = currentTargetOffset - thresholds[currentTargetOffsetIndex]
-        let upperBound = currentTargetOffset + thresholds[currentTargetOffsetIndex + 1]
-        let currentArea = lowerBound ... upperBound
+        // Calculate upper bounds
+        let upperOffsets = targetOffsets[...currentTargetIndex]
+        let upperThresholds = thresholds[...currentTargetIndex]
+        let upperBounds = zip(upperOffsets, upperThresholds).map(+)
 
-        if currentArea.contains(destination) {
-            // Within the area of the current target offset, allow dragging.
-            return TranslationState(nextOffset: destination, targetOffset: currentTargetOffset, isDismissible: false)
-        } else if destination < currentTargetOffset {
-            let targetOffset = targetOffsets.first(where: { $0 < destination })
-            // Above the area of the current target offset, allow dragging if the next target offset is found.
-            return TranslationState(
-                nextOffset: targetOffset == nil ? source : destination,
-                targetOffset: targetOffset ?? currentTargetOffset,
+        let bounds = upperBounds + lowerBounds
+
+        // Target used to control offsets bigger than or equal to maxOffset
+        let bottomTarget = LimitTarget(
+            targetOffset: isDismissible ? superview.frame.height : maxOffset,
+            bound: bounds.first ?? maxOffset,
+            behavior: isDismissible ? .linear : .stop,
+            isDismissible: isDismissible,
+            compare: >=
+        )
+
+        var upperBound = bounds.first ?? 0
+        var targets: [TranslationTarget] = [bottomTarget]
+
+        for (targetOffset, lowerBound) in zip(targetOffsets, bounds.dropFirst()) {
+            let target = RangeTarget(
+                targetOffset: targetOffset,
+                range: lowerBound ..< upperBound,
                 isDismissible: false
             )
-        } else {
-            let targetOffset = targetOffsets.first(where: { $0 > destination })
-            // Below the area of the current target offset,
-            // allow dragging and set as dismissable if the next target offset is not found.
-            return TranslationState(
-                nextOffset: destination,
-                targetOffset: targetOffset ?? currentTargetOffset,
-                isDismissible: targetOffset == nil
-            )
+
+            targets.append(target)
+            upperBound = lowerBound
         }
+
+        // Target used to control offsets smaller than minOffset
+        let topTarget = LimitTarget(
+            targetOffset: minOffset,
+            bound: minOffset,
+            behavior: .rubberBand(radius: threshold(0, minOffset)),
+            isDismissible: false,
+            compare: <
+        )
+
+        targets.append(topTarget)
+
+        return targets
     }
-}
-
-// MARK: - Helper types
-
-struct TranslationState {
-    /// The offset to be set for the current pan gesture translation.
-    let nextOffset: CGFloat
-    /// The offset to be set when the pan gesture ended, cancelled or failed.
-    let targetOffset: CGFloat
-    /// A flag indicating whether the view is ready to be dismissed.
-    let isDismissible: Bool
 }
