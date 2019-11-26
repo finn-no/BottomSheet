@@ -78,7 +78,7 @@ struct BottomSheetCalculator {
         let bottomTarget = LimitTarget(
             targetOffset: isDismissible ? superview.frame.height : maxOffset,
             bound: bounds.first ?? maxOffset,
-            behavior: isDismissible ? .linear : .stop,
+            behavior: isDismissible ? .linear : .rubberBand(radius: threshold(0, maxOffset)),
             isDismissible: isDismissible,
             compare: >=
         )
