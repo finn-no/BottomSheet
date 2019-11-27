@@ -142,7 +142,7 @@ public final class BottomSheetView: UIView {
     public func reset() {
         updateTargetOffsets()
 
-        guard let maxOffset = targetHeights.max() else {
+        guard let maxOffset = targetOffsets.max() else {
             return
         }
 
