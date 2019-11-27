@@ -60,24 +60,15 @@ final class BottomSheetPresentationController: UIPresentationController {
         guard let presentedView = presentedView else { return .zero }
         guard let containerView = containerView else { return .zero }
 
-        let offset = BottomSheetCalculator.offset(
+        let contentHeight = BottomSheetCalculator.targetHeight(
             for: presentedView,
             in: containerView,
             height: targetHeights[startTargetIndex]
         )
 
-        let handleHeight: CGFloat = 20
-        let expectedHeight: CGFloat
-
-        if targetHeights[startTargetIndex] == .bottomSheetAutomatic {
-            expectedHeight = containerView.frame.height - offset - handleHeight
-        } else {
-            expectedHeight = containerView.frame.height - offset
-        }
-
         let size = CGSize(
             width: containerView.frame.width,
-            height: expectedHeight
+            height: contentHeight
         )
 
         return CGRect(

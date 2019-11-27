@@ -13,21 +13,26 @@ struct BottomSheetCalculator {
     ///   - height: preferred height for the content view
     static func offset(for contentView: UIView, in superview: UIView, height: CGFloat) -> CGFloat {
         let handleHeight: CGFloat = 20
+        var contentHeight = targetHeight(for: contentView, in: superview, height: height)
 
-        func makeTargetHeight() -> CGFloat {
-            if height == .bottomSheetAutomatic {
-                let size = contentView.systemLayoutSizeFitting(
-                    superview.frame.size,
-                    withHorizontalFittingPriority: .required,
-                    verticalFittingPriority: .fittingSizeLevel
-                )
-                return size.height + handleHeight
-            } else {
-                return height
-            }
+        if height == .bottomSheetAutomatic {
+            contentHeight += handleHeight
         }
 
-        return max(superview.frame.height - makeTargetHeight(), handleHeight)
+        return max(superview.frame.height - contentHeight, handleHeight)
+    }
+
+    static func targetHeight(for contentView: UIView, in superview: UIView, height: CGFloat) -> CGFloat {
+        if height == .bottomSheetAutomatic {
+            let size = contentView.systemLayoutSizeFitting(
+                superview.frame.size,
+                withHorizontalFittingPriority: .required,
+                verticalFittingPriority: .fittingSizeLevel
+            )
+            return size.height
+        } else {
+            return height
+        }
     }
 
     /// Creates the translation targets of a BottomSheetView based on an array of target offsets and the current target offset
