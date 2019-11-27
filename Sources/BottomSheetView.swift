@@ -13,6 +13,7 @@ extension CGFloat {
 // MARK: - Delegate
 
 public protocol BottomSheetViewDelegate: AnyObject {
+    func bottomSheetViewDidTapDimView(_ view: BottomSheetView)
     func bottomSheetViewDidReachDismissArea(_ view: BottomSheetView)
 }
 
@@ -38,6 +39,7 @@ public final class BottomSheetView: UIView {
     private var initialOffset: CGFloat?
     private var translationTargets = [TranslationTarget]()
 
+    private lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(tapGesture:)))
     private lazy var panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(panGesture:)))
     private lazy var springAnimator = SpringAnimator(dampingRatio: 0.8, frequencyResponse: 0.4)
 
@@ -53,6 +55,7 @@ public final class BottomSheetView: UIView {
         let view = UIView(frame: .zero)
         view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.backgroundColor = UIColor(white: 0, alpha: 0.4)
+        view.addGestureRecognizer(tapGesture)
         view.isHidden = true
         view.alpha = 0
         return view
@@ -246,6 +249,12 @@ public final class BottomSheetView: UIView {
         default:
             break
         }
+    }
+
+    // MARK: - UITapGestureRecognizer
+
+    @objc private func handleTap(tapGesture: UITapGestureRecognizer) {
+        delegate?.bottomSheetViewDidTapDimView(self)
     }
 
     // MARK: - Offset calculation
