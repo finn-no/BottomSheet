@@ -88,7 +88,7 @@ public final class BottomSheetView: UIView {
     /// - Parameters:
     ///   - view: the container for the bottom sheet view
     ///   - completion: a closure to be executed when the animation ends
-    public func present(in superview: UIView, targetIndex: Int = 0, completion: ((Bool) -> Void)? = nil) {
+    public func present(in superview: UIView, targetIndex: Int = 0, animated: Bool = true, completion: ((Bool) -> Void)? = nil) {
         guard self.superview != superview else { return }
 
         superview.addSubview(dimView)
@@ -96,7 +96,17 @@ public final class BottomSheetView: UIView {
 
         translatesAutoresizingMaskIntoConstraints = false
         dimView.frame = superview.bounds
-        topConstraint = topAnchor.constraint(equalTo: superview.topAnchor, constant: superview.frame.height)
+
+        let offset: CGFloat
+
+        if animated {
+            offset = superview.frame.height
+        } else {
+            dimView.alpha = 1.0
+            offset = BottomSheetCalculator.offset(for: contentView, in: superview, height: targetHeights[targetIndex])
+        }
+
+        topConstraint = topAnchor.constraint(equalTo: superview.topAnchor, constant: offset)
 
         springAnimator.addAnimation { [weak self] position in
             self?.topConstraint.constant = position.y
@@ -115,7 +125,6 @@ public final class BottomSheetView: UIView {
         superview.layoutIfNeeded()
         addGestureRecognizer(panGesture)
 
-        currentTargetOffsetIndex = targetIndex
         updateTargetOffsets()
         transition(to: targetIndex)
     }
