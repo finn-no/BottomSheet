@@ -141,12 +141,7 @@ public final class BottomSheetView: UIView {
     /// Call this method e.g. when orientation change is detected.
     public func reset() {
         updateTargetOffsets()
-
-        guard let maxOffset = targetOffsets.max() else {
-            return
-        }
-
-        animate(to: maxOffset)
+        animate(to: targetOffsets[currentTargetOffsetIndex])
     }
 
     /// Animates bottom sheet view to the given height.
