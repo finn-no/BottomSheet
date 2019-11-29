@@ -13,16 +13,16 @@ struct BottomSheetCalculator {
     ///   - height: preferred height for the content view
     static func offset(for contentView: UIView, in superview: UIView, height: CGFloat) -> CGFloat {
         let handleHeight: CGFloat = 20
-        var contentHeight = targetHeight(for: contentView, in: superview, height: height)
+        var targetHeight = contentHeight(for: contentView, in: superview, height: height)
 
         if height == .bottomSheetAutomatic {
-            contentHeight += handleHeight
+            targetHeight += handleHeight
         }
 
-        return max(superview.frame.height - contentHeight, handleHeight)
+        return max(superview.frame.height - targetHeight, handleHeight)
     }
 
-    static func targetHeight(for contentView: UIView, in superview: UIView, height: CGFloat) -> CGFloat {
+    static func contentHeight(for contentView: UIView, in superview: UIView, height: CGFloat) -> CGFloat {
         if height == .bottomSheetAutomatic {
             let size = contentView.systemLayoutSizeFitting(
                 superview.frame.size,

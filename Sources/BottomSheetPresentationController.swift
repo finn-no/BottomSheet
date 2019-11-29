@@ -60,7 +60,7 @@ final class BottomSheetPresentationController: UIPresentationController {
         guard let presentedView = presentedView else { return .zero }
         guard let containerView = containerView else { return .zero }
 
-        let contentHeight = BottomSheetCalculator.targetHeight(
+        let contentHeight = BottomSheetCalculator.contentHeight(
             for: presentedView,
             in: containerView,
             height: targetHeights[startTargetIndex]
