@@ -97,16 +97,16 @@ public final class BottomSheetView: UIView {
         translatesAutoresizingMaskIntoConstraints = false
         dimView.frame = superview.bounds
 
-        let offset: CGFloat
+        let startConstant: CGFloat
 
         if animated {
-            offset = superview.frame.height
+            startConstant = superview.frame.height
         } else {
             dimView.alpha = 1.0
-            offset = BottomSheetCalculator.offset(for: contentView, in: superview, height: targetHeights[targetIndex])
+            startConstant = BottomSheetCalculator.offset(for: contentView, in: superview, height: targetHeights[targetIndex])
         }
 
-        topConstraint = topAnchor.constraint(equalTo: superview.topAnchor, constant: offset)
+        topConstraint = topAnchor.constraint(equalTo: superview.topAnchor, constant: startConstant)
 
         springAnimator.addAnimation { [weak self] position in
             self?.topConstraint.constant = position.y
@@ -126,6 +126,11 @@ public final class BottomSheetView: UIView {
         addGestureRecognizer(panGesture)
 
         updateTargetOffsets()
+
+        let offset = BottomSheetCalculator.offset(for: contentView, in: superview, height: targetHeights[targetIndex])
+        currentTargetOffsetIndex = targetOffsets.firstIndex(of: offset) ?? 0
+
+        createTranslationTargets()
         transition(to: targetIndex)
     }
 
@@ -150,6 +155,7 @@ public final class BottomSheetView: UIView {
     /// Call this method e.g. when orientation change is detected.
     public func reset() {
         updateTargetOffsets()
+        createTranslationTargets()
         animate(to: targetOffsets[currentTargetOffsetIndex])
     }
 
@@ -265,8 +271,6 @@ public final class BottomSheetView: UIView {
         targetOffsets = targetHeights.map {
             BottomSheetCalculator.offset(for: contentView, in: superview, height: $0)
         }.sorted(by: >)
-
-        createTranslationTargets()
     }
 
     private func createTranslationTargets() {
