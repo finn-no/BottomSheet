@@ -91,7 +91,7 @@ public final class BottomSheetView: UIView {
     /// - Parameters:
     ///   - view: the container for the bottom sheet view
     ///   - completion: a closure to be executed when the animation ends
-    public func present(in superview: UIView, targetIndex: Int = 0, completion: ((Bool) -> Void)? = nil) {
+    public func present(in superview: UIView, targetIndex: Int = 0, animated: Bool = true, completion: ((Bool) -> Void)? = nil) {
         guard self.superview != superview else { return }
 
         superview.addSubview(dimView)
@@ -99,7 +99,19 @@ public final class BottomSheetView: UIView {
 
         translatesAutoresizingMaskIntoConstraints = false
         dimView.frame = superview.bounds
-        topConstraint = topAnchor.constraint(equalTo: superview.topAnchor, constant: superview.frame.height)
+
+        let startOffset = BottomSheetCalculator.offset(
+            for: contentView,
+            in: superview,
+            height: targetHeights[targetIndex]
+        )
+
+        if animated {
+            topConstraint = topAnchor.constraint(equalTo: superview.topAnchor, constant: superview.frame.height)
+        } else {
+            dimView.alpha = 1.0
+            topConstraint = topAnchor.constraint(equalTo: superview.topAnchor, constant: startOffset)
+        }
 
         springAnimator.addAnimation { [weak self] position in
             self?.topConstraint.constant = position.y
@@ -118,9 +130,9 @@ public final class BottomSheetView: UIView {
         superview.layoutIfNeeded()
         addGestureRecognizer(panGesture)
 
-        currentTargetOffsetIndex = targetIndex
         updateTargetOffsets()
         transition(to: targetIndex)
+        createTranslationTargets()
     }
 
     /// Animates bottom sheet view out of the screen bounds and removes it from the superview on completion.
@@ -144,6 +156,7 @@ public final class BottomSheetView: UIView {
     /// Call this method e.g. when orientation change is detected.
     public func reset() {
         updateTargetOffsets()
+        createTranslationTargets()
         animate(to: targetOffsets[currentTargetOffsetIndex])
     }
 
@@ -265,8 +278,6 @@ public final class BottomSheetView: UIView {
         targetOffsets = targetHeights.map {
             BottomSheetCalculator.offset(for: contentView, in: superview, height: $0)
         }.sorted(by: >)
-
-        createTranslationTargets()
     }
 
     private func createTranslationTargets() {

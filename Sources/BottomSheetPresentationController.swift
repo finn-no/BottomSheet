@@ -15,7 +15,7 @@ final class BottomSheetPresentationController: UIPresentationController {
 
     // MARK: - Internal properties
 
-    var transitionState: TransitionState = .presenting
+    var transitionState: TransitionState?
 
     // MARK: - Private properties
 
@@ -39,6 +39,45 @@ final class BottomSheetPresentationController: UIPresentationController {
     // MARK: - Transition life cycle
 
     override func presentationTransitionWillBegin() {
+        guard transitionState == .presenting else { return }
+        createBottomSheetView()
+    }
+
+    override func presentationTransitionDidEnd(_ completed: Bool) {
+        guard transitionState == nil else { return }
+        guard let containerView = containerView else { return }
+
+        createBottomSheetView()
+
+        bottomSheetView?.present(
+            in: containerView,
+            targetIndex: startTargetIndex,
+            animated: false
+        )
+    }
+
+    override var frameOfPresentedViewInContainerView: CGRect {
+        guard let presentedView = presentedView else { return .zero }
+        guard let containerView = containerView else { return .zero }
+
+        let contentHeight = BottomSheetCalculator.contentHeight(
+            for: presentedView,
+            in: containerView,
+            height: targetHeights[startTargetIndex]
+        )
+
+        let size = CGSize(
+            width: containerView.frame.width,
+            height: contentHeight
+        )
+
+        return CGRect(
+            origin: .zero,
+            size: size
+        )
+    }
+
+    private func createBottomSheetView() {
         guard let presentedView = presentedView else { return }
 
         bottomSheetView = BottomSheetView(
@@ -78,6 +117,9 @@ extension BottomSheetPresentationController: UIViewControllerAnimatedTransitioni
             )
         case .dismissing:
             bottomSheetView?.dismiss(completion: completion)
+
+        case .none:
+            return
         }
     }
 }
