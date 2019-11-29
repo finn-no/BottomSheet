@@ -23,6 +23,7 @@ final class BottomSheetPresentationController: UIPresentationController {
     private let startTargetIndex: Int
     private var dismissVelocity: CGPoint = .zero
     private var bottomSheetView: BottomSheetView?
+    private weak var transitionContext: UIViewControllerContextTransitioning?
 
     // MARK: - Init
 
@@ -105,8 +106,11 @@ extension BottomSheetPresentationController: UIViewControllerAnimatedTransitioni
     }
 
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        let completion = { (didComplete: Bool) in
+        self.transitionContext = transitionContext
+
+        let completion = { [weak self] (didComplete: Bool) in
             transitionContext.completeTransition(didComplete)
+            self?.transitionState = nil
         }
 
         switch transitionState {
@@ -140,11 +144,24 @@ extension BottomSheetPresentationController: UIViewControllerInteractiveTransiti
 
 extension BottomSheetPresentationController: BottomSheetViewDelegate {
     func bottomSheetViewDidTapDimView(_ view: BottomSheetView) {
-        presentedViewController.dismiss(animated: true)
+        dismissIfNeeded(with: .zero)
     }
 
     func bottomSheetViewDidReachDismissArea(_ view: BottomSheetView, with velocity: CGPoint) {
-        dismissVelocity = velocity
-        presentedViewController.dismiss(animated: true)
+        dismissIfNeeded(with: velocity)
+    }
+
+    private func dismissIfNeeded(with velocity: CGPoint) {
+        switch transitionState {
+        case .presenting:
+            bottomSheetView?.dismiss(velocity: velocity, completion: { _ in
+                self.transitionContext?.completeTransition(false)
+            })
+        case .dismissing:
+            return
+        case .none:
+            dismissVelocity = velocity
+            presentedViewController.dismiss(animated: true)
+        }
     }
 }
