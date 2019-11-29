@@ -6,7 +6,7 @@ jobs:
     shell: /bin/bash --login -o pipefail
     steps:
       - checkout
-      - run: xcodebuild -project BottomSheet.xcodeproj -scheme "Demo" -sdk iphonesimulator -destination 'platform=iOS Simulator,OS=13.3,name=iPhone 11 Pro' build test | xcpretty
+      - run: xcodebuild -project BottomSheet.xcodeproj -scheme "Demo" -sdk iphonesimulator -destination 'platform=iOS Simulator,OS=13.2.2,name=iPhone 11 Pro' build test | xcpretty
 
   swiftlint:
     docker:
