@@ -144,14 +144,14 @@ extension BottomSheetPresentationController: UIViewControllerInteractiveTransiti
 
 extension BottomSheetPresentationController: BottomSheetViewDelegate {
     func bottomSheetViewDidTapDimView(_ view: BottomSheetView) {
-        dismissIfNeeded(with: .zero)
+        dismiss(with: .zero)
     }
 
     func bottomSheetViewDidReachDismissArea(_ view: BottomSheetView, with velocity: CGPoint) {
-        dismissIfNeeded(with: velocity)
+        dismiss(with: velocity)
     }
 
-    private func dismissIfNeeded(with velocity: CGPoint) {
+    private func dismiss(with velocity: CGPoint) {
         switch transitionState {
         case .presenting:
             bottomSheetView?.dismiss(velocity: velocity, completion: { _ in
