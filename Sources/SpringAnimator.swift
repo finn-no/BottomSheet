@@ -25,7 +25,7 @@ class SpringAnimator: NSObject {
 
     var initialVelocity: CGPoint = .zero {
         didSet {
-            velocity = initialVelocity
+            velocity = -initialVelocity
         }
     }
 

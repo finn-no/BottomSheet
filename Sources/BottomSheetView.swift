@@ -14,7 +14,7 @@ extension CGFloat {
 
 public protocol BottomSheetViewDelegate: AnyObject {
     func bottomSheetViewDidTapDimView(_ view: BottomSheetView)
-    func bottomSheetViewDidReachDismissArea(_ view: BottomSheetView)
+    func bottomSheetViewDidReachDismissArea(_ view: BottomSheetView, with velocity: CGPoint)
 }
 
 // MARK: - View
@@ -139,7 +139,7 @@ public final class BottomSheetView: UIView {
     ///
     /// - Parameters:
     ///   - completion: a closure to be executed when the animation ends
-    public func dismiss(completion: ((Bool) -> Void)? = nil) {
+    public func dismiss(velocity: CGPoint = .zero, completion: ((Bool) -> Void)? = nil) {
         springAnimator.addCompletion { [weak self] didComplete in
             if didComplete {
                 self?.dimView.removeFromSuperview()
@@ -149,7 +149,7 @@ public final class BottomSheetView: UIView {
             completion?(didComplete)
         }
 
-        animate(to: superview?.frame.height ?? 0)
+        animate(to: superview?.frame.height ?? 0, with: velocity)
     }
 
     /// Recalculates target offsets and animates to the minimum one.
@@ -252,10 +252,15 @@ public final class BottomSheetView: UIView {
         case .ended, .cancelled, .failed:
             initialOffset = nil
 
+            let velocity = translationTarget.translateVelocity(
+                panGesture.velocity(in: superview),
+                for: location
+            )
+
             if translationTarget.isDismissible {
-                delegate?.bottomSheetViewDidReachDismissArea(self)
+                delegate?.bottomSheetViewDidReachDismissArea(self, with: velocity)
             } else {
-                animate(to: translationTarget.targetOffset)
+                animate(to: translationTarget.targetOffset, with: velocity)
                 createTranslationTargets()
             }
 
