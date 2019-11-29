@@ -128,9 +128,8 @@ public final class BottomSheetView: UIView {
         addGestureRecognizer(panGesture)
 
         updateTargetOffsets()
-        currentTargetOffsetIndex = targetOffsets.firstIndex(of: startOffset) ?? 0
-        createTranslationTargets()
         transition(to: targetIndex)
+        createTranslationTargets()
     }
 
     /// Animates bottom sheet view out of the screen bounds and removes it from the superview on completion.
