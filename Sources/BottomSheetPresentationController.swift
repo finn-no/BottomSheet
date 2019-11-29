@@ -21,6 +21,7 @@ final class BottomSheetPresentationController: UIPresentationController {
 
     private let targetHeights: [CGFloat]
     private let startTargetIndex: Int
+    private var dismissVelocity: CGPoint = .zero
     private var bottomSheetView: BottomSheetView?
 
     // MARK: - Init
@@ -116,7 +117,10 @@ extension BottomSheetPresentationController: UIViewControllerAnimatedTransitioni
                 completion: completion
             )
         case .dismissing:
-            bottomSheetView?.dismiss(completion: completion)
+            bottomSheetView?.dismiss(
+                velocity: dismissVelocity,
+                completion: completion
+            )
 
         case .none:
             return
@@ -139,7 +143,8 @@ extension BottomSheetPresentationController: BottomSheetViewDelegate {
         presentedViewController.dismiss(animated: true)
     }
 
-    func bottomSheetViewDidReachDismissArea(_ view: BottomSheetView) {
+    func bottomSheetViewDidReachDismissArea(_ view: BottomSheetView, with velocity: CGPoint) {
+        dismissVelocity = velocity
         presentedViewController.dismiss(animated: true)
     }
 }
