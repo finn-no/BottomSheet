@@ -93,6 +93,10 @@ extension BottomSheetPresentationController: UIViewControllerInteractiveTransiti
 // MARK: - BottomSheetViewPresenterDelegate
 
 extension BottomSheetPresentationController: BottomSheetViewDelegate {
+    func bottomSheetViewDidTapDimView(_ view: BottomSheetView) {
+        presentedViewController.dismiss(animated: true)
+    }
+
     func bottomSheetViewDidReachDismissArea(_ view: BottomSheetView) {
         presentedViewController.dismiss(animated: true)
     }
