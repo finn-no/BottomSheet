@@ -37,7 +37,7 @@ struct BottomSheetCalculator {
             contentHeight = height
         }
 
-        return min(contentHeight, superview.frame.height - 64 - BottomSheetCalculator.handleHeight)
+        return min(contentHeight, UIScreen.main.bounds.height - 64 - BottomSheetCalculator.handleHeight)
     }
 
     /// Creates the translation targets of a BottomSheetView based on an array of target offsets and the current target offset
