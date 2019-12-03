@@ -120,17 +120,25 @@ public final class BottomSheetView: UIView {
 
         springAnimator.addCompletion { didComplete in completion?(didComplete) }
 
-        NSLayoutConstraint.activate([
+        var constraints: [NSLayoutConstraint] = [
             topConstraint,
             bottomAnchor.constraint(greaterThanOrEqualTo: superview.bottomAnchor),
             leadingAnchor.constraint(equalTo: superview.leadingAnchor),
             trailingAnchor.constraint(equalTo: superview.trailingAnchor)
-        ])
+        ]
 
+        updateTargetOffsets()
+
+        if let maxOffset = targetOffsets.max() {
+            let minHeight = superview.frame.size.height - maxOffset
+            let constant = BottomSheetCalculator.contentHeight(for: contentView, in: superview, height: minHeight)
+            constraints.append(contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: constant))
+        }
+
+        NSLayoutConstraint.activate(constraints)
         superview.layoutIfNeeded()
         addGestureRecognizer(panGesture)
 
-        updateTargetOffsets()
         transition(to: targetIndex)
         createTranslationTargets()
     }

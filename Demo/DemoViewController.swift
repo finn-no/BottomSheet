@@ -64,15 +64,12 @@ final class DemoViewController: UIViewController {
             view.topAnchor.constraint(equalTo: viewController.view.topAnchor),
             view.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
             view.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
-            view.heightAnchor.constraint(equalToConstant: 400),
             view.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor)
         ])
 
         let navigationController = UINavigationController(rootViewController: viewController)
         navigationController.transitioningDelegate = bottomSheetTransitioningDelegate
         navigationController.modalPresentationStyle = .custom
-        navigationController.title = "My Navigation Controller"
-        navigationController.view.backgroundColor = .white
 
         present(navigationController, animated: true)
     }
