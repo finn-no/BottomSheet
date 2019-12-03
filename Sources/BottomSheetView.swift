@@ -130,9 +130,8 @@ public final class BottomSheetView: UIView {
         updateTargetOffsets()
 
         if let maxOffset = targetOffsets.max() {
-            let minHeight = superview.frame.size.height - maxOffset
-            let constant = BottomSheetCalculator.contentHeight(for: contentView, in: superview, height: minHeight)
-            constraints.append(contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: constant))
+            let contentViewHeight = superview.frame.size.height - maxOffset - BottomSheetCalculator.handleHeight
+            constraints.append(contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: contentViewHeight))
         }
 
         NSLayoutConstraint.activate(constraints)
@@ -190,7 +189,7 @@ public final class BottomSheetView: UIView {
 
     private func setup() {
         clipsToBounds = true
-        backgroundColor = contentView.backgroundColor
+        backgroundColor = contentView.backgroundColor ?? .bgPrimary
 
         layer.masksToBounds = false
         layer.shadowColor = UIColor.black.cgColor
@@ -309,14 +308,26 @@ public final class BottomSheetView: UIView {
 
 private extension UIColor {
     class var handle: UIColor {
-        let defaultColor = UIColor(red: 195/255, green: 204/255, blue: 217/255, alpha: 1)
+        return dynamicColorIfAvailable(
+            defaultColor: UIColor(red: 195/255, green: 204/255, blue: 217/255, alpha: 1),
+            darkModeColor: UIColor(red: 67/255, green: 67/255, blue: 89/255, alpha: 1)
+        )
+    }
 
+    class var bgPrimary: UIColor {
+        return dynamicColorIfAvailable(
+            defaultColor: .white,
+            darkModeColor: UIColor(red: 27/255, green: 27/255, blue: 36/255, alpha: 1)
+        )
+    }
+
+    class func dynamicColorIfAvailable(defaultColor: UIColor, darkModeColor: UIColor) -> UIColor {
         if #available(iOS 13.0, *) {
             #if swift(>=5.1)
             return UIColor { traitCollection -> UIColor in
                 switch traitCollection.userInterfaceStyle {
                 case .dark:
-                    return UIColor(red: 67/255, green: 67/255, blue: 89/255, alpha: 1)
+                    return darkModeColor
                 default:
                     return defaultColor
                 }

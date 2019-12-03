@@ -60,13 +60,14 @@ final class DemoViewController: UIViewController {
         viewController.view.addSubview(view)
 
         NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: viewController.view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            view.topAnchor.constraint(equalTo: viewController.view.topAnchor, constant: 16),
             view.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
             view.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
             view.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor)
         ])
 
         let navigationController = UINavigationController(rootViewController: viewController)
+        navigationController.navigationBar.isTranslucent = false
         navigationController.transitioningDelegate = bottomSheetTransitioningDelegate
         navigationController.modalPresentationStyle = .custom
 

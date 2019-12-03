@@ -5,7 +5,7 @@
 import UIKit
 
 struct BottomSheetCalculator {
-    private static let handleHeight: CGFloat = 20
+    static let handleHeight: CGFloat = 20
 
     /// Calculates offset for the given content view within its superview, taking preferred height into account.
     ///
