@@ -56,12 +56,11 @@ final class DemoViewController: UIViewController {
         viewController.title = "My View Controller"
 
         let view = UIView.makeView(withTitle: "UIViewController in Navigation Controller")
-        viewController.view.backgroundColor = .red
-
+        viewController.view.backgroundColor = view.backgroundColor
         viewController.view.addSubview(view)
 
         NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: viewController.view.topAnchor),
+            view.topAnchor.constraint(equalTo: viewController.view.safeAreaLayoutGuide.topAnchor, constant: 16),
             view.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
             view.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
             view.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor)
