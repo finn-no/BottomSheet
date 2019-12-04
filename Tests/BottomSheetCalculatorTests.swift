@@ -15,15 +15,15 @@ final class BottomSheetCalculatorTests: XCTestCase {
     }
 
     func testOffsetWithHeightSmallerThanSuperviewHeight() {
-        XCTAssertEqual(BottomSheetCalculator.offset(for: view, in: superview, height: 300), 100) // 400 - 300
+        XCTAssertEqual(BottomSheetCalculator.offset(for: view, in: superview, height: 300), 100 - .handleHeight) // 400 - 300 - .handleHeight
     }
 
     func testOffsetWithHeightBiggerThanSuperviewHeight() {
-        XCTAssertEqual(BottomSheetCalculator.offset(for: view, in: superview, height: 500), 20) // Handle height
+        XCTAssertEqual(BottomSheetCalculator.offset(for: view, in: superview, height: 500), .handleHeight) // Handle height
     }
 
     func testOffsetWithZeroHeight() {
-        XCTAssertEqual(BottomSheetCalculator.offset(for: view, in: superview, height: 0), 400) // Superview height
+        XCTAssertEqual(BottomSheetCalculator.offset(for: view, in: superview, height: 0), 400 - .handleHeight) // Superview height - .handleHeight
     }
 
     func testLayoutWithEmptyOffsets() {

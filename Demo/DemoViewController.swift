@@ -7,7 +7,7 @@ import BottomSheet
 
 final class DemoViewController: UIViewController {
     private lazy var bottomSheetTransitioningDelegate = BottomSheetTransitioningDelegate(
-        targetHeights: [.bottomSheetAutomatic, UIScreen.main.bounds.size.height - 200]
+        contentHeights: [.bottomSheetAutomatic, UIScreen.main.bounds.size.height - 200]
     )
 
     // MARK: - Lifecycle
@@ -99,7 +99,7 @@ final class DemoViewController: UIViewController {
     @objc private func presentView() {
         let bottomSheetView = BottomSheetView(
             contentView: UIView.makeView(withTitle: "UIView"),
-            targetHeights: [100, 500]
+            contentHeights: [100, 500]
         )
         bottomSheetView.present(in: view)
     }

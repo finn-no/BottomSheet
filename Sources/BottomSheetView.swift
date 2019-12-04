@@ -32,7 +32,7 @@ public final class BottomSheetView: UIView {
     private let isDismissable: Bool
     private let contentView: UIView
     private var topConstraint: NSLayoutConstraint!
-    private let targetHeights: [CGFloat]
+    private let contentHeights: [CGFloat]
     private var targetOffsets = [CGFloat]()
     private var currentTargetOffsetIndex: Int = 0
 
@@ -63,9 +63,9 @@ public final class BottomSheetView: UIView {
 
     // MARK: - Init
 
-    public init(contentView: UIView, targetHeights: [CGFloat], isDismissible: Bool = false) {
+    public init(contentView: UIView, contentHeights: [CGFloat], isDismissible: Bool = false) {
         self.contentView = contentView
-        self.targetHeights = targetHeights.isEmpty ? [.bottomSheetAutomatic] : targetHeights
+        self.contentHeights = contentHeights.isEmpty ? [.bottomSheetAutomatic] : contentHeights
         self.isDismissable = isDismissible
         super.init(frame: .zero)
         setup()
@@ -103,7 +103,7 @@ public final class BottomSheetView: UIView {
         let startOffset = BottomSheetCalculator.offset(
             for: contentView,
             in: superview,
-            height: targetHeights[targetIndex]
+            height: contentHeights[targetIndex]
         )
 
         if animated {
@@ -130,7 +130,7 @@ public final class BottomSheetView: UIView {
         updateTargetOffsets()
 
         if let maxOffset = targetOffsets.max() {
-            let contentViewHeight = superview.frame.size.height - maxOffset - BottomSheetCalculator.handleHeight
+            let contentViewHeight = superview.frame.size.height - maxOffset - .handleHeight
             constraints.append(contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: contentViewHeight))
         }
 
@@ -172,7 +172,7 @@ public final class BottomSheetView: UIView {
     /// - Parameters:
     ///   - index: the index of the target height
     public func transition(to index: Int) {
-        guard targetHeights.indices.contains(index) else {
+        guard contentHeights.indices.contains(index) else {
             assertionFailure("Provided index is out of bounds of the array with target heights.")
             return
         }
@@ -181,7 +181,7 @@ public final class BottomSheetView: UIView {
             return
         }
 
-        let offset = BottomSheetCalculator.offset(for: contentView, in: superview, height: targetHeights[index])
+        let offset = BottomSheetCalculator.offset(for: contentView, in: superview, height: contentHeights[index])
         animate(to: offset)
     }
 
@@ -287,7 +287,7 @@ public final class BottomSheetView: UIView {
     private func updateTargetOffsets() {
         guard let superview = superview else { return }
 
-        targetOffsets = targetHeights.map {
+        targetOffsets = contentHeights.map {
             BottomSheetCalculator.offset(for: contentView, in: superview, height: $0)
         }.sorted(by: >)
     }

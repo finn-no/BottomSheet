@@ -5,14 +5,14 @@
 import UIKit
 
 public final class BottomSheetTransitioningDelegate: NSObject {
-    private let preferredHeights: [CGFloat]
+    private let contentHeights: [CGFloat]
     private let startTargetIndex: Int
     private var presentationController: BottomSheetPresentationController?
 
     // MARK: - Init
 
-    public init(targetHeights: [CGFloat], startTargetIndex: Int = 0) {
-        self.preferredHeights = targetHeights
+    public init(contentHeights: [CGFloat], startTargetIndex: Int = 0) {
+        self.contentHeights = contentHeights
         self.startTargetIndex = startTargetIndex
     }
 }
@@ -28,7 +28,7 @@ extension BottomSheetTransitioningDelegate: UIViewControllerTransitioningDelegat
         presentationController = BottomSheetPresentationController(
             presentedViewController: presented,
             presenting: presenting,
-            targetHeights: preferredHeights,
+            contentHeights: contentHeights,
             startTargetIndex: startTargetIndex
         )
         return presentationController
