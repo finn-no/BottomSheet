@@ -1,4 +1,5 @@
-# BottomSheet
+<img src="/GitHub/bottom-sheet-banner.png">
+
 [![CircleCI](https://img.shields.io/circleci/project/github/finn-no/BottomSheet/master.svg)](https://circleci.com/gh/finn-no/BottomSheet/tree/master)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![CocoaPods compatible](https://img.shields.io/cocoapods/v/FINNBottomSheet.svg)](https://cocoapods.org/pods/FINNBottomSheet)
