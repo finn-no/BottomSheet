@@ -19,7 +19,7 @@ final class BottomSheetPresentationController: UIPresentationController {
 
     // MARK: - Private properties
 
-    private let targetHeights: [CGFloat]
+    private let contentHeights: [CGFloat]
     private let startTargetIndex: Int
     private var dismissVelocity: CGPoint = .zero
     private var bottomSheetView: BottomSheetView?
@@ -30,10 +30,10 @@ final class BottomSheetPresentationController: UIPresentationController {
     init(
         presentedViewController: UIViewController,
         presenting: UIViewController?,
-        targetHeights: [CGFloat],
+        contentHeights: [CGFloat],
         startTargetIndex: Int
     ) {
-        self.targetHeights = targetHeights
+        self.contentHeights = contentHeights
         self.startTargetIndex = startTargetIndex
         super.init(presentedViewController: presentedViewController, presenting: presenting)
     }
@@ -65,7 +65,7 @@ final class BottomSheetPresentationController: UIPresentationController {
         let contentHeight = BottomSheetCalculator.contentHeight(
             for: presentedView,
             in: containerView,
-            height: targetHeights[startTargetIndex]
+            height: contentHeights[startTargetIndex]
         )
 
         let size = CGSize(
@@ -84,7 +84,7 @@ final class BottomSheetPresentationController: UIPresentationController {
 
         bottomSheetView = BottomSheetView(
             contentView: presentedView,
-            targetHeights: targetHeights,
+            contentHeights: contentHeights,
             isDismissible: true
         )
 
