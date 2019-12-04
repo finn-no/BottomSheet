@@ -23,16 +23,21 @@ final class DemoViewController: UIViewController {
         view.backgroundColor = .white
 
         let buttonA = UIButton(type: .system)
-        buttonA.setTitle("View Controller", for: .normal)
+        buttonA.setTitle("Navigation View Controller", for: .normal)
         buttonA.titleLabel?.font = .systemFont(ofSize: 18)
-        buttonA.addTarget(self, action: #selector(presentViewController), for: .touchUpInside)
+        buttonA.addTarget(self, action: #selector(presentNavigationViewController), for: .touchUpInside)
 
         let buttonB = UIButton(type: .system)
-        buttonB.setTitle("View", for: .normal)
+        buttonB.setTitle("View Controller", for: .normal)
         buttonB.titleLabel?.font = .systemFont(ofSize: 18)
-        buttonB.addTarget(self, action: #selector(presentView), for: .touchUpInside)
+        buttonB.addTarget(self, action: #selector(presentViewController), for: .touchUpInside)
 
-        let stackView = UIStackView(arrangedSubviews: [buttonA, buttonB])
+        let buttonC = UIButton(type: .system)
+        buttonC.setTitle("View", for: .normal)
+        buttonC.titleLabel?.font = .systemFont(ofSize: 18)
+        buttonC.addTarget(self, action: #selector(presentView), for: .touchUpInside)
+
+        let stackView = UIStackView(arrangedSubviews: [buttonA, buttonB, buttonC])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
 
@@ -42,6 +47,31 @@ final class DemoViewController: UIViewController {
             stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
+    }
+
+    // MARK: - Presentation logic
+
+    @objc private func presentNavigationViewController() {
+        let viewController = UIViewController()
+        viewController.title = "My View Controller"
+
+        let view = UIView.makeView(withTitle: "UIViewController in Navigation Controller")
+        viewController.view.backgroundColor = view.backgroundColor
+        viewController.view.addSubview(view)
+
+        NSLayoutConstraint.activate([
+            view.topAnchor.constraint(equalTo: viewController.view.topAnchor, constant: 16),
+            view.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
+            view.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor)
+        ])
+
+        let navigationController = UINavigationController(rootViewController: viewController)
+        navigationController.navigationBar.isTranslucent = false
+        navigationController.transitioningDelegate = bottomSheetTransitioningDelegate
+        navigationController.modalPresentationStyle = .custom
+
+        present(navigationController, animated: true)
     }
 
     // MARK: - Presentation logic
