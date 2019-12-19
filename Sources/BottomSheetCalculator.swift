@@ -23,7 +23,7 @@ struct BottomSheetCalculator {
         for contentView: UIView,
         in superview: UIView,
         height: CGFloat,
-        useSafeAreaInsets: Bool
+        useSafeAreaInsets: Bool = false
     ) -> CGFloat {
         let targetHeight = contentHeight(
             for: contentView,
@@ -39,7 +39,7 @@ struct BottomSheetCalculator {
         for contentView: UIView,
         in superview: UIView,
         height: CGFloat,
-        useSafeAreaInsets: Bool
+        useSafeAreaInsets: Bool = false
     ) -> CGFloat {
         let contentHeight: CGFloat
         let bottomInset: CGFloat = useSafeAreaInsets ? .safeAreaBottomInset : 0
