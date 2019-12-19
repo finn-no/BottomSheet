@@ -52,47 +52,18 @@ final class DemoViewController: UIViewController {
     // MARK: - Presentation logic
 
     @objc private func presentNavigationViewController() {
-        let viewController = UIViewController()
-        viewController.title = "My View Controller"
-
-        let view = UIView.makeView(withTitle: "UIViewController in Navigation Controller")
-        viewController.view.backgroundColor = view.backgroundColor
-        viewController.view.addSubview(view)
-
-        NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: viewController.view.topAnchor, constant: 16),
-            view.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
-            view.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor)
-        ])
-
-        let navigationController = UINavigationController(rootViewController: viewController)
+        let viewController = ViewController(withNavigationButton: true, title: "Step 1", contentHeight: 400)
+        let navigationController = BottomSheetNavigationController(rootViewController: viewController)
         navigationController.navigationBar.isTranslucent = false
-        navigationController.transitioningDelegate = bottomSheetTransitioningDelegate
-        navigationController.modalPresentationStyle = .custom
-
         present(navigationController, animated: true)
     }
 
     // MARK: - Presentation logic
 
     @objc private func presentViewController() {
-        let viewController = UIViewController()
+        let viewController = ViewController(withNavigationButton: false, title: "UIViewConteoller", contentHeight: 400)
         viewController.transitioningDelegate = bottomSheetTransitioningDelegate
         viewController.modalPresentationStyle = .custom
-
-        let view = UIView.makeView(withTitle: "UIViewController")
-        viewController.view.backgroundColor = .red
-        viewController.view.addSubview(view)
-
-        NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: viewController.view.topAnchor),
-            view.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
-            view.heightAnchor.constraint(equalToConstant: 400),
-            view.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor)
-        ])
-
         present(viewController, animated: true)
     }
 
@@ -108,16 +79,16 @@ final class DemoViewController: UIViewController {
 // MARK: - Private extensions
 
 private extension UIView {
-    static func makeView(withTitle title: String) -> UIView {
+    static func makeView(withTitle title: String? = nil) -> UIView {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor(hue: 0.5, saturation: 0.3, brightness: 0.6, alpha: 1.0)
+
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = title
         label.textAlignment = .center
         label.textColor = .white
-
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor(hue: 0.5, saturation: 0.3, brightness: 0.6, alpha: 1.0)
         view.addSubview(label)
 
         NSLayoutConstraint.activate([
@@ -127,5 +98,57 @@ private extension UIView {
         ])
 
         return view
+    }
+}
+
+private final class ViewController: UIViewController {
+    private let withNavigationButton: Bool
+    private let contentHeight: CGFloat
+
+    init(withNavigationButton: Bool, title: String, contentHeight: CGFloat) {
+        self.withNavigationButton = withNavigationButton
+        self.contentHeight = contentHeight
+        super.init(nibName: nil, bundle: nil)
+        self.title = title
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        let contentView = UIView.makeView(withTitle: withNavigationButton ? nil : title)
+        view.backgroundColor = contentView.backgroundColor
+        view.addSubview(contentView)
+
+        NSLayoutConstraint.activate([
+            contentView.topAnchor.constraint(equalTo: view.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            contentView.heightAnchor.constraint(equalToConstant: contentHeight),
+            contentView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+
+        if withNavigationButton {
+            let button = UIButton(type: .system)
+            button.translatesAutoresizingMaskIntoConstraints = false
+            button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
+            button.setTitle("Next", for: .normal)
+            button.setTitleColor(.white, for: .normal)
+            button.addTarget(self, action: #selector(handleButtonTap), for: .touchUpInside)
+            view.addSubview(button)
+
+            NSLayoutConstraint.activate([
+                button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                button.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            ])
+        }
+    }
+
+    @objc private func handleButtonTap() {
+        let viewController = ViewController(withNavigationButton: false, title: "Step 2", contentHeight: contentHeight - 100)
+        navigationController?.pushViewController(viewController, animated: true)
     }
 }
