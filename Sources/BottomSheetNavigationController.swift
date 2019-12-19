@@ -5,15 +5,15 @@
 import UIKit
 
 public class BottomSheetNavigationController: UINavigationController {
-    private let notificationCenter = NotificationCenter.default
     private var bottomSheetTransitioningDelegate: BottomSheetTransitioningDelegate?
 
     // MARK: - Init
 
-    public init(rootViewController: UIViewController, notificationCenter: NotificationCenter = .default) {
+    public init(rootViewController: UIViewController, useSafeAreaInsets: Bool = false) {
         super.init(rootViewController: rootViewController)
         bottomSheetTransitioningDelegate = BottomSheetTransitioningDelegate(
-            contentHeights: [systemLayoutSizeFittingHeight(for: rootViewController)]
+            contentHeights: [systemLayoutSizeFittingHeight(for: rootViewController)],
+            useSafeAreaInsets: useSafeAreaInsets
         )
         transitioningDelegate = bottomSheetTransitioningDelegate
         modalPresentationStyle = .custom
@@ -21,10 +21,6 @@ public class BottomSheetNavigationController: UINavigationController {
 
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    deinit {
-        notificationCenter.removeObserver(self)
     }
 
     // MARK: - View lifecycle
