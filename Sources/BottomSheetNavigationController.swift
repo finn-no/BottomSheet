@@ -4,7 +4,7 @@
 
 import UIKit
 
-public class BottomSheetNavigationController: UINavigationController {
+open class BottomSheetNavigationController: UINavigationController {
     private var bottomSheetTransitioningDelegate: BottomSheetTransitioningDelegate?
 
     // MARK: - Init
@@ -25,7 +25,7 @@ public class BottomSheetNavigationController: UINavigationController {
 
     // MARK: - View lifecycle
 
-    public override func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
         navigationBar.isTranslucent = false
         delegate = self
