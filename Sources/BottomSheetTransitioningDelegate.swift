@@ -5,7 +5,7 @@
 import UIKit
 
 public final class BottomSheetTransitioningDelegate: NSObject {
-    private let contentHeights: [CGFloat]
+    private var contentHeights: [CGFloat]
     private let startTargetIndex: Int
     private let useSafeAreaInsets: Bool
     private var presentationController: BottomSheetPresentationController?
@@ -16,6 +16,17 @@ public final class BottomSheetTransitioningDelegate: NSObject {
         self.contentHeights = contentHeights
         self.startTargetIndex = startTargetIndex
         self.useSafeAreaInsets = useSafeAreaInsets
+    }
+
+    // MARK: - Public
+
+    public func reset() {
+        presentationController?.reset()
+    }
+
+    public func reload(with contentHeights: [CGFloat]) {
+        self.contentHeights = contentHeights
+        presentationController?.reload(with: contentHeights)
     }
 }
 

@@ -33,7 +33,7 @@ public final class BottomSheetView: UIView {
     private let isDismissable: Bool
     private let contentView: UIView
     private var topConstraint: NSLayoutConstraint!
-    private let contentHeights: [CGFloat]
+    private var contentHeights: [CGFloat]
     private var targetOffsets = [CGFloat]()
     private var currentTargetOffsetIndex: Int = 0
 
@@ -177,6 +177,11 @@ public final class BottomSheetView: UIView {
         updateTargetOffsets()
         createTranslationTargets()
         animate(to: targetOffsets[currentTargetOffsetIndex])
+    }
+
+    public func reload(with contentHeights: [CGFloat]) {
+        self.contentHeights = contentHeights
+        reset()
     }
 
     /// Animates bottom sheet view to the given height.
