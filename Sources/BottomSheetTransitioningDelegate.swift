@@ -7,13 +7,15 @@ import UIKit
 public final class BottomSheetTransitioningDelegate: NSObject {
     private let contentHeights: [CGFloat]
     private let startTargetIndex: Int
+    private let useSafeAreaInsets: Bool
     private var presentationController: BottomSheetPresentationController?
 
     // MARK: - Init
 
-    public init(contentHeights: [CGFloat], startTargetIndex: Int = 0) {
+    public init(contentHeights: [CGFloat], startTargetIndex: Int = 0, useSafeAreaInsets: Bool = false) {
         self.contentHeights = contentHeights
         self.startTargetIndex = startTargetIndex
+        self.useSafeAreaInsets = useSafeAreaInsets
     }
 }
 
@@ -29,7 +31,8 @@ extension BottomSheetTransitioningDelegate: UIViewControllerTransitioningDelegat
             presentedViewController: presented,
             presenting: presenting,
             contentHeights: contentHeights,
-            startTargetIndex: startTargetIndex
+            startTargetIndex: startTargetIndex,
+            useSafeAreaInsets: useSafeAreaInsets
         )
         return presentationController
     }

@@ -82,7 +82,7 @@ final class DemoViewController: UIViewController {
         viewController.modalPresentationStyle = .custom
 
         let view = UIView.makeView(withTitle: "UIViewController")
-        viewController.view.backgroundColor = view.backgroundColor
+        viewController.view.backgroundColor = .red
         viewController.view.addSubview(view)
 
         NSLayoutConstraint.activate([
