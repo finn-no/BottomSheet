@@ -19,7 +19,7 @@ final class BottomSheetPresentationController: UIPresentationController {
 
     // MARK: - Private properties
 
-    private let contentHeights: [CGFloat]
+    private var contentHeights: [CGFloat]
     private let startTargetIndex: Int
     private let useSafeAreaInsets: Bool
     private var dismissVelocity: CGPoint = .zero
@@ -39,6 +39,17 @@ final class BottomSheetPresentationController: UIPresentationController {
         self.startTargetIndex = startTargetIndex
         self.useSafeAreaInsets = useSafeAreaInsets
         super.init(presentedViewController: presentedViewController, presenting: presenting)
+    }
+
+    // MARK: - Internal
+
+    public func reset() {
+        bottomSheetView?.reset()
+    }
+
+    public func reload(with contentHeights: [CGFloat]) {
+        self.contentHeights = contentHeights
+        bottomSheetView?.reload(with: contentHeights)
     }
 
     // MARK: - Transition life cycle
@@ -114,7 +125,7 @@ extension BottomSheetPresentationController: UIViewControllerAnimatedTransitioni
         self.transitionContext = transitionContext
 
         let completion = { [weak self] (didComplete: Bool) in
-            transitionContext.completeTransition(didComplete)
+            self?.transitionContext?.completeTransition(didComplete)
             self?.transitionState = nil
         }
 

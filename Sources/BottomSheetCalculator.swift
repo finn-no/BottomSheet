@@ -45,12 +45,7 @@ struct BottomSheetCalculator {
         let bottomInset: CGFloat = useSafeAreaInsets ? .safeAreaBottomInset : 0
 
         if height == .bottomSheetAutomatic {
-            let size = contentView.systemLayoutSizeFitting(
-                superview.frame.size,
-                withHorizontalFittingPriority: .required,
-                verticalFittingPriority: .fittingSizeLevel
-            )
-            contentHeight = size.height
+            contentHeight = contentView.systemLayoutHeightFitting(superview.frame.size)
         } else {
             contentHeight = height
         }
@@ -137,5 +132,26 @@ struct BottomSheetCalculator {
         targets.append(topTarget)
 
         return targets
+    }
+}
+
+// MARK: - Extensions
+
+extension UIView {
+    func systemLayoutHeightFitting(_ size: CGSize) -> CGFloat {
+        let sizeToFit: CGSize
+
+        /// Consider preferredContentSize if it's a view of UIViewController
+        if let viewController = next as? UIViewController {
+            sizeToFit = viewController.preferredContentSize
+        } else {
+            sizeToFit = size
+        }
+
+        return systemLayoutSizeFitting(
+            sizeToFit,
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .fittingSizeLevel
+        ).height
     }
 }

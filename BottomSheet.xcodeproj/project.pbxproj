@@ -23,6 +23,7 @@
 		CF46A383238593AD00FFCB9F /* BottomSheetCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF46A3812385902100FFCB9F /* BottomSheetCalculator.swift */; };
 		DA0F4B00238BDB85002DE188 /* TranslationTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0F4AFE238BDB7C002DE188 /* TranslationTarget.swift */; };
 		DA11525523880010002E2F40 /* BottomSheetModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA11525323880010002E2F40 /* BottomSheetModelTests.swift */; };
+		DACFE66423AC29BE006B352F /* BottomSheetNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DACFE66023AC2626006B352F /* BottomSheetNavigationController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +77,7 @@
 		CF46A3812385902100FFCB9F /* BottomSheetCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetCalculator.swift; sourceTree = "<group>"; };
 		DA0F4AFE238BDB7C002DE188 /* TranslationTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TranslationTarget.swift; sourceTree = "<group>"; };
 		DA11525323880010002E2F40 /* BottomSheetModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetModelTests.swift; sourceTree = "<group>"; };
+		DACFE66023AC2626006B352F /* BottomSheetNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetNavigationController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,12 +133,13 @@
 			children = (
 				CF1539C02382F20E001687C1 /* BottomSheet.h */,
 				CF1539C12382F20E001687C1 /* Info.plist */,
-				DA0F4AFE238BDB7C002DE188 /* TranslationTarget.swift */,
 				CF46A3812385902100FFCB9F /* BottomSheetCalculator.swift */,
+				DACFE66023AC2626006B352F /* BottomSheetNavigationController.swift */,
 				CF1539F12382F621001687C1 /* BottomSheetPresentationController.swift */,
 				CF1539F32382F621001687C1 /* BottomSheetTransitioningDelegate.swift */,
 				CF1539F52382F621001687C1 /* BottomSheetView.swift */,
 				CF1539F42382F621001687C1 /* SpringAnimator.swift */,
+				DA0F4AFE238BDB7C002DE188 /* TranslationTarget.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -338,6 +341,7 @@
 				CF1539FC2382F62A001687C1 /* BottomSheetTransitioningDelegate.swift in Sources */,
 				DA0F4B00238BDB85002DE188 /* TranslationTarget.swift in Sources */,
 				CF1539FF2382F62A001687C1 /* SpringAnimator.swift in Sources */,
+				DACFE66423AC29BE006B352F /* BottomSheetNavigationController.swift in Sources */,
 				CF1539FD2382F62A001687C1 /* BottomSheetView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
