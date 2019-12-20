@@ -125,7 +125,7 @@ private final class ViewController: UIViewController {
         super.viewDidLoad()
 
         let contentView = UIView.makeView(withTitle: text)
-        view.backgroundColor = contentView.backgroundColor
+        view.backgroundColor = .red
         view.addSubview(contentView)
 
         NSLayoutConstraint.activate([
@@ -133,8 +133,9 @@ private final class ViewController: UIViewController {
             contentView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             contentView.heightAnchor.constraint(equalToConstant: contentHeight),
-            contentView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+
+        preferredContentSize.height = contentHeight
 
         if withNavigationButton {
             let button = UIButton(type: .system)
@@ -147,52 +148,13 @@ private final class ViewController: UIViewController {
 
             NSLayoutConstraint.activate([
                 button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                button.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+                button.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
             ])
         }
     }
 
     @objc private func handleButtonTap() {
         let viewController = ViewController(withNavigationButton: false, contentHeight: contentHeight - 100)
-        viewController.title = "Step 2"
-        navigationController?.pushViewController(viewController, animated: true)
-    }
-}
-
-class TableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    private lazy var tableView = UITableView()
-    let items = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.addSubview(tableView)
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
-        tableView.reloadData()
-    }
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return items.count
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = "\(items[indexPath.item])"
-        return cell
-    }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let viewController = ViewController(withNavigationButton: false, contentHeight: 300)
         viewController.title = "Step 2"
         navigationController?.pushViewController(viewController, animated: true)
     }
