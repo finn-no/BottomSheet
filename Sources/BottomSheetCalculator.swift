@@ -143,7 +143,7 @@ extension UIView {
 
         /// Consider preferredContentSize if it's a view of UIViewController
         if let viewController = next as? UIViewController {
-            sizeToFit = viewController.preferredContentSize != .zero ? viewController.preferredContentSize : size
+            sizeToFit = viewController.preferredContentSize
         } else {
             sizeToFit = size
         }
