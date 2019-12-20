@@ -53,8 +53,11 @@ final class DemoViewController: UIViewController {
 
     @objc private func presentNavigationViewController() {
         let viewController = ViewController(withNavigationButton: true, contentHeight: 400)
+        viewController.title = "Step 1"
+
         let navigationController = BottomSheetNavigationController(rootViewController: viewController)
         navigationController.navigationBar.isTranslucent = false
+
         present(navigationController, animated: true)
     }
 
@@ -134,8 +137,6 @@ private final class ViewController: UIViewController {
         ])
 
         if withNavigationButton {
-            title = "Step 1"
-
             let button = UIButton(type: .system)
             button.translatesAutoresizingMaskIntoConstraints = false
             button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
@@ -152,11 +153,8 @@ private final class ViewController: UIViewController {
     }
 
     @objc private func handleButtonTap() {
-        let viewController = ViewController(
-            withNavigationButton: false,
-            text: "Step 2",
-            contentHeight: contentHeight - 100
-        )
+        let viewController = ViewController(withNavigationButton: false, contentHeight: contentHeight - 100)
+        viewController.title = "Step 2"
         navigationController?.pushViewController(viewController, animated: true)
     }
 }

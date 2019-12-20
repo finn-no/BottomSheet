@@ -128,8 +128,8 @@ public final class BottomSheetView: UIView {
         }
 
         springAnimator.addAnimation { [weak self] position in
-            self?.topConstraint.constant = position.y
             self?.updateDimViewAlpha(for: position.y)
+            self?.topConstraint.constant = position.y
         }
 
         springAnimator.addCompletion { didComplete in completion?(didComplete) }
@@ -250,6 +250,10 @@ public final class BottomSheetView: UIView {
     }
 
     private func updateDimViewAlpha(for offset: CGFloat) {
+        if offset <= topConstraint.constant && dimView.alpha == 1 {
+            return
+        }
+
         if let superview = superview, let maxOffset = targetOffsets.max() {
             dimView.alpha = min(1, (superview.frame.height - offset) / (superview.frame.height - maxOffset))
         }

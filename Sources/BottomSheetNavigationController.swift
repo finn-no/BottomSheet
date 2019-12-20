@@ -27,7 +27,6 @@ open class BottomSheetNavigationController: UINavigationController {
 
     open override func viewDidLoad() {
         super.viewDidLoad()
-        navigationBar.isTranslucent = false
         delegate = self
     }
 
@@ -45,7 +44,7 @@ open class BottomSheetNavigationController: UINavigationController {
     // MARK: - Public
 
     public func systemLayoutSizeFittingHeight(for viewController: UIViewController) -> CGFloat {
-        let navigationBarHeight = navigationBar.isTranslucent ? 0 : navigationBar.frame.size.height
+        let navigationBarHeight = navigationBar.isTranslucent || navigationBar.isHidden ? 0 : navigationBar.frame.size.height
         let size = viewController.view.systemLayoutSizeFitting(
             view.frame.size,
             withHorizontalFittingPriority: .required,
