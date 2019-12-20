@@ -94,10 +94,21 @@ private extension UIView {
         label.textColor = .white
         view.addSubview(label)
 
+        let borderView = UIView()
+        borderView.translatesAutoresizingMaskIntoConstraints = false
+        borderView.backgroundColor = .white
+        borderView.alpha = 0.4
+        view.addSubview(borderView)
+
         NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: view.topAnchor),
+            label.topAnchor.constraint(equalTo: view.topAnchor, constant: 8),
             label.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            label.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            label.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+
+            borderView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            borderView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            borderView.heightAnchor.constraint(equalToConstant: 2),
+            borderView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
 
         return view
@@ -125,7 +136,7 @@ private final class ViewController: UIViewController {
         super.viewDidLoad()
 
         let contentView = UIView.makeView(withTitle: text)
-        view.backgroundColor = .red
+        view.backgroundColor = contentView.backgroundColor
         view.addSubview(contentView)
 
         NSLayoutConstraint.activate([
