@@ -158,3 +158,42 @@ private final class ViewController: UIViewController {
         navigationController?.pushViewController(viewController, animated: true)
     }
 }
+
+class TableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    private lazy var tableView = UITableView()
+    let items = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.addSubview(tableView)
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.reloadData()
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return items.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        cell.textLabel?.text = "\(items[indexPath.item])"
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let viewController = ViewController(withNavigationButton: false, contentHeight: 300)
+        viewController.title = "Step 2"
+        navigationController?.pushViewController(viewController, animated: true)
+    }
+}
