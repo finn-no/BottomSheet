@@ -6,23 +6,43 @@ import UIKit
 
 extension CGFloat {
     static let handleHeight: CGFloat = 20
+
+    static var safeAreaBottomInset: CGFloat {
+        return UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
+    }
 }
 
 struct BottomSheetCalculator {
-
     /// Calculates offset for the given content view within its superview, taking preferred height into account.
     ///
     /// - Parameters:
     ///   - contentView: the content view of the bottom sheet
     ///   - superview: the bottom sheet container view
     ///   - height: preferred height for the content view
-    static func offset(for contentView: UIView, in superview: UIView, height: CGFloat) -> CGFloat {
-        let targetHeight = contentHeight(for: contentView, in: superview, height: height) + .handleHeight
+    static func offset(
+        for contentView: UIView,
+        in superview: UIView,
+        height: CGFloat,
+        useSafeAreaInsets: Bool = false
+    ) -> CGFloat {
+        let targetHeight = contentHeight(
+            for: contentView,
+            in: superview,
+            height: height,
+            useSafeAreaInsets: useSafeAreaInsets
+        ) + .handleHeight
+
         return max(superview.frame.height - targetHeight, .handleHeight)
     }
 
-    static func contentHeight(for contentView: UIView, in superview: UIView, height: CGFloat) -> CGFloat {
+    static func contentHeight(
+        for contentView: UIView,
+        in superview: UIView,
+        height: CGFloat,
+        useSafeAreaInsets: Bool = false
+    ) -> CGFloat {
         let contentHeight: CGFloat
+        let bottomInset: CGFloat = useSafeAreaInsets ? .safeAreaBottomInset : 0
 
         if height == .bottomSheetAutomatic {
             let size = contentView.systemLayoutSizeFitting(
@@ -35,7 +55,7 @@ struct BottomSheetCalculator {
             contentHeight = height
         }
 
-        return min(contentHeight, UIScreen.main.bounds.height - 64 - .handleHeight)
+        return min(contentHeight + bottomInset, UIScreen.main.bounds.height - 64 - .handleHeight)
     }
 
     /// Creates the translation targets of a BottomSheetView based on an array of target offsets and the current target offset

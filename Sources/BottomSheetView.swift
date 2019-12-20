@@ -29,6 +29,7 @@ public final class BottomSheetView: UIView {
 
     // MARK: - Private properties
 
+    private let useSafeAreaInsets: Bool
     private let isDismissable: Bool
     private let contentView: UIView
     private var topConstraint: NSLayoutConstraint!
@@ -42,6 +43,10 @@ public final class BottomSheetView: UIView {
     private lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(tapGesture:)))
     private lazy var panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(panGesture:)))
     private lazy var springAnimator = SpringAnimator(dampingRatio: 0.8, frequencyResponse: 0.4)
+
+    private var bottomInset: CGFloat {
+        return useSafeAreaInsets ? .safeAreaBottomInset : 0
+    }
 
     private lazy var handleView: UIView = {
         let view = UIView(frame: .zero)
@@ -63,9 +68,15 @@ public final class BottomSheetView: UIView {
 
     // MARK: - Init
 
-    public init(contentView: UIView, contentHeights: [CGFloat], isDismissible: Bool = false) {
+    public init(
+        contentView: UIView,
+        contentHeights: [CGFloat],
+        useSafeAreaInsets: Bool = false,
+        isDismissible: Bool = false
+    ) {
         self.contentView = contentView
         self.contentHeights = contentHeights.isEmpty ? [.bottomSheetAutomatic] : contentHeights
+        self.useSafeAreaInsets = useSafeAreaInsets
         self.isDismissable = isDismissible
         super.init(frame: .zero)
         setup()
@@ -103,7 +114,8 @@ public final class BottomSheetView: UIView {
         let startOffset = BottomSheetCalculator.offset(
             for: contentView,
             in: superview,
-            height: contentHeights[targetIndex]
+            height: contentHeights[targetIndex],
+            useSafeAreaInsets: useSafeAreaInsets
         )
 
         if animated {
@@ -130,7 +142,7 @@ public final class BottomSheetView: UIView {
         updateTargetOffsets()
 
         if let maxOffset = targetOffsets.max() {
-            let contentViewHeight = superview.frame.size.height - maxOffset - .handleHeight
+            let contentViewHeight = superview.frame.size.height - maxOffset - .handleHeight - bottomInset
             constraints.append(contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: contentViewHeight))
         }
 
@@ -181,7 +193,13 @@ public final class BottomSheetView: UIView {
             return
         }
 
-        let offset = BottomSheetCalculator.offset(for: contentView, in: superview, height: contentHeights[index])
+        let offset = BottomSheetCalculator.offset(
+            for: contentView,
+            in: superview,
+            height: contentHeights[index],
+            useSafeAreaInsets: useSafeAreaInsets
+        )
+
         animate(to: offset)
     }
 
@@ -214,7 +232,7 @@ public final class BottomSheetView: UIView {
             contentView.topAnchor.constraint(equalTo: handleView.bottomAnchor, constant: 8),
             contentView.leadingAnchor.constraint(equalTo: leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            contentView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor)
+            contentView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -bottomInset)
         ])
     }
 
@@ -288,7 +306,7 @@ public final class BottomSheetView: UIView {
         guard let superview = superview else { return }
 
         targetOffsets = contentHeights.map {
-            BottomSheetCalculator.offset(for: contentView, in: superview, height: $0)
+            BottomSheetCalculator.offset(for: contentView, in: superview, height: $0, useSafeAreaInsets: useSafeAreaInsets)
         }.sorted(by: >)
     }
 
