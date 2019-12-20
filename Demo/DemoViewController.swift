@@ -52,7 +52,7 @@ final class DemoViewController: UIViewController {
     // MARK: - Presentation logic
 
     @objc private func presentNavigationViewController() {
-        let viewController = ViewController(withNavigationButton: true, title: "Step 1", contentHeight: 400)
+        let viewController = ViewController(withNavigationButton: true, contentHeight: 400)
         let navigationController = BottomSheetNavigationController(rootViewController: viewController)
         navigationController.navigationBar.isTranslucent = false
         present(navigationController, animated: true)
@@ -61,7 +61,7 @@ final class DemoViewController: UIViewController {
     // MARK: - Presentation logic
 
     @objc private func presentViewController() {
-        let viewController = ViewController(withNavigationButton: false, title: "UIViewConteoller", contentHeight: 400)
+        let viewController = ViewController(withNavigationButton: false, text: "UIViewController", contentHeight: 400)
         viewController.transitioningDelegate = bottomSheetTransitioningDelegate
         viewController.modalPresentationStyle = .custom
         present(viewController, animated: true)
@@ -104,9 +104,11 @@ private extension UIView {
 private final class ViewController: UIViewController {
     private let withNavigationButton: Bool
     private let contentHeight: CGFloat
+    private let text: String?
 
-    init(withNavigationButton: Bool, title: String, contentHeight: CGFloat) {
+    init(withNavigationButton: Bool, text: String? = nil, contentHeight: CGFloat) {
         self.withNavigationButton = withNavigationButton
+        self.text = text
         self.contentHeight = contentHeight
         super.init(nibName: nil, bundle: nil)
         self.title = title
@@ -119,7 +121,7 @@ private final class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let contentView = UIView.makeView(withTitle: withNavigationButton ? nil : title)
+        let contentView = UIView.makeView(withTitle: text)
         view.backgroundColor = contentView.backgroundColor
         view.addSubview(contentView)
 
@@ -132,6 +134,8 @@ private final class ViewController: UIViewController {
         ])
 
         if withNavigationButton {
+            title = "Step 1"
+
             let button = UIButton(type: .system)
             button.translatesAutoresizingMaskIntoConstraints = false
             button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
@@ -148,7 +152,11 @@ private final class ViewController: UIViewController {
     }
 
     @objc private func handleButtonTap() {
-        let viewController = ViewController(withNavigationButton: false, title: "Step 2", contentHeight: contentHeight - 100)
+        let viewController = ViewController(
+            withNavigationButton: false,
+            text: "Step 2",
+            contentHeight: contentHeight - 100
+        )
         navigationController?.pushViewController(viewController, animated: true)
     }
 }

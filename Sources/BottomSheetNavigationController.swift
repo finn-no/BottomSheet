@@ -65,7 +65,7 @@ open class BottomSheetNavigationController: UINavigationController {
 extension BottomSheetNavigationController: UINavigationControllerDelegate {
     public func navigationController(
         _ navigationController: UINavigationController,
-        willShow viewController: UIViewController, animated: Bool
+        didShow viewController: UIViewController, animated: Bool
     ) {
         let height = systemLayoutSizeFittingHeight(for: viewController)
         reload(with: height)
