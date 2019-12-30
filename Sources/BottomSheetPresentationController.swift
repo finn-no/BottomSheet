@@ -43,11 +43,15 @@ final class BottomSheetPresentationController: UIPresentationController {
 
     // MARK: - Internal
 
-    public func reset() {
+    func transition(to index: Int) {
+        bottomSheetView?.transition(to: index)
+    }
+
+    func reset() {
         bottomSheetView?.reset()
     }
 
-    public func reload(with contentHeights: [CGFloat]) {
+    func reload(with contentHeights: [CGFloat]) {
         self.contentHeights = contentHeights
         bottomSheetView?.reload(with: contentHeights)
     }

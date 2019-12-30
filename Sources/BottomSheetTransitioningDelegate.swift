@@ -24,6 +24,16 @@ public final class BottomSheetTransitioningDelegate: NSObject {
 
     // MARK: - Public
 
+    /// Animates bottom sheet view to the given height.
+    ///
+    /// - Parameters:
+    ///   - index: the index of the target height
+    public func transition(to index: Int) {
+        presentationController?.transition(to: index)
+    }
+
+    /// Recalculates target offsets and animates to the minimum one.
+    /// Call this method e.g. when orientation change is detected.
     public func reset() {
         presentationController?.reset()
     }
