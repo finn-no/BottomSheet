@@ -34,6 +34,22 @@ public protocol BottomSheetViewDelegate: AnyObject {
 // MARK: - View
 
 public final class BottomSheetView: UIView {
+    public enum HandleBackground {
+        case color(UIColor)
+        case visualEffect(UIVisualEffect)
+
+        var view: UIView {
+            switch self {
+            case .color(let value):
+                let view = UIView()
+                view.backgroundColor = value
+                return view
+            case .visualEffect(let value):
+                return UIVisualEffectView(effect: value)
+            }
+        }
+    }
+
     public weak var delegate: BottomSheetViewDelegate?
     public private(set) var contentHeights: [CGFloat]
 
@@ -47,6 +63,7 @@ public final class BottomSheetView: UIView {
     private let useSafeAreaInsets: Bool
     private let isDismissable: Bool
     private let contentView: UIView
+    private let handleBackground: HandleBackground
     private var topConstraint: NSLayoutConstraint!
     private var targetOffsets = [CGFloat]()
     private var currentTargetOffsetIndex: Int = 0
@@ -87,10 +104,12 @@ public final class BottomSheetView: UIView {
     public init(
         contentView: UIView,
         contentHeights: [CGFloat],
+        handleBackground: HandleBackground = .color(.clear),
         useSafeAreaInsets: Bool = false,
         isDismissible: Bool = false
     ) {
         self.contentView = contentView
+        self.handleBackground = handleBackground
         self.contentHeights = contentHeights.isEmpty ? [.bottomSheetAutomatic] : contentHeights
         self.useSafeAreaInsets = useSafeAreaInsets
         self.isDismissable = isDismissible
@@ -232,12 +251,21 @@ public final class BottomSheetView: UIView {
         layer.cornerRadius = 16
         layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
 
+        let handleBackgroundView = handleBackground.view
+
         addSubview(contentView)
         addSubview(handleView)
+        addSubview(handleBackgroundView)
 
+        handleBackgroundView.translatesAutoresizingMaskIntoConstraints = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
+            handleBackgroundView.topAnchor.constraint(equalTo: topAnchor),
+            handleBackgroundView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            handleBackgroundView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            handleBackgroundView.heightAnchor.constraint(equalToConstant: .handleHeight),
+
             handleView.topAnchor.constraint(equalTo: topAnchor, constant: 8),
             handleView.centerXAnchor.constraint(equalTo: centerXAnchor),
             handleView.widthAnchor.constraint(equalToConstant: 25),
