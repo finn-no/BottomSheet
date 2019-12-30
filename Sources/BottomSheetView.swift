@@ -35,6 +35,7 @@ public protocol BottomSheetViewDelegate: AnyObject {
 
 public final class BottomSheetView: UIView {
     public weak var delegate: BottomSheetViewDelegate?
+    public private(set) var contentHeights: [CGFloat]
 
     public var isDimViewHidden: Bool {
         get { dimView.isHidden }
@@ -47,7 +48,6 @@ public final class BottomSheetView: UIView {
     private let isDismissable: Bool
     private let contentView: UIView
     private var topConstraint: NSLayoutConstraint!
-    private var contentHeights: [CGFloat]
     private var targetOffsets = [CGFloat]()
     private var currentTargetOffsetIndex: Int = 0
 

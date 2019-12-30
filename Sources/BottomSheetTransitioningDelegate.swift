@@ -5,7 +5,7 @@
 import UIKit
 
 public final class BottomSheetTransitioningDelegate: NSObject {
-    private var contentHeights: [CGFloat]
+    public private(set) var contentHeights: [CGFloat]
     private let startTargetIndex: Int
     private let useSafeAreaInsets: Bool
     private var weakPresentationController: WeakRef<BottomSheetPresentationController>?
