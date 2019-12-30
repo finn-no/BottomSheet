@@ -10,6 +10,20 @@ extension CGFloat {
     public static let bottomSheetAutomatic: CGFloat = -123456789
 }
 
+extension Array where Element == CGFloat {
+    public static var bottomSheetDefault: [CGFloat] {
+        let screenSize = UIScreen.main.bounds.size
+
+        if screenSize.height <= 568 {
+            return [510, 510]
+        } else if screenSize.height >= 812 {
+            return [570, screenSize.height - 64]
+        } else {
+            return [510, screenSize.height - 64]
+        }
+    }
+}
+
 // MARK: - Delegate
 
 public protocol BottomSheetViewDelegate: AnyObject {
