@@ -7,6 +7,7 @@ import UIKit
 public final class BottomSheetTransitioningDelegate: NSObject {
     public private(set) var contentHeights: [CGFloat]
     private let startTargetIndex: Int
+    private let handleBackground: BottomSheetView.HandleBackground
     private let useSafeAreaInsets: Bool
     private var weakPresentationController: WeakRef<BottomSheetPresentationController>?
 
@@ -16,9 +17,15 @@ public final class BottomSheetTransitioningDelegate: NSObject {
 
     // MARK: - Init
 
-    public init(contentHeights: [CGFloat], startTargetIndex: Int = 0, useSafeAreaInsets: Bool = false) {
+    public init(
+        contentHeights: [CGFloat],
+        startTargetIndex: Int = 0,
+        handleBackground: BottomSheetView.HandleBackground = .color(.clear),
+        useSafeAreaInsets: Bool = false
+    ) {
         self.contentHeights = contentHeights
         self.startTargetIndex = startTargetIndex
+        self.handleBackground = handleBackground
         self.useSafeAreaInsets = useSafeAreaInsets
     }
 
@@ -57,6 +64,7 @@ extension BottomSheetTransitioningDelegate: UIViewControllerTransitioningDelegat
             presenting: presenting,
             contentHeights: contentHeights,
             startTargetIndex: startTargetIndex,
+            handleBackground: handleBackground,
             useSafeAreaInsets: useSafeAreaInsets
         )
         self.weakPresentationController = WeakRef(value: presentationController)
