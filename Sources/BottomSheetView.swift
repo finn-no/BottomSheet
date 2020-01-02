@@ -33,6 +33,7 @@ public protocol BottomSheetViewDelegate: AnyObject {
 
 public protocol BottomSheetViewAnimationDelegate: AnyObject {
     func bottomSheetView(_ view: BottomSheetView, didAnimateToPosition position: CGPoint)
+    func bottomSheetView(_ view: BottomSheetView, didCompleteAnimation complete: Bool)
 }
 
 // MARK: - View
@@ -172,7 +173,11 @@ public final class BottomSheetView: UIView {
             self.animationDelegate?.bottomSheetView(self, didAnimateToPosition: position)
         }
 
-        springAnimator.addCompletion { didComplete in completion?(didComplete) }
+        springAnimator.addCompletion { [weak self] didComplete in
+            guard let self = self else { return }
+            completion?(didComplete)
+            self.animationDelegate?.bottomSheetView(self, didCompleteAnimation: didComplete)
+        }
 
         NSLayoutConstraint.activate([
             topConstraint,
