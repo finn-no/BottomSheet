@@ -25,6 +25,7 @@ final class BottomSheetPresentationController: UIPresentationController {
     private let useSafeAreaInsets: Bool
     private var dismissVelocity: CGPoint = .zero
     private var bottomSheetView: BottomSheetView?
+    private weak var animationDelegate: BottomSheetViewAnimationDelegate?
     private weak var transitionContext: UIViewControllerContextTransitioning?
 
     // MARK: - Init
@@ -34,12 +35,14 @@ final class BottomSheetPresentationController: UIPresentationController {
         presenting: UIViewController?,
         contentHeights: [CGFloat],
         startTargetIndex: Int,
+        animationDelegate: BottomSheetViewAnimationDelegate?,
         handleBackground: BottomSheetView.HandleBackground,
         useSafeAreaInsets: Bool
     ) {
         self.contentHeights = contentHeights
         self.startTargetIndex = startTargetIndex
         self.handleBackground = handleBackground
+        self.animationDelegate = animationDelegate
         self.useSafeAreaInsets = useSafeAreaInsets
         super.init(presentedViewController: presentedViewController, presenting: presenting)
     }
@@ -112,6 +115,7 @@ final class BottomSheetPresentationController: UIPresentationController {
             isDismissible: true
         )
 
+        bottomSheetView?.animationDelegate = animationDelegate
         bottomSheetView?.delegate = self
         bottomSheetView?.isDimViewHidden = false
     }

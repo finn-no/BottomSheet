@@ -31,6 +31,10 @@ public protocol BottomSheetViewDelegate: AnyObject {
     func bottomSheetViewDidReachDismissArea(_ view: BottomSheetView, with velocity: CGPoint)
 }
 
+public protocol BottomSheetViewAnimationDelegate: AnyObject {
+    func bottomSheetView(_ view: BottomSheetView, didAnimateToPosition position: CGPoint)
+}
+
 // MARK: - View
 
 public final class BottomSheetView: UIView {
@@ -51,6 +55,7 @@ public final class BottomSheetView: UIView {
     }
 
     public weak var delegate: BottomSheetViewDelegate?
+    public weak var animationDelegate: BottomSheetViewAnimationDelegate?
     public private(set) var contentHeights: [CGFloat]
 
     public var isDimViewHidden: Bool {
@@ -161,8 +166,10 @@ public final class BottomSheetView: UIView {
         }
 
         springAnimator.addAnimation { [weak self] position in
-            self?.updateDimViewAlpha(for: position.y)
-            self?.topConstraint.constant = position.y
+            guard let self = self else { return }
+            self.updateDimViewAlpha(for: position.y)
+            self.topConstraint.constant = position.y
+            self.animationDelegate?.bottomSheetView(self, didAnimateToPosition: position)
         }
 
         springAnimator.addCompletion { didComplete in completion?(didComplete) }
