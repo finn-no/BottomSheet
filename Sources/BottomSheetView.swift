@@ -252,10 +252,13 @@ public final class BottomSheetView: UIView {
         layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
 
         let handleBackgroundView = handleBackground.view
+        handleBackgroundView.layer.cornerRadius = layer.cornerRadius
+        handleBackgroundView.layer.maskedCorners = layer.maskedCorners
+        handleBackgroundView.clipsToBounds = true
 
         addSubview(contentView)
-        addSubview(handleView)
         addSubview(handleBackgroundView)
+        addSubview(handleView)
 
         handleBackgroundView.translatesAutoresizingMaskIntoConstraints = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
