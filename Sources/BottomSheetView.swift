@@ -15,7 +15,7 @@ extension Array where Element == CGFloat {
         let screenSize = UIScreen.main.bounds.size
 
         if screenSize.height <= 568 {
-            return [510, 510]
+            return [510]
         } else if screenSize.height >= 812 {
             return [570, screenSize.height - 64]
         } else {
