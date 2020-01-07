@@ -10,6 +10,20 @@ extension CGFloat {
     public static let bottomSheetAutomatic: CGFloat = -123456789
 }
 
+extension Array where Element == CGFloat {
+    public static var bottomSheetDefault: [CGFloat] {
+        let screenSize = UIScreen.main.bounds.size
+
+        if screenSize.height <= 568 {
+            return [510]
+        } else if screenSize.height >= 812 {
+            return [570, screenSize.height - 64]
+        } else {
+            return [510, screenSize.height - 64]
+        }
+    }
+}
+
 // MARK: - Delegate
 
 public protocol BottomSheetViewDelegate: AnyObject {
@@ -17,10 +31,33 @@ public protocol BottomSheetViewDelegate: AnyObject {
     func bottomSheetViewDidReachDismissArea(_ view: BottomSheetView, with velocity: CGPoint)
 }
 
+public protocol BottomSheetViewAnimationDelegate: AnyObject {
+    func bottomSheetView(_ view: BottomSheetView, didAnimateToPosition position: CGPoint)
+    func bottomSheetView(_ view: BottomSheetView, didCompleteAnimation complete: Bool)
+}
+
 // MARK: - View
 
 public final class BottomSheetView: UIView {
+    public enum HandleBackground {
+        case color(UIColor)
+        case visualEffect(UIVisualEffect)
+
+        var view: UIView {
+            switch self {
+            case .color(let value):
+                let view = UIView()
+                view.backgroundColor = value
+                return view
+            case .visualEffect(let value):
+                return UIVisualEffectView(effect: value)
+            }
+        }
+    }
+
     public weak var delegate: BottomSheetViewDelegate?
+    public weak var animationDelegate: BottomSheetViewAnimationDelegate?
+    public private(set) var contentHeights: [CGFloat]
 
     public var isDimViewHidden: Bool {
         get { dimView.isHidden }
@@ -32,8 +69,8 @@ public final class BottomSheetView: UIView {
     private let useSafeAreaInsets: Bool
     private let isDismissable: Bool
     private let contentView: UIView
+    private let handleBackground: HandleBackground
     private var topConstraint: NSLayoutConstraint!
-    private var contentHeights: [CGFloat]
     private var targetOffsets = [CGFloat]()
     private var currentTargetOffsetIndex: Int = 0
 
@@ -73,10 +110,12 @@ public final class BottomSheetView: UIView {
     public init(
         contentView: UIView,
         contentHeights: [CGFloat],
+        handleBackground: HandleBackground = .color(.clear),
         useSafeAreaInsets: Bool = false,
         isDismissible: Bool = false
     ) {
         self.contentView = contentView
+        self.handleBackground = handleBackground
         self.contentHeights = contentHeights.isEmpty ? [.bottomSheetAutomatic] : contentHeights
         self.useSafeAreaInsets = useSafeAreaInsets
         self.isDismissable = isDismissible
@@ -128,11 +167,17 @@ public final class BottomSheetView: UIView {
         }
 
         springAnimator.addAnimation { [weak self] position in
-            self?.updateDimViewAlpha(for: position.y)
-            self?.topConstraint.constant = position.y
+            guard let self = self else { return }
+            self.updateDimViewAlpha(for: position.y)
+            self.topConstraint.constant = position.y
+            self.animationDelegate?.bottomSheetView(self, didAnimateToPosition: position)
         }
 
-        springAnimator.addCompletion { didComplete in completion?(didComplete) }
+        springAnimator.addCompletion { [weak self] didComplete in
+            guard let self = self else { return }
+            completion?(didComplete)
+            self.animationDelegate?.bottomSheetView(self, didCompleteAnimation: didComplete)
+        }
 
         NSLayoutConstraint.activate([
             topConstraint,
@@ -218,12 +263,24 @@ public final class BottomSheetView: UIView {
         layer.cornerRadius = 16
         layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
 
+        let handleBackgroundView = handleBackground.view
+        handleBackgroundView.layer.cornerRadius = layer.cornerRadius
+        handleBackgroundView.layer.maskedCorners = layer.maskedCorners
+        handleBackgroundView.clipsToBounds = true
+
         addSubview(contentView)
+        addSubview(handleBackgroundView)
         addSubview(handleView)
 
+        handleBackgroundView.translatesAutoresizingMaskIntoConstraints = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
+            handleBackgroundView.topAnchor.constraint(equalTo: topAnchor),
+            handleBackgroundView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            handleBackgroundView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            handleBackgroundView.heightAnchor.constraint(equalToConstant: .handleHeight),
+
             handleView.topAnchor.constraint(equalTo: topAnchor, constant: 8),
             handleView.centerXAnchor.constraint(equalTo: centerXAnchor),
             handleView.widthAnchor.constraint(equalToConstant: 25),

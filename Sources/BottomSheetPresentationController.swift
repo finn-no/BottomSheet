@@ -21,9 +21,11 @@ final class BottomSheetPresentationController: UIPresentationController {
 
     private var contentHeights: [CGFloat]
     private let startTargetIndex: Int
+    private let handleBackground: BottomSheetView.HandleBackground
     private let useSafeAreaInsets: Bool
     private var dismissVelocity: CGPoint = .zero
     private var bottomSheetView: BottomSheetView?
+    private weak var animationDelegate: BottomSheetViewAnimationDelegate?
     private weak var transitionContext: UIViewControllerContextTransitioning?
 
     // MARK: - Init
@@ -33,21 +35,29 @@ final class BottomSheetPresentationController: UIPresentationController {
         presenting: UIViewController?,
         contentHeights: [CGFloat],
         startTargetIndex: Int,
+        animationDelegate: BottomSheetViewAnimationDelegate?,
+        handleBackground: BottomSheetView.HandleBackground,
         useSafeAreaInsets: Bool
     ) {
         self.contentHeights = contentHeights
         self.startTargetIndex = startTargetIndex
+        self.handleBackground = handleBackground
+        self.animationDelegate = animationDelegate
         self.useSafeAreaInsets = useSafeAreaInsets
         super.init(presentedViewController: presentedViewController, presenting: presenting)
     }
 
     // MARK: - Internal
 
-    public func reset() {
+    func transition(to index: Int) {
+        bottomSheetView?.transition(to: index)
+    }
+
+    func reset() {
         bottomSheetView?.reset()
     }
 
-    public func reload(with contentHeights: [CGFloat]) {
+    func reload(with contentHeights: [CGFloat]) {
         self.contentHeights = contentHeights
         bottomSheetView?.reload(with: contentHeights)
     }
@@ -100,10 +110,12 @@ final class BottomSheetPresentationController: UIPresentationController {
         bottomSheetView = BottomSheetView(
             contentView: presentedView,
             contentHeights: contentHeights,
+            handleBackground: handleBackground,
             useSafeAreaInsets: useSafeAreaInsets,
             isDismissible: true
         )
 
+        bottomSheetView?.animationDelegate = animationDelegate
         bottomSheetView?.delegate = self
         bottomSheetView?.isDimViewHidden = false
     }

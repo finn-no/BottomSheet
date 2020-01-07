@@ -5,10 +5,12 @@
 import UIKit
 
 public final class BottomSheetTransitioningDelegate: NSObject {
-    private var contentHeights: [CGFloat]
+    public private(set) var contentHeights: [CGFloat]
     private let startTargetIndex: Int
+    private let handleBackground: BottomSheetView.HandleBackground
     private let useSafeAreaInsets: Bool
     private var weakPresentationController: WeakRef<BottomSheetPresentationController>?
+    private weak var animationDelegate: BottomSheetViewAnimationDelegate?
 
     private var presentationController: BottomSheetPresentationController? {
         return weakPresentationController?.value
@@ -16,14 +18,32 @@ public final class BottomSheetTransitioningDelegate: NSObject {
 
     // MARK: - Init
 
-    public init(contentHeights: [CGFloat], startTargetIndex: Int = 0, useSafeAreaInsets: Bool = false) {
+    public init(
+        contentHeights: [CGFloat],
+        startTargetIndex: Int = 0,
+        handleBackground: BottomSheetView.HandleBackground = .color(.clear),
+        animationDelegate: BottomSheetViewAnimationDelegate? = nil,
+        useSafeAreaInsets: Bool = false
+    ) {
         self.contentHeights = contentHeights
         self.startTargetIndex = startTargetIndex
+        self.handleBackground = handleBackground
+        self.animationDelegate = animationDelegate
         self.useSafeAreaInsets = useSafeAreaInsets
     }
 
     // MARK: - Public
 
+    /// Animates bottom sheet view to the given height.
+    ///
+    /// - Parameters:
+    ///   - index: the index of the target height
+    public func transition(to index: Int) {
+        presentationController?.transition(to: index)
+    }
+
+    /// Recalculates target offsets and animates to the minimum one.
+    /// Call this method e.g. when orientation change is detected.
     public func reset() {
         presentationController?.reset()
     }
@@ -47,6 +67,8 @@ extension BottomSheetTransitioningDelegate: UIViewControllerTransitioningDelegat
             presenting: presenting,
             contentHeights: contentHeights,
             startTargetIndex: startTargetIndex,
+            animationDelegate: animationDelegate,
+            handleBackground: handleBackground,
             useSafeAreaInsets: useSafeAreaInsets
         )
         self.weakPresentationController = WeakRef(value: presentationController)
