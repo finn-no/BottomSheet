@@ -68,10 +68,6 @@ public final class BottomSheetView: UIView {
         set { dimView.isHidden = newValue }
     }
 
-    // MARK: - Internal properties
-
-    
-
     // MARK: - Private properties
 
     private let useSafeAreaInsets: Bool
