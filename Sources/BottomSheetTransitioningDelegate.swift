@@ -10,6 +10,7 @@ public final class BottomSheetTransitioningDelegate: NSObject {
     private let handleBackground: BottomSheetView.HandleBackground
     private let useSafeAreaInsets: Bool
     private var weakPresentationController: WeakRef<BottomSheetPresentationController>?
+    private weak var dismissalDelegate: BottomSheetViewDismissalDelegate?
     private weak var animationDelegate: BottomSheetViewAnimationDelegate?
 
     private var presentationController: BottomSheetPresentationController? {
@@ -22,12 +23,14 @@ public final class BottomSheetTransitioningDelegate: NSObject {
         contentHeights: [CGFloat],
         startTargetIndex: Int = 0,
         handleBackground: BottomSheetView.HandleBackground = .color(.clear),
+        dismissalDelegate: BottomSheetViewDismissalDelegate? = nil,
         animationDelegate: BottomSheetViewAnimationDelegate? = nil,
         useSafeAreaInsets: Bool = false
     ) {
         self.contentHeights = contentHeights
         self.startTargetIndex = startTargetIndex
         self.handleBackground = handleBackground
+        self.dismissalDelegate = dismissalDelegate
         self.animationDelegate = animationDelegate
         self.useSafeAreaInsets = useSafeAreaInsets
     }
@@ -67,6 +70,7 @@ extension BottomSheetTransitioningDelegate: UIViewControllerTransitioningDelegat
             presenting: presenting,
             contentHeights: contentHeights,
             startTargetIndex: startTargetIndex,
+            dismissalDelegate: dismissalDelegate,
             animationDelegate: animationDelegate,
             handleBackground: handleBackground,
             useSafeAreaInsets: useSafeAreaInsets

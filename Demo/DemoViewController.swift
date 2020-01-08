@@ -7,7 +7,8 @@ import BottomSheet
 
 final class DemoViewController: UIViewController {
     private lazy var bottomSheetTransitioningDelegate = BottomSheetTransitioningDelegate(
-        contentHeights: [.bottomSheetAutomatic, UIScreen.main.bounds.size.height - 200]
+        contentHeights: [.bottomSheetAutomatic, UIScreen.main.bounds.size.height - 200],
+        dismissalDelegate: self
     )
 
     // MARK: - Lifecycle
@@ -76,6 +77,22 @@ final class DemoViewController: UIViewController {
             contentHeights: [100, 500]
         )
         bottomSheetView.present(in: view)
+    }
+}
+
+// MARK: - BottomSheetViewDismissalDelegate
+
+extension DemoViewController: BottomSheetViewDismissalDelegate {
+    func bottomSheetViewCanDismiss(_ view: BottomSheetView) -> Bool {
+        return true
+    }
+
+    func bottomSheetViewDidTapDimView(_ view: BottomSheetView) {
+        print("Did tap dim view")
+    }
+
+    func bottomSheetViewDidReachDismissArea(_ view: BottomSheetView, with velocity: CGPoint) {
+        print("Did rearch dismiss area")
     }
 }
 

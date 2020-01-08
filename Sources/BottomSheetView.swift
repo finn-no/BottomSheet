@@ -26,7 +26,8 @@ extension Array where Element == CGFloat {
 
 // MARK: - Delegate
 
-public protocol BottomSheetViewActionDelegate: AnyObject {
+public protocol BottomSheetViewDismissalDelegate: AnyObject {
+    func bottomSheetViewCanDismiss(_ view: BottomSheetView) -> Bool
     func bottomSheetViewDidTapDimView(_ view: BottomSheetView)
     func bottomSheetViewDidReachDismissArea(_ view: BottomSheetView, with velocity: CGPoint)
 }
@@ -55,7 +56,7 @@ public final class BottomSheetView: UIView {
         }
     }
 
-    public weak var actionDelegate: BottomSheetViewActionDelegate?
+    public weak var dismissalDelegate: BottomSheetViewDismissalDelegate?
     public weak var animationDelegate: BottomSheetViewAnimationDelegate?
     public private(set) var contentHeights: [CGFloat]
 
@@ -67,7 +68,6 @@ public final class BottomSheetView: UIView {
     // MARK: - Private properties
 
     private let useSafeAreaInsets: Bool
-    private let isDismissable: Bool
     private let contentView: UIView
     private let handleBackground: HandleBackground
     private var topConstraint: NSLayoutConstraint!
@@ -83,6 +83,10 @@ public final class BottomSheetView: UIView {
 
     private var bottomInset: CGFloat {
         return useSafeAreaInsets ? .safeAreaBottomInset : 0
+    }
+
+    private var isDismissable: Bool {
+        return dismissalDelegate?.bottomSheetViewCanDismiss(self) ?? false
     }
 
     private lazy var handleView: UIView = {
@@ -112,13 +116,15 @@ public final class BottomSheetView: UIView {
         contentHeights: [CGFloat],
         handleBackground: HandleBackground = .color(.clear),
         useSafeAreaInsets: Bool = false,
-        isDismissible: Bool = false
+        dismissalDelegate: BottomSheetViewDismissalDelegate? = nil,
+        animationDelegate: BottomSheetViewAnimationDelegate? = nil
     ) {
         self.contentView = contentView
         self.handleBackground = handleBackground
         self.contentHeights = contentHeights.isEmpty ? [.bottomSheetAutomatic] : contentHeights
         self.useSafeAreaInsets = useSafeAreaInsets
-        self.isDismissable = isDismissible
+        self.dismissalDelegate = dismissalDelegate
+        self.animationDelegate = animationDelegate
         super.init(frame: .zero)
         setup()
     }
@@ -353,7 +359,7 @@ public final class BottomSheetView: UIView {
                 if !isDismissable {
                     animateToTranslationTarget()
                 }
-                actionDelegate?.bottomSheetViewDidReachDismissArea(self, with: velocity)
+                dismissalDelegate?.bottomSheetViewDidReachDismissArea(self, with: velocity)
             } else {
                 animateToTranslationTarget()
             }
@@ -366,7 +372,7 @@ public final class BottomSheetView: UIView {
     // MARK: - UITapGestureRecognizer
 
     @objc private func handleTap(tapGesture: UITapGestureRecognizer) {
-        actionDelegate?.bottomSheetViewDidTapDimView(self)
+        dismissalDelegate?.bottomSheetViewDidTapDimView(self)
     }
 
     // MARK: - Offset calculation
