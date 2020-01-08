@@ -11,7 +11,7 @@ final class BottomSheetModelTests: XCTestCase {
         let rangeModel = RangeTarget(
             targetOffset: 500,
             range: 300 ..< 600,
-            isDismissible: false
+            isBottomTarget: false
         )
 
         XCTAssertFalse(rangeModel.contains(offset: 200))
@@ -27,7 +27,7 @@ final class BottomSheetModelTests: XCTestCase {
             targetOffset: targetOffset,
             bound: targetOffset,
             behavior: .stop,
-            isDismissible: false,
+            isBottomTarget: false,
             compare: <
         )
 
@@ -44,7 +44,7 @@ final class BottomSheetModelTests: XCTestCase {
             targetOffset: bound,
             bound: bound,
             behavior: .rubberBand(radius: radius),
-            isDismissible: false,
+            isBottomTarget: false,
             compare: <
         )
 
@@ -64,7 +64,7 @@ final class BottomSheetModelTests: XCTestCase {
             targetOffset: targetOffset,
             bound: 700,
             behavior: .linear,
-            isDismissible: false,
+            isBottomTarget: false,
             compare: >=
         )
 
