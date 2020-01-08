@@ -102,7 +102,7 @@ struct BottomSheetCalculator {
             targetOffset: isDismissible ? superview.frame.height : maxOffset,
             bound: bounds.first ?? maxOffset,
             behavior: isDismissible ? .linear : .rubberBand(radius: threshold(0, maxOffset)),
-            isDismissible: true,
+            isBottomTarget: true,
             compare: >=
         )
 
@@ -113,7 +113,7 @@ struct BottomSheetCalculator {
             let target = RangeTarget(
                 targetOffset: targetOffset,
                 range: lowerBound ..< upperBound,
-                isDismissible: false
+                isBottomTarget: false
             )
 
             targets.append(target)
@@ -125,7 +125,7 @@ struct BottomSheetCalculator {
             targetOffset: minOffset,
             bound: minOffset,
             behavior: .rubberBand(radius: threshold(0, minOffset)),
-            isDismissible: false,
+            isBottomTarget: false,
             compare: <
         )
 

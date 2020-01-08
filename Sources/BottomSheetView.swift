@@ -68,6 +68,10 @@ public final class BottomSheetView: UIView {
         set { dimView.isHidden = newValue }
     }
 
+    // MARK: - Internal properties
+
+    
+
     // MARK: - Private properties
 
     private let useSafeAreaInsets: Bool
@@ -354,7 +358,7 @@ public final class BottomSheetView: UIView {
             }
 
             // if it's the bottom limit target
-            if translationTarget.isDismissible {
+            if translationTarget.isBottomTarget {
                 if let dismissalDelegate = dismissalDelegate {
                     dismissalDelegate.bottomSheetView(self, willDismissBy: .drag(velocity: velocity))
                 } else {
