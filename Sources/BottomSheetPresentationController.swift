@@ -11,6 +11,28 @@ extension BottomSheetPresentationController {
     }
 }
 
+public protocol BottomSheetPresentationControllerDelegate: AnyObject {
+    func bottomSheetPresentationController(
+        _ controller: UIPresentationController,
+        shouldDismissBy action: BottomSheetView.DismissAction
+    ) -> Bool
+
+    func bottomSheetPresentationController(
+        _ controller: UIPresentationController,
+        didCancelDismissBy action: BottomSheetView.DismissAction
+    )
+
+    func bottomSheetPresentationController(
+        _ controller: UIPresentationController,
+        willDismissBy action: BottomSheetView.DismissAction?
+    )
+
+    func bottomSheetPresentationController(
+        _ controller: UIPresentationController,
+        didDismissBy action: BottomSheetView.DismissAction?
+    )
+}
+
 final class BottomSheetPresentationController: UIPresentationController {
 
     // MARK: - Internal properties
@@ -25,7 +47,8 @@ final class BottomSheetPresentationController: UIPresentationController {
     private let useSafeAreaInsets: Bool
     private var dismissVelocity: CGPoint = .zero
     private var bottomSheetView: BottomSheetView?
-    private weak var dismissalDelegate: BottomSheetViewDismissalDelegate?
+    private var dismissAction: BottomSheetView.DismissAction?
+    private weak var presentationDelegate: BottomSheetPresentationControllerDelegate?
     private weak var animationDelegate: BottomSheetViewAnimationDelegate?
     private weak var transitionContext: UIViewControllerContextTransitioning?
 
@@ -36,7 +59,7 @@ final class BottomSheetPresentationController: UIPresentationController {
         presenting: UIViewController?,
         contentHeights: [CGFloat],
         startTargetIndex: Int,
-        dismissalDelegate: BottomSheetViewDismissalDelegate?,
+        presentationDelegate: BottomSheetPresentationControllerDelegate?,
         animationDelegate: BottomSheetViewAnimationDelegate?,
         handleBackground: BottomSheetView.HandleBackground,
         useSafeAreaInsets: Bool
@@ -44,7 +67,7 @@ final class BottomSheetPresentationController: UIPresentationController {
         self.contentHeights = contentHeights
         self.startTargetIndex = startTargetIndex
         self.handleBackground = handleBackground
-        self.dismissalDelegate = dismissalDelegate
+        self.presentationDelegate = presentationDelegate
         self.animationDelegate = animationDelegate
         self.useSafeAreaInsets = useSafeAreaInsets
         super.init(presentedViewController: presentedViewController, presenting: presenting)
@@ -83,6 +106,14 @@ final class BottomSheetPresentationController: UIPresentationController {
             targetIndex: startTargetIndex,
             animated: false
         )
+    }
+
+    override func dismissalTransitionWillBegin() {
+        presentationDelegate?.bottomSheetPresentationController(self, willDismissBy: dismissAction)
+    }
+
+    override func dismissalTransitionDidEnd(_ completed: Bool) {
+        presentationDelegate?.bottomSheetPresentationController(self, didDismissBy: dismissAction)
     }
 
     override var frameOfPresentedViewInContainerView: CGRect {
@@ -173,28 +204,26 @@ extension BottomSheetPresentationController: UIViewControllerInteractiveTransiti
 // MARK: - BottomSheetViewPresenterDelegate
 
 extension BottomSheetPresentationController: BottomSheetViewDismissalDelegate {
-    func bottomSheetViewCanDismissWithGesture(_ view: BottomSheetView) -> Bool {
-        dismissalDelegate?.bottomSheetViewCanDismissWithGesture(view) ?? true
-    }
-
-    func bottomSheetViewDidTapDimView(_ view: BottomSheetView) {
-        dismiss(view, with: .zero)
-        dismissalDelegate?.bottomSheetViewDidTapDimView(view)
-    }
-
-    func bottomSheetViewDidReachDismissArea(_ view: BottomSheetView, with velocity: CGPoint) {
-        dismiss(view, with: velocity)
-        dismissalDelegate?.bottomSheetViewDidReachDismissArea(view, with: velocity)
-    }
-
-    private func dismiss(_ view: BottomSheetView, with velocity: CGPoint) {
-        guard dismissalDelegate?.bottomSheetViewCanDismissWithGesture(view) ?? true else {
+    func bottomSheetView(_ view: BottomSheetView, willDismissBy action: BottomSheetView.DismissAction) {
+        guard presentationDelegate?.bottomSheetPresentationController(self, shouldDismissBy: action) ?? true else {
+            presentationDelegate?.bottomSheetPresentationController(self, didCancelDismissBy: action)
             return
         }
 
+        dismissAction = action
+
+        switch action {
+        case .drag(let velocity):
+            dismiss(with: velocity)
+        case .tap:
+            dismiss(with: .zero)
+        }
+    }
+
+    private func dismiss(with velocity: CGPoint) {
         switch transitionState {
         case .presenting:
-            view.dismiss(velocity: velocity, completion: { _ in
+            bottomSheetView?.dismiss(velocity: velocity, completion: { _ in
                 self.transitionContext?.completeTransition(false)
             })
         case .dismissing:

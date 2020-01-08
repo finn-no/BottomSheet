@@ -27,9 +27,7 @@ extension Array where Element == CGFloat {
 // MARK: - Delegate
 
 public protocol BottomSheetViewDismissalDelegate: AnyObject {
-    func bottomSheetViewCanDismissWithGesture(_ view: BottomSheetView) -> Bool
-    func bottomSheetViewDidTapDimView(_ view: BottomSheetView)
-    func bottomSheetViewDidReachDismissArea(_ view: BottomSheetView, with velocity: CGPoint)
+    func bottomSheetView(_ view: BottomSheetView, willDismissBy action: BottomSheetView.DismissAction)
 }
 
 public protocol BottomSheetViewAnimationDelegate: AnyObject {
@@ -54,6 +52,11 @@ public final class BottomSheetView: UIView {
                 return UIVisualEffectView(effect: value)
             }
         }
+    }
+
+    public enum DismissAction {
+        case drag(velocity: CGPoint)
+        case tap
     }
 
     public weak var dismissalDelegate: BottomSheetViewDismissalDelegate?
@@ -83,10 +86,6 @@ public final class BottomSheetView: UIView {
 
     private var bottomInset: CGFloat {
         return useSafeAreaInsets ? .safeAreaBottomInset : 0
-    }
-
-    private var isDismissable: Bool {
-        return dismissalDelegate?.bottomSheetViewCanDismissWithGesture(self) ?? false
     }
 
     private lazy var handleView: UIView = {
@@ -356,10 +355,11 @@ public final class BottomSheetView: UIView {
 
             // if it's the bottom limit target
             if translationTarget.isDismissible {
-                if !isDismissable {
+                if let dismissalDelegate = dismissalDelegate {
+                    dismissalDelegate.bottomSheetView(self, willDismissBy: .drag(velocity: velocity))
+                } else {
                     animateToTranslationTarget()
                 }
-                dismissalDelegate?.bottomSheetViewDidReachDismissArea(self, with: velocity)
             } else {
                 animateToTranslationTarget()
             }
@@ -372,7 +372,7 @@ public final class BottomSheetView: UIView {
     // MARK: - UITapGestureRecognizer
 
     @objc private func handleTap(tapGesture: UITapGestureRecognizer) {
-        dismissalDelegate?.bottomSheetViewDidTapDimView(self)
+         dismissalDelegate?.bottomSheetView(self, willDismissBy: .tap)
     }
 
     // MARK: - Offset calculation
@@ -399,7 +399,7 @@ public final class BottomSheetView: UIView {
             for: targetOffsets,
             at: currentTargetOffsetIndex,
             in: superview,
-            isDismissible: isDismissable
+            isDismissible: dismissalDelegate != nil
         )
     }
 }
