@@ -116,7 +116,7 @@ final class BottomSheetPresentationController: UIPresentationController {
         )
 
         bottomSheetView?.animationDelegate = animationDelegate
-        bottomSheetView?.delegate = self
+        bottomSheetView?.actionDelegate = self
         bottomSheetView?.isDimViewHidden = false
     }
 
@@ -170,7 +170,7 @@ extension BottomSheetPresentationController: UIViewControllerInteractiveTransiti
 
 // MARK: - BottomSheetViewPresenterDelegate
 
-extension BottomSheetPresentationController: BottomSheetViewDelegate {
+extension BottomSheetPresentationController: BottomSheetViewActionDelegate {
     func bottomSheetViewDidTapDimView(_ view: BottomSheetView) {
         dismiss(with: .zero)
     }

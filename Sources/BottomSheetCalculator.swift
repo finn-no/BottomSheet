@@ -102,7 +102,7 @@ struct BottomSheetCalculator {
             targetOffset: isDismissible ? superview.frame.height : maxOffset,
             bound: bounds.first ?? maxOffset,
             behavior: isDismissible ? .linear : .rubberBand(radius: threshold(0, maxOffset)),
-            isDismissible: isDismissible,
+            isDismissible: true,
             compare: >=
         )
 

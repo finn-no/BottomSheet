@@ -26,7 +26,7 @@ extension Array where Element == CGFloat {
 
 // MARK: - Delegate
 
-public protocol BottomSheetViewDelegate: AnyObject {
+public protocol BottomSheetViewActionDelegate: AnyObject {
     func bottomSheetViewDidTapDimView(_ view: BottomSheetView)
     func bottomSheetViewDidReachDismissArea(_ view: BottomSheetView, with velocity: CGPoint)
 }
@@ -55,7 +55,7 @@ public final class BottomSheetView: UIView {
         }
     }
 
-    public weak var delegate: BottomSheetViewDelegate?
+    public weak var actionDelegate: BottomSheetViewActionDelegate?
     public weak var animationDelegate: BottomSheetViewAnimationDelegate?
     public private(set) var contentHeights: [CGFloat]
 
@@ -343,11 +343,19 @@ public final class BottomSheetView: UIView {
                 for: location
             )
 
-            if translationTarget.isDismissible {
-                delegate?.bottomSheetViewDidReachDismissArea(self, with: velocity)
-            } else {
+            func animateToTranslationTarget() {
                 animate(to: translationTarget.targetOffset, with: velocity)
                 createTranslationTargets()
+            }
+
+            // if it's the bottom limit target
+            if translationTarget.isDismissible {
+                if !isDismissable {
+                    animateToTranslationTarget()
+                }
+                actionDelegate?.bottomSheetViewDidReachDismissArea(self, with: velocity)
+            } else {
+                animateToTranslationTarget()
             }
 
         default:
@@ -358,7 +366,7 @@ public final class BottomSheetView: UIView {
     // MARK: - UITapGestureRecognizer
 
     @objc private func handleTap(tapGesture: UITapGestureRecognizer) {
-        delegate?.bottomSheetViewDidTapDimView(self)
+        actionDelegate?.bottomSheetViewDidTapDimView(self)
     }
 
     // MARK: - Offset calculation
