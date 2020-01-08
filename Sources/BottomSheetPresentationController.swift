@@ -173,8 +173,8 @@ extension BottomSheetPresentationController: UIViewControllerInteractiveTransiti
 // MARK: - BottomSheetViewPresenterDelegate
 
 extension BottomSheetPresentationController: BottomSheetViewDismissalDelegate {
-    func bottomSheetViewCanDismiss(_ view: BottomSheetView) -> Bool {
-        dismissalDelegate?.bottomSheetViewCanDismiss(view) ?? true
+    func bottomSheetViewCanDismissWithGesture(_ view: BottomSheetView) -> Bool {
+        dismissalDelegate?.bottomSheetViewCanDismissWithGesture(view) ?? true
     }
 
     func bottomSheetViewDidTapDimView(_ view: BottomSheetView) {
@@ -188,7 +188,7 @@ extension BottomSheetPresentationController: BottomSheetViewDismissalDelegate {
     }
 
     private func dismiss(_ view: BottomSheetView, with velocity: CGPoint) {
-        guard dismissalDelegate?.bottomSheetViewCanDismiss(view) ?? true else {
+        guard dismissalDelegate?.bottomSheetViewCanDismissWithGesture(view) ?? true else {
             return
         }
 

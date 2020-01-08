@@ -83,7 +83,7 @@ final class DemoViewController: UIViewController {
 // MARK: - BottomSheetViewDismissalDelegate
 
 extension DemoViewController: BottomSheetViewDismissalDelegate {
-    func bottomSheetViewCanDismiss(_ view: BottomSheetView) -> Bool {
+    func bottomSheetViewCanDismissByGesture(_ view: BottomSheetView) -> Bool {
         return true
     }
 

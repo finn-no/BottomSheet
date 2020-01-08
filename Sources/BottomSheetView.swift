@@ -27,7 +27,7 @@ extension Array where Element == CGFloat {
 // MARK: - Delegate
 
 public protocol BottomSheetViewDismissalDelegate: AnyObject {
-    func bottomSheetViewCanDismiss(_ view: BottomSheetView) -> Bool
+    func bottomSheetViewCanDismissWithGesture(_ view: BottomSheetView) -> Bool
     func bottomSheetViewDidTapDimView(_ view: BottomSheetView)
     func bottomSheetViewDidReachDismissArea(_ view: BottomSheetView, with velocity: CGPoint)
 }
@@ -86,7 +86,7 @@ public final class BottomSheetView: UIView {
     }
 
     private var isDismissable: Bool {
-        return dismissalDelegate?.bottomSheetViewCanDismiss(self) ?? false
+        return dismissalDelegate?.bottomSheetViewCanDismissWithGesture(self) ?? false
     }
 
     private lazy var handleView: UIView = {
