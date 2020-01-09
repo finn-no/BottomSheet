@@ -7,7 +7,8 @@ import BottomSheet
 
 final class DemoViewController: UIViewController {
     private lazy var bottomSheetTransitioningDelegate = BottomSheetTransitioningDelegate(
-        contentHeights: [.bottomSheetAutomatic, UIScreen.main.bounds.size.height - 200]
+        contentHeights: [.bottomSheetAutomatic, UIScreen.main.bounds.size.height - 200],
+        presentationDelegate: self
     )
 
     // MARK: - Lifecycle
@@ -76,6 +77,38 @@ final class DemoViewController: UIViewController {
             contentHeights: [100, 500]
         )
         bottomSheetView.present(in: view)
+    }
+}
+
+// MARK: - BottomSheetViewDismissalDelegate
+
+extension DemoViewController: BottomSheetPresentationControllerDelegate {
+    func bottomSheetPresentationController(
+        _ controller: UIPresentationController,
+        shouldDismissBy action: BottomSheetView.DismissAction
+    ) -> Bool {
+        return true
+    }
+
+    func bottomSheetPresentationController(
+        _ controller: UIPresentationController,
+        didCancelDismissBy action: BottomSheetView.DismissAction
+    ) {
+        print("Did cancel dismiss by \(action)")
+    }
+
+    func bottomSheetPresentationController(
+        _ controller: UIPresentationController,
+        willDismissBy action: BottomSheetView.DismissAction?
+    ) {
+        print("Will dismiss dismiss by \(String(describing: action))")
+    }
+
+    func bottomSheetPresentationController(
+        _ controller: UIPresentationController,
+        didDismissBy action: BottomSheetView.DismissAction?
+    ) {
+        print("Did dismiss dismiss by \(String(describing: action))")
     }
 }
 

@@ -11,9 +11,8 @@ protocol TranslationTarget {
     /// An offset which a BottomSheetView can transition to
     var targetOffset: CGFloat { get }
 
-    /// Flag specifying whether a BottomSheetView should be dismissed.
-    /// This should only be used when presented by a presentation controller
-    var isDismissible: Bool { get }
+    /// Flag specifying whether it is a bottom limit target.
+    var isBottomTarget: Bool { get }
 
     /// BottomSheetView will find the model which contains the current translation offset
     /// and transition to its target offset when its gesture ends.
@@ -56,7 +55,7 @@ enum TranslationBehavior {
 struct RangeTarget: TranslationTarget {
     let targetOffset: CGFloat
     let range: Range<CGFloat>
-    let isDismissible: Bool
+    let isBottomTarget: Bool
 
     func contains(offset: CGFloat) -> Bool {
         range.contains(offset)
@@ -87,7 +86,7 @@ struct LimitTarget: TranslationTarget {
     let targetOffset: CGFloat
     let bound: CGFloat
     let behavior: TranslationBehavior
-    let isDismissible: Bool
+    let isBottomTarget: Bool
     let compare: (CGFloat, CGFloat) -> Bool
 
     func contains(offset: CGFloat) -> Bool {

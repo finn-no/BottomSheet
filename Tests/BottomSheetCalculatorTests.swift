@@ -27,11 +27,11 @@ final class BottomSheetCalculatorTests: XCTestCase {
     }
 
     func testLayoutWithEmptyOffsets() {
-        XCTAssertTrue(BottomSheetCalculator.createTranslationTargets(for: [], at: 0, in: superview, isDismissible: false).isEmpty)
+        XCTAssertTrue(BottomSheetCalculator.createTranslationTargets(for: [], at: 0, in: superview, targetMaxHeight: false).isEmpty)
     }
 
     func testLayoutModelsWithSingleOffset() {
-        let models = BottomSheetCalculator.createTranslationTargets(for: [500], at: 0, in: superview, isDismissible: false)
+        let models = BottomSheetCalculator.createTranslationTargets(for: [500], at: 0, in: superview, targetMaxHeight: false)
 
         XCTAssertEqual(models.count, 3)
         XCTAssertTrue(models[0] is LimitTarget)
@@ -40,7 +40,7 @@ final class BottomSheetCalculatorTests: XCTestCase {
     }
 
     func testLayoutModelsWithMultipleOffsets() {
-        let models = BottomSheetCalculator.createTranslationTargets(for: [700, 300, 100], at: 0, in: superview, isDismissible: false)
+        let models = BottomSheetCalculator.createTranslationTargets(for: [700, 300, 100], at: 0, in: superview, targetMaxHeight: false)
 
         XCTAssertEqual(models.count, 5)
         XCTAssertTrue(models.first is LimitTarget)
@@ -48,7 +48,7 @@ final class BottomSheetCalculatorTests: XCTestCase {
     }
 
     func testLayoutModelsWhenContainingOffset() {
-        let models = BottomSheetCalculator.createTranslationTargets(for: [700, 300, 100], at: 0, in: superview, isDismissible: false)
+        let models = BottomSheetCalculator.createTranslationTargets(for: [700, 300, 100], at: 0, in: superview, targetMaxHeight: false)
 
         XCTAssertTrue(models[0].contains(offset: 800))
         XCTAssertTrue(models[1].contains(offset: 690))
@@ -59,7 +59,7 @@ final class BottomSheetCalculatorTests: XCTestCase {
     }
 
     func testLayoutModelsWhenNotContainingOffset() {
-        let models = BottomSheetCalculator.createTranslationTargets(for: [700, 300, 100], at: 0, in: superview, isDismissible: false)
+        let models = BottomSheetCalculator.createTranslationTargets(for: [700, 300, 100], at: 0, in: superview, targetMaxHeight: false)
         XCTAssertFalse(models[0].contains(offset: 600))
         XCTAssertFalse(models[1].contains(offset: 300))
         XCTAssertFalse(models[2].contains(offset: 100))
@@ -68,7 +68,7 @@ final class BottomSheetCalculatorTests: XCTestCase {
     }
 
     func testLayoutThresholds() {
-        let models = BottomSheetCalculator.createTranslationTargets(for: [700, 600, 400], at: 1, in: superview, isDismissible: false)
+        let models = BottomSheetCalculator.createTranslationTargets(for: [700, 600, 400], at: 1, in: superview, targetMaxHeight: false)
 
         guard let firstModel = models[1] as? RangeTarget else {
             return
