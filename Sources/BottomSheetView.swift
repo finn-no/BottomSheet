@@ -399,7 +399,7 @@ public final class BottomSheetView: UIView {
             for: targetOffsets,
             at: currentTargetOffsetIndex,
             in: superview,
-            isDismissible: dismissalDelegate != nil
+            targetMaxHeight: dismissalDelegate != nil
         )
     }
 }

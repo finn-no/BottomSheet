@@ -59,12 +59,12 @@ struct BottomSheetCalculator {
     ///   - targetOffsets: array containing the different target offsets a BottomSheetView can transition between
     ///   - currentTargetIndex: index of the current target offset of the BottomSheetView
     ///   - superview: the bottom sheet container view
-    ///   - isDismissable: flag specifying whether the last translation target should dismiss the BottomSheetView
+    ///   - targetMaxHeight: flag specifying whether the last translation target should dismiss the BottomSheetView
     static func createTranslationTargets(
         for targetOffsets: [CGFloat],
         at currentTargetIndex: Int,
         in superview: UIView,
-        isDismissible: Bool
+        targetMaxHeight: Bool
     ) -> [TranslationTarget] {
         guard !targetOffsets.isEmpty else { return [] }
 
@@ -79,7 +79,7 @@ struct BottomSheetCalculator {
         }
         // If the BottomSheetView is dismissible we want the user to translate a certain amount before transitioning to the dismiss translation target
         // If not, make it stop at the smallest target height by setting the first threshold to zero.
-        let lowestThreshold = isDismissible ? threshold(superview.frame.height, maxOffset) : 0
+        let lowestThreshold = targetMaxHeight ? threshold(superview.frame.height, maxOffset) : 0
         // We add a zero threshold at the end to make the BottomSheetView stop at its biggest height.
         let highestThreshold: CGFloat = 0
         // Calculate all the offsets in between
@@ -99,9 +99,9 @@ struct BottomSheetCalculator {
 
         // Target used to control offsets bigger than or equal to maxOffset
         let bottomTarget = LimitTarget(
-            targetOffset: isDismissible ? superview.frame.height : maxOffset,
+            targetOffset: targetMaxHeight ? superview.frame.height : maxOffset,
             bound: bounds.first ?? maxOffset,
-            behavior: isDismissible ? .linear : .rubberBand(radius: threshold(0, maxOffset)),
+            behavior: targetMaxHeight ? .linear : .rubberBand(radius: threshold(0, maxOffset)),
             isBottomTarget: true,
             compare: >=
         )
