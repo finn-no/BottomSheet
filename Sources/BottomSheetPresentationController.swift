@@ -206,7 +206,7 @@ extension BottomSheetPresentationController: UIViewControllerInteractiveTransiti
 extension BottomSheetPresentationController: BottomSheetViewDismissalDelegate {
     func bottomSheetView(_ view: BottomSheetView, willDismissBy action: BottomSheetView.DismissAction) {
         guard presentationDelegate?.bottomSheetPresentationController(self, shouldDismissBy: action) ?? true else {
-            //view.reset()
+            view.reset()
             presentationDelegate?.bottomSheetPresentationController(self, didCancelDismissBy: action)
             return
         }
