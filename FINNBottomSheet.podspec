@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
     s.name             = 'FINNBottomSheet'
     s.summary          = 'Custom modal presentation style for views anchored to the bottom of the screen'
-    s.version          = '3.2.0'
+    s.version          = '4.0.0'
     s.author           = 'FINN.no'
     s.homepage         = 'https://github.com/finn-no/bottom-sheet-ios'
     s.social_media_url = 'https://twitter.com/FINN_tech'
