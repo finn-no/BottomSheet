@@ -62,6 +62,7 @@ public final class BottomSheetView: UIView {
     public weak var dismissalDelegate: BottomSheetViewDismissalDelegate?
     public weak var animationDelegate: BottomSheetViewAnimationDelegate?
     public private(set) var contentHeights: [CGFloat]
+    public private(set) var currentTargetOffsetIndex: Int = 0
 
     public var isDimViewHidden: Bool {
         get { dimView.isHidden }
@@ -75,7 +76,6 @@ public final class BottomSheetView: UIView {
     private let handleBackground: HandleBackground
     private var topConstraint: NSLayoutConstraint!
     private var targetOffsets = [CGFloat]()
-    private var currentTargetOffsetIndex: Int = 0
 
     private var initialOffset: CGFloat?
     private var translationTargets = [TranslationTarget]()
