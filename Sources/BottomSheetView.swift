@@ -69,6 +69,8 @@ public final class BottomSheetView: UIView {
         set { dimView.isHidden = newValue }
     }
 
+    public let draggableHeight: CGFloat?
+
     // MARK: - Private properties
 
     private let useSafeAreaInsets: Bool
@@ -77,13 +79,16 @@ public final class BottomSheetView: UIView {
     private let handleBackground: HandleBackground
     private var topConstraint: NSLayoutConstraint!
     private var targetOffsets = [CGFloat]()
-
     private var initialOffset: CGFloat?
     private var translationTargets = [TranslationTarget]()
-
-    private lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(tapGesture:)))
-    private lazy var panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(panGesture:)))
     private lazy var springAnimator = SpringAnimator(dampingRatio: 0.8, frequencyResponse: 0.4)
+    private lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(tapGesture:)))
+
+    private lazy var panGesture: UIPanGestureRecognizer = {
+        let gestureRecognizer = PanGestureRecognizer(target: self, action: #selector(handlePan(panGesture:)))
+        gestureRecognizer.draggableHeight = draggableHeight
+        return gestureRecognizer
+    }()
 
     private var bottomInset: CGFloat {
         return useSafeAreaInsets ? .safeAreaBottomInset : 0
@@ -115,6 +120,7 @@ public final class BottomSheetView: UIView {
         contentView: UIView,
         contentHeights: [CGFloat],
         handleBackground: HandleBackground = .color(.clear),
+        draggableHeight: CGFloat? = nil,
         useSafeAreaInsets: Bool = false,
         stretchOnResize: Bool = false,
         dismissalDelegate: BottomSheetViewDismissalDelegate? = nil,
@@ -122,6 +128,7 @@ public final class BottomSheetView: UIView {
     ) {
         self.contentView = contentView
         self.handleBackground = handleBackground
+        self.draggableHeight = draggableHeight
         self.contentHeights = contentHeights.isEmpty ? [.bottomSheetAutomatic] : contentHeights
         self.useSafeAreaInsets = useSafeAreaInsets
         self.stretchOnResize = stretchOnResize
@@ -415,6 +422,25 @@ public final class BottomSheetView: UIView {
             in: superview,
             targetMaxHeight: dismissalDelegate != nil
         )
+    }
+}
+
+// MARK: - Private types
+
+private class PanGestureRecognizer: UIPanGestureRecognizer {
+    var draggableHeight: CGFloat?
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
+        guard let firstTouch = touches.first, let view = view, let draggableHeight = draggableHeight else {
+            return super.touchesBegan(touches, with: event)
+        }
+
+        let touchPoint = firstTouch.location(in: view)
+        let draggableRect = CGRect(x: 0, y: 0, width: view.frame.width, height: draggableHeight)
+
+        if draggableRect.contains(touchPoint) {
+            super.touchesBegan(touches, with: event)
+        }
     }
 }
 
