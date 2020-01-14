@@ -45,6 +45,7 @@ final class BottomSheetPresentationController: UIPresentationController {
     private let startTargetIndex: Int
     private let handleBackground: BottomSheetView.HandleBackground
     private let useSafeAreaInsets: Bool
+    private let stretchOnResize: Bool
     private var dismissVelocity: CGPoint = .zero
     private var bottomSheetView: BottomSheetView?
     private var dismissAction: BottomSheetView.DismissAction?
@@ -62,7 +63,8 @@ final class BottomSheetPresentationController: UIPresentationController {
         presentationDelegate: BottomSheetPresentationControllerDelegate?,
         animationDelegate: BottomSheetViewAnimationDelegate?,
         handleBackground: BottomSheetView.HandleBackground,
-        useSafeAreaInsets: Bool
+        useSafeAreaInsets: Bool,
+        stretchOnResize: Bool
     ) {
         self.contentHeights = contentHeights
         self.startTargetIndex = startTargetIndex
@@ -70,6 +72,7 @@ final class BottomSheetPresentationController: UIPresentationController {
         self.presentationDelegate = presentationDelegate
         self.animationDelegate = animationDelegate
         self.useSafeAreaInsets = useSafeAreaInsets
+        self.stretchOnResize = stretchOnResize
         super.init(presentedViewController: presentedViewController, presenting: presenting)
     }
 
@@ -146,6 +149,7 @@ final class BottomSheetPresentationController: UIPresentationController {
             contentHeights: contentHeights,
             handleBackground: handleBackground,
             useSafeAreaInsets: useSafeAreaInsets,
+            stretchOnResize: stretchOnResize,
             dismissalDelegate: self,
             animationDelegate: animationDelegate
         )
