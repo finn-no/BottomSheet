@@ -72,6 +72,7 @@ public final class BottomSheetView: UIView {
     // MARK: - Private properties
 
     private let useSafeAreaInsets: Bool
+    private let stretchOnResize: Bool
     private let contentView: UIView
     private let handleBackground: HandleBackground
     private var topConstraint: NSLayoutConstraint!
@@ -115,6 +116,7 @@ public final class BottomSheetView: UIView {
         contentHeights: [CGFloat],
         handleBackground: HandleBackground = .color(.clear),
         useSafeAreaInsets: Bool = false,
+        stretchOnResize: Bool = false,
         dismissalDelegate: BottomSheetViewDismissalDelegate? = nil,
         animationDelegate: BottomSheetViewAnimationDelegate? = nil
     ) {
@@ -122,6 +124,7 @@ public final class BottomSheetView: UIView {
         self.handleBackground = handleBackground
         self.contentHeights = contentHeights.isEmpty ? [.bottomSheetAutomatic] : contentHeights
         self.useSafeAreaInsets = useSafeAreaInsets
+        self.stretchOnResize = stretchOnResize
         self.dismissalDelegate = dismissalDelegate
         self.animationDelegate = animationDelegate
         super.init(frame: .zero)
@@ -284,7 +287,7 @@ public final class BottomSheetView: UIView {
         handleBackgroundView.translatesAutoresizingMaskIntoConstraints = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
 
-        NSLayoutConstraint.activate([
+        var constraints = [
             handleBackgroundView.topAnchor.constraint(equalTo: topAnchor),
             handleBackgroundView.leadingAnchor.constraint(equalTo: leadingAnchor),
             handleBackgroundView.trailingAnchor.constraint(equalTo: trailingAnchor),
@@ -298,8 +301,15 @@ public final class BottomSheetView: UIView {
             contentView.topAnchor.constraint(equalTo: handleView.bottomAnchor, constant: 8),
             contentView.leadingAnchor.constraint(equalTo: leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            contentView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -bottomInset)
-        ])
+        ]
+
+        if stretchOnResize {
+            constraints.append(contentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -bottomInset))
+        } else {
+            constraints.append(contentView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -bottomInset))
+        }
+
+        NSLayoutConstraint.activate(constraints)
     }
 
     // MARK: - Animations
