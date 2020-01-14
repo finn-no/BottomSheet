@@ -435,8 +435,9 @@ private class PanGestureRecognizer: UIPanGestureRecognizer {
             return super.touchesBegan(touches, with: event)
         }
 
+        let height = CGFloat.handleHeight + draggableHeight
         let touchPoint = firstTouch.location(in: view)
-        let draggableRect = CGRect(x: 0, y: 0, width: view.frame.width, height: draggableHeight)
+        let draggableRect = CGRect(x: 0, y: 0, width: view.frame.width, height: height)
 
         if draggableRect.contains(touchPoint) {
             super.touchesBegan(touches, with: event)
