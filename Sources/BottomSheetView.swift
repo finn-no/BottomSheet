@@ -206,6 +206,10 @@ public final class BottomSheetView: UIView {
     public func dismiss(velocity: CGPoint = .zero, completion: ((Bool) -> Void)? = nil) {
         springAnimator.addCompletion { [weak self] didComplete in
             if didComplete {
+                self?.contentView.constraints.forEach { constraint in
+                    self?.contentView.removeConstraint(constraint)
+                }
+                self?.contentView.removeFromSuperview()
                 self?.dimView.removeFromSuperview()
                 self?.removeFromSuperview()
             }
@@ -372,7 +376,7 @@ public final class BottomSheetView: UIView {
     // MARK: - UITapGestureRecognizer
 
     @objc private func handleTap(tapGesture: UITapGestureRecognizer) {
-         dismissalDelegate?.bottomSheetView(self, willDismissBy: .tap)
+        dismissalDelegate?.bottomSheetView(self, willDismissBy: .tap)
     }
 
     // MARK: - Offset calculation
