@@ -10,11 +10,20 @@ open class BottomSheetNavigationController: UINavigationController {
 
     // MARK: - Init
 
-    public init(rootViewController: UIViewController, useSafeAreaInsets: Bool = false) {
+    public init(
+        rootViewController: UIViewController,
+        handleBackground: BottomSheetView.HandleBackground = .color(.clear),
+        draggableHeight: CGFloat? = nil,
+        useSafeAreaInsets: Bool = false,
+        stretchOnResize: Bool = false
+    ) {
         super.init(rootViewController: rootViewController)
         bottomSheetTransitioningDelegate = BottomSheetTransitioningDelegate(
             contentHeights: [systemLayoutSizeFittingHeight(for: rootViewController)],
-            useSafeAreaInsets: useSafeAreaInsets
+            handleBackground: handleBackground,
+            draggableHeight: draggableHeight,
+            useSafeAreaInsets: useSafeAreaInsets,
+            stretchOnResize: stretchOnResize
         )
         transitioningDelegate = bottomSheetTransitioningDelegate
         modalPresentationStyle = .custom
