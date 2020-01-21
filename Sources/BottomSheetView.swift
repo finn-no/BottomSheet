@@ -405,9 +405,12 @@ public final class BottomSheetView: UIView {
             BottomSheetCalculator.offset(for: contentView, in: superview, height: $0, useSafeAreaInsets: useSafeAreaInsets)
         }.sorted(by: >)
 
-        if let maxOffset = targetOffsets.max() {
-            let contentViewHeight = superview.frame.size.height - maxOffset - .handleHeight - bottomInset
-            contentViewHeightConstraint.constant = contentViewHeight
+
+        if stretchOnResize || contentViewHeightConstraint.constant == 0 {
+            if let maxOffset = targetOffsets.max() {
+                let contentViewHeight = superview.frame.size.height - maxOffset - .handleHeight - bottomInset
+                contentViewHeightConstraint.constant = contentViewHeight
+            }
         }
 
         superview.layoutIfNeeded()
