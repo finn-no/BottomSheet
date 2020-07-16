@@ -184,12 +184,18 @@ extension BottomSheetPresentationController: UIViewControllerAnimatedTransitioni
 
         switch transitionState {
         case .presenting:
+            guard bottomSheetView?.superview == nil else {
+                return
+            }
             bottomSheetView?.present(
                 in: transitionContext.containerView,
                 targetIndex: startTargetIndex,
                 completion: completion
             )
         case .dismissing:
+            guard bottomSheetView?.superview != nil else {
+                return
+            }
             bottomSheetView?.dismiss(
                 velocity: dismissVelocity,
                 completion: completion
