@@ -63,7 +63,7 @@ contentView.backgroundColor = .red
 
 let bottomSheetView = BottomSheetView(
     contentView: contentView,
-    targetHeights: [100, 500]
+    contentHeights: [100, 500]
 )
 
 // Can be presented in any UIView subclass
