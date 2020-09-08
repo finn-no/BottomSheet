@@ -45,7 +45,7 @@ View controller -based presentation:
 
 ```swift
 let transitioningDelegate = BottomSheetTransitioningDelegate(
-    targetHeights: [.bottomSheetAutomatic, UIScreen.main.bounds.size.height - 200],
+    contentHeights: [.bottomSheetAutomatic, UIScreen.main.bounds.size.height - 200],
     startTargetIndex: 0
 )
 let viewController = UIViewController()
@@ -69,3 +69,9 @@ let bottomSheetView = BottomSheetView(
 // Can be presented in any UIView subclass
 bottomSheetView.present(in: viewController.view, targetIndex: 0) 
 ```
+
+## Known limitations
+
+Using `.bottomSheetAutomatic`:
+
+When using `.bottomSheetAutomatic` to calculate the content height and your view is constrained using the `layoutMarginsGuide`, you must be aware that the returned content height may actually be higher than the compressed layout size of your view. Also, it may result in the transition animation freezing. This problem is avoided simply by not using the `layoutMarginsGuide`. 
