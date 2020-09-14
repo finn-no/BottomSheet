@@ -104,6 +104,10 @@ class SpringAnimator: NSObject {
         state = .stopped
         completion?(!withoutFinishing)
     }
+
+    func invalidate() {
+        displayLink.invalidate()
+    }
 }
 
 private extension SpringAnimator {
