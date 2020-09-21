@@ -39,6 +39,10 @@ final class BottomSheetPresentationController: UIPresentationController {
 
     var transitionState: TransitionState?
 
+    var dimViewBackgroundColor: UIColor? {
+        bottomSheetView?.dimViewBackgroundColor
+    }
+
     // MARK: - Private properties
 
     private var contentHeights: [CGFloat]
@@ -80,6 +84,10 @@ final class BottomSheetPresentationController: UIPresentationController {
     }
 
     // MARK: - Internal
+
+    func hideDimView() {
+        bottomSheetView?.hideDimView()
+    }
 
     func transition(to index: Int) {
         bottomSheetView?.transition(to: index)

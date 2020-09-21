@@ -114,6 +114,10 @@ public final class BottomSheetView: UIView {
 
     private lazy var contentViewHeightConstraint = contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: 0)
 
+    var dimViewBackgroundColor: UIColor? {
+        dimView.backgroundColor
+    }
+
     // MARK: - Init
 
     public init(
@@ -317,6 +321,12 @@ public final class BottomSheetView: UIView {
         }
 
         NSLayoutConstraint.activate(constraints)
+    }
+
+    // MARK: - Internal methods
+
+    func hideDimView() {
+        dimView.removeFromSuperview()
     }
 
     // MARK: - Animations

@@ -19,6 +19,10 @@ public final class BottomSheetTransitioningDelegate: NSObject {
         return weakPresentationController?.value
     }
 
+    public var backgroundOverlayColor: UIColor? {
+        presentationController?.dimViewBackgroundColor
+    }
+
     // MARK: - Init
 
     public init(
@@ -60,6 +64,10 @@ public final class BottomSheetTransitioningDelegate: NSObject {
     public func reload(with contentHeights: [CGFloat]) {
         self.contentHeights = contentHeights
         presentationController?.reload(with: contentHeights)
+    }
+
+    public func hideBackgroundOverlay() {
+        presentationController?.hideDimView()
     }
 }
 
