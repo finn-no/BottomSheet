@@ -85,10 +85,6 @@ final class BottomSheetPresentationController: UIPresentationController {
 
     // MARK: - Internal
 
-    func hideDimView() {
-        bottomSheetView?.hideDimView()
-    }
-
     func transition(to index: Int) {
         bottomSheetView?.transition(to: index)
     }
@@ -100,6 +96,10 @@ final class BottomSheetPresentationController: UIPresentationController {
     func reload(with contentHeights: [CGFloat]) {
         self.contentHeights = contentHeights
         bottomSheetView?.reload(with: contentHeights)
+    }
+
+    func hideDimView() {
+        bottomSheetView?.hideDimView()
     }
 
     // MARK: - Transition life cycle

@@ -71,6 +71,10 @@ public final class BottomSheetView: UIView {
 
     public let draggableHeight: CGFloat?
 
+    var dimViewBackgroundColor: UIColor? {
+        dimView.backgroundColor
+    }
+
     // MARK: - Private properties
 
     private let useSafeAreaInsets: Bool
@@ -113,10 +117,6 @@ public final class BottomSheetView: UIView {
     }()
 
     private lazy var contentViewHeightConstraint = contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: 0)
-
-    var dimViewBackgroundColor: UIColor? {
-        dimView.backgroundColor
-    }
 
     // MARK: - Init
 
