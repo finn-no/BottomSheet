@@ -71,6 +71,10 @@ public final class BottomSheetView: UIView {
 
     public let draggableHeight: CGFloat?
 
+    var dimViewBackgroundColor: UIColor? {
+        dimView.backgroundColor
+    }
+
     // MARK: - Private properties
 
     private let useSafeAreaInsets: Bool
@@ -317,6 +321,12 @@ public final class BottomSheetView: UIView {
         }
 
         NSLayoutConstraint.activate(constraints)
+    }
+
+    // MARK: - Internal methods
+
+    func hideDimView() {
+        dimView.removeFromSuperview()
     }
 
     // MARK: - Animations
