@@ -36,7 +36,7 @@ pod 'FINNBottomSheet'
 To integrate using Apple's Swift package manager, add the following as a dependency to your Package.swift:
 
 ```swift
-.package(url: "https://github.com/finn-no/BottomSheet.git", .upToNextMajor(from: "1.0.0"))
+.package(name: "FINNBottomSheet", url: "https://github.com/finn-no/BottomSheet.git", .upToNextMajor(from: "1.0.0"))
 ```
 
 ## Usage
@@ -44,6 +44,8 @@ To integrate using Apple's Swift package manager, add the following as a depende
 View controller -based presentation:
 
 ```swift
+import FINNBottomSheet
+
 let transitioningDelegate = BottomSheetTransitioningDelegate(
     contentHeights: [.bottomSheetAutomatic, UIScreen.main.bounds.size.height - 200],
     startTargetIndex: 0
@@ -58,6 +60,8 @@ present(viewController, animated: true)
 View -based presentation:
 
 ```swift
+import FINNBottomSheet
+
 let contentView = UIView()
 contentView.backgroundColor = .red
 
@@ -67,11 +71,11 @@ let bottomSheetView = BottomSheetView(
 )
 
 // Can be presented in any UIView subclass
-bottomSheetView.present(in: viewController.view, targetIndex: 0) 
+bottomSheetView.present(in: viewController.view, targetIndex: 0)
 ```
 
 ## Known limitations
 
 Using `.bottomSheetAutomatic`:
 
-When using `.bottomSheetAutomatic` to calculate the content height and your view is constrained using the `layoutMarginsGuide`, you must be aware that the returned content height may actually be higher than the compressed layout size of your view. Also, it may result in the transition animation freezing. This problem is avoided simply by not using the `layoutMarginsGuide`. 
+When using `.bottomSheetAutomatic` to calculate the content height and your view is constrained using the `layoutMarginsGuide`, you must be aware that the returned content height may actually be higher than the compressed layout size of your view. Also, it may result in the transition animation freezing. This problem is avoided simply by not using the `layoutMarginsGuide`.
