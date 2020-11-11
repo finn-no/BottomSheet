@@ -410,6 +410,8 @@ public final class BottomSheetView: UIView {
 
     private func updateTargetOffsets() {
         guard let superview = superview else { return }
+        
+        contentViewHeightConstraint.constant = 0
 
         targetOffsets = contentHeights.map {
             BottomSheetCalculator.offset(for: contentView, in: superview, height: $0, useSafeAreaInsets: useSafeAreaInsets)
