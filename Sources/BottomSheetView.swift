@@ -98,11 +98,10 @@ public final class BottomSheetView: UIView {
         return useSafeAreaInsets ? .safeAreaBottomInset : 0
     }
 
-    private lazy var handleView: UIView = {
-        let view = UIView(frame: .zero)
+    private lazy var handleView: HandleView = {
+        let view = HandleView(frame: .zero)
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .handle
-        view.layer.cornerRadius = 2
+        view.delegate = self
         return view
     }()
 
@@ -411,7 +410,7 @@ public final class BottomSheetView: UIView {
 
     private func updateTargetOffsets() {
         guard let superview = superview else { return }
-        
+
         contentViewHeightConstraint.constant = 0
 
         targetOffsets = contentHeights.map {
@@ -458,9 +457,18 @@ private class PanGestureRecognizer: UIPanGestureRecognizer {
     }
 }
 
-// MARK: - Private extensions
+// MARK: - HandleViewDelegate
 
-private extension UIColor {
+extension BottomSheetView: HandleViewDelegate {
+    func didPerformAccessibilityActivate(_ view: HandleView) -> Bool {
+        dismissalDelegate?.bottomSheetView(self, willDismissBy: .tap)
+        return true
+    }
+}
+
+// MARK: - Internal extensions
+
+extension UIColor {
     class var handle: UIColor {
         return dynamicColorIfAvailable(
             defaultColor: UIColor(red: 195/255, green: 204/255, blue: 217/255, alpha: 1),
