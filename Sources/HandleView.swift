@@ -27,7 +27,7 @@ class HandleView: UIView {
 
         isAccessibilityElement = true
         accessibilityTraits = .button
-        accessibilityLabel = "Lukk"
+        accessibilityLabel = "handle_view_accessibility_label".localized()
     }
 
     override func accessibilityActivate() -> Bool {
