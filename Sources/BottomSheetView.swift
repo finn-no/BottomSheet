@@ -140,6 +140,7 @@ public final class BottomSheetView: UIView {
         self.animationDelegate = animationDelegate
         super.init(frame: .zero)
         setup()
+        accessibilityViewIsModal = true
     }
 
     public required init?(coder: NSCoder) {
