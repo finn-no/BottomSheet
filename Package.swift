@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "FINNBottomSheet",
-    defaultLocalization: "nb",
+    defaultLocalization: "en",
     platforms: [
         .iOS(.v11)
     ],

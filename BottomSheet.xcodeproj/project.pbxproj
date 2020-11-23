@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5D5A7BF1256BA2A900FD1820 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5D5A7BEF256BA2A900FD1820 /* Localizable.strings */; };
 		5DAC3BF4256964C60052400F /* HandleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DAC3BF3256964C60052400F /* HandleView.swift */; };
 		5DAC3BFB256966C50052400F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5DAC3BF9256966C50052400F /* Localizable.strings */; };
 		5DAC3C02256967B10052400F /* String+Localized.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DAC3C01256967B10052400F /* String+Localized.swift */; };
@@ -61,6 +62,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5D5A7BF0256BA2A900FD1820 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Localizable.strings; sourceTree = "<group>"; };
 		5DAC3BF3256964C60052400F /* HandleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandleView.swift; sourceTree = "<group>"; };
 		5DAC3BFA256966C50052400F /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = Localizable.strings; sourceTree = "<group>"; };
 		5DAC3C01256967B10052400F /* String+Localized.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Localized.swift"; sourceTree = "<group>"; };
@@ -113,9 +115,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5D5A7BEC256BA27300FD1820 /* en.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				5D5A7BEF256BA2A900FD1820 /* Localizable.strings */,
+			);
+			path = en.lproj;
+			sourceTree = "<group>";
+		};
 		5DAC3BF7256966800052400F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				5D5A7BEC256BA27300FD1820 /* en.lproj */,
 				5DAC3BF8256966870052400F /* nb.lproj */,
 			);
 			path = Resources;
@@ -324,6 +335,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5DAC3BFB256966C50052400F /* Localizable.strings in Resources */,
+				5D5A7BF1256BA2A900FD1820 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -417,6 +429,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		5D5A7BEF256BA2A900FD1820 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5D5A7BF0256BA2A900FD1820 /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 		5DAC3BF9256966C50052400F /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
