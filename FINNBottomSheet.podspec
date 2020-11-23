@@ -13,6 +13,7 @@ Pod::Spec.new do |s|
     s.source           = { :git => 'https://github.com/finn-no/bottom-sheet-ios.git', :tag => s.version }
     s.cocoapods_version = '>= 1.4.0'
     s.source_files = 'Sources/**/*.{h,m,swift}'
+    s.resources = ['Sources/**/*.lproj']
     s.resource_bundle = { 'FINNBottomSheet' => ['Sources/**/*.lproj'] }
     s.frameworks = 'Foundation', 'UIKit'
   end
