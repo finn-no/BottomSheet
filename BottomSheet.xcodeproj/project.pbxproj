@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5D5A7BF1256BA2A900FD1820 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5D5A7BEF256BA2A900FD1820 /* Localizable.strings */; };
+		5DAC3BF4256964C60052400F /* HandleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DAC3BF3256964C60052400F /* HandleView.swift */; };
+		5DAC3BFB256966C50052400F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5DAC3BF9256966C50052400F /* Localizable.strings */; };
+		5DAC3C02256967B10052400F /* String+Localized.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DAC3C01256967B10052400F /* String+Localized.swift */; };
 		CF1539C72382F20E001687C1 /* BottomSheet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF1539BD2382F20E001687C1 /* BottomSheet.framework */; };
 		CF1539CC2382F20E001687C1 /* BottomSheetCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF1539CB2382F20E001687C1 /* BottomSheetCalculatorTests.swift */; };
 		CF1539CE2382F20E001687C1 /* BottomSheet.h in Headers */ = {isa = PBXBuildFile; fileRef = CF1539C02382F20E001687C1 /* BottomSheet.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -58,6 +62,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5D5A7BF0256BA2A900FD1820 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Localizable.strings; sourceTree = "<group>"; };
+		5DAC3BF3256964C60052400F /* HandleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandleView.swift; sourceTree = "<group>"; };
+		5DAC3BFA256966C50052400F /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = Localizable.strings; sourceTree = "<group>"; };
+		5DAC3C01256967B10052400F /* String+Localized.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Localized.swift"; sourceTree = "<group>"; };
 		CF1539BD2382F20E001687C1 /* BottomSheet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BottomSheet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF1539C02382F20E001687C1 /* BottomSheet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BottomSheet.h; sourceTree = "<group>"; };
 		CF1539C12382F20E001687C1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -107,6 +115,39 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5D5A7BEC256BA27300FD1820 /* en.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				5D5A7BEF256BA2A900FD1820 /* Localizable.strings */,
+			);
+			path = en.lproj;
+			sourceTree = "<group>";
+		};
+		5DAC3BF7256966800052400F /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				5D5A7BEC256BA27300FD1820 /* en.lproj */,
+				5DAC3BF8256966870052400F /* nb.lproj */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		5DAC3BF8256966870052400F /* nb.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				5DAC3BF9256966C50052400F /* Localizable.strings */,
+			);
+			path = nb.lproj;
+			sourceTree = "<group>";
+		};
+		5DAC3C002569679E0052400F /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				5DAC3C01256967B10052400F /* String+Localized.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		CF1539B32382F20E001687C1 = {
 			isa = PBXGroup;
 			children = (
@@ -131,6 +172,8 @@
 		CF1539BF2382F20E001687C1 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				5DAC3C002569679E0052400F /* Extensions */,
+				5DAC3BF7256966800052400F /* Resources */,
 				CF1539C02382F20E001687C1 /* BottomSheet.h */,
 				CF1539C12382F20E001687C1 /* Info.plist */,
 				CF46A3812385902100FFCB9F /* BottomSheetCalculator.swift */,
@@ -140,6 +183,7 @@
 				CF1539F52382F621001687C1 /* BottomSheetView.swift */,
 				CF1539F42382F621001687C1 /* SpringAnimator.swift */,
 				DA0F4AFE238BDB7C002DE188 /* TranslationTarget.swift */,
+				5DAC3BF3256964C60052400F /* HandleView.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -271,6 +315,7 @@
 			knownRegions = (
 				en,
 				Base,
+				nb,
 			);
 			mainGroup = CF1539B32382F20E001687C1;
 			productRefGroup = CF1539BE2382F20E001687C1 /* Products */;
@@ -289,6 +334,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5DAC3BFB256966C50052400F /* Localizable.strings in Resources */,
+				5D5A7BF1256BA2A900FD1820 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -336,8 +383,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5DAC3C02256967B10052400F /* String+Localized.swift in Sources */,
 				CF1539FB2382F62A001687C1 /* BottomSheetPresentationController.swift in Sources */,
 				CF46A383238593AD00FFCB9F /* BottomSheetCalculator.swift in Sources */,
+				5DAC3BF4256964C60052400F /* HandleView.swift in Sources */,
 				CF1539FC2382F62A001687C1 /* BottomSheetTransitioningDelegate.swift in Sources */,
 				DA0F4B00238BDB85002DE188 /* TranslationTarget.swift in Sources */,
 				CF1539FF2382F62A001687C1 /* SpringAnimator.swift in Sources */,
@@ -378,6 +427,25 @@
 			targetProxy = CF153A032382F88E001687C1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		5D5A7BEF256BA2A900FD1820 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5D5A7BF0256BA2A900FD1820 /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		5DAC3BF9256966C50052400F /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5DAC3BFA256966C50052400F /* nb */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		CF1539CF2382F20E001687C1 /* Debug */ = {
