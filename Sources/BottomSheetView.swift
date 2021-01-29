@@ -226,6 +226,7 @@ public final class BottomSheetView: UIView {
                 self?.contentView.removeFromSuperview()
                 self?.dimView.removeFromSuperview()
                 self?.removeFromSuperview()
+                self?.springAnimator.invalidate()
             }
 
             completion?(didComplete)
