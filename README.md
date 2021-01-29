@@ -30,7 +30,7 @@ github "finn-no/BottomSheet"
 **BottomSheet** is also available through [CocoaPods](http://cocoapods.org). To install it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'FINNBottomSheet'
+pod "FINNBottomSheet", git: "https://github.com/finn-no/BottomSheet.git"
 ```
 
 To integrate using Apple's Swift package manager, add the following as a dependency to your Package.swift:
