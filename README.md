@@ -82,4 +82,38 @@ When using `.bottomSheetAutomatic` to calculate the content height and your view
 
 ### BottomSheetTransitioningDelegate
 
-To avoid "glitches" you might need to keep a strong reference to the transitioning delegate (`BottomSheetTransitioningDelegate`) until the bottom sheet animation is complete. 
+To avoid "glitches" you might need to keep a strong reference to the transitioning delegate (`BottomSheetTransitioningDelegate`) until the bottom sheet animation is complete.
+
+## Create new releases
+
+### Setup
+- Install dependencies with `bundle install` (dependencies will be installed in `./bundler`)
+- Fastlane will use the GitHub API, so make sure to create a personal access token [here](https://github.com/settings/tokens) and place it within an environment variable called **`FINN_GITHUB_COM_ACCESS_TOKEN`**.
+  - When creating a token, you only need to give access to the scope `repo`.
+  - There are multiple ways to make an environment variable, for example by using a `.env` file or adding it to `.bashrc`/`.bash_profile`). Don't forget to run `source .env` (for whichever file you set the environment variables in) if you don't want to restart your shell.
+  - Run `bundle exec fastlane verify_environment_variable` to see if it is configured correctly.
+- Run `bundle exec fastlane verify_ssh_to_github` to see if ssh to GitHub is working.
+
+### Make release
+- Run `bundle exec fastlane` and choose appropriate lane. Follow instructions, you will be asked for confirmation before all remote changes.
+- After the release has been created you can edit the description on GitHub by using the printed link.
+
+## Interesting things
+
+### Changelogs
+
+This project has a `Gemfile` that specify some development dependencies, one of those is `pr_changelog` which is a tool that helps you to generate changelogs from the Git history of the repo. You install this by running `bundle install`.
+
+To get the changes that have not been released yet just run:
+
+```
+$ pr_changelog
+```
+
+If you want to see what changes were released in the last version, run:
+
+```
+$ pr_changelog --last-release
+```
+
+You can always run the command with the `--help` flag when needed.
