@@ -1,0 +1,169 @@
+# This is the minimum version number required.
+# Update this, if you use features of a newer version
+fastlane_version "2.146.0"
+
+skip_docs
+
+desc "Create a new version"
+lane :make_new_version do |options|
+  make_release("BottomSheet", "FINNBottomSheet", "", options)
+end
+
+desc "Attempt to connect to github.com with ssh"
+lane :verify_ssh_to_github do
+  githuburl = "github.com"
+  UI.header "Verify ssh is setup and #{githuburl} can be accessed, will prompt for ssh key password if needed"
+  command = "ssh -T git@#{githuburl}"
+  sh(
+    command,
+    log: true,
+    error_callback: ->(result) {
+      sshresult = result
+      if sshresult.include? "successfully authenticated"
+        UI.success "Could authenticate to #{githuburl}"
+      else
+        UI.shell_error! "Seems connection to #{githuburl} failed"
+      end
+    }
+  )
+end
+
+desc "Verify that environment variable exists"
+lane :verify_environment_variable do |options|
+  verify_and_get_github_token
+end
+
+def make_release(reponame, project, tag_prefix, options)
+  ## Verify and get GithHub token
+  github_token = verify_and_get_github_token
+
+  ## Verify the branch.
+  branch = verify_branch("master")
+
+  ## Verify clean git status.
+  ensure_git_status_clean
+
+  ## Define new tag and version.
+  version_bump = lookup(options, :bump, %w(major minor patch))
+  if version_bump.nil?
+    version_bump = UI.select("What do you want to bump: ", ["major", "minor", "patch"])
+  end
+  last_version = version_get_podspec(path: "#{project}.podspec")
+  new_tag, new_version = new_tag_and_version(last_version, tag_prefix, version_bump)
+
+  ## Make sure the tag is unique.
+  ensure_tag_is_unique(new_tag)
+
+  ## Make the user verify that the tag and version is correct.
+  unless UI.confirm "Will create a release with version '#{new_version}' and tag '#{new_tag}'. Is that correct?"
+    UI.user_error! "Version was not accepted by user."
+  end
+
+  version_bump_podspec(path: "#{project}.podspec", version_number: new_version)
+
+  ## Update the version used when building
+  #todo: update_version_file("../#{project}/Version.h", new_version)
+
+  if UI.confirm "Will commit changes to files"
+    git_commit(path: "#{project}.podspec", message: "Bumped #{project} version to #{new_version}")
+  end
+
+  ## Push the branch
+  if UI.confirm "Will push branch changes to GitHub"
+    push_to_git_remote
+  end
+
+  ## Publish a new release to GitHub.
+  if UI.confirm "Will create a release in GitHub with tag '#{new_tag}' on branch '#{branch}'"
+    github_release = create_github_release(reponame, "#{project} #{new_version}", new_tag, branch, github_token)
+    UI.success "Updated version and created release on Github!"
+    UI.success "Please update its description here: #{github_release['html_url']}"
+    system('open', github_release['html_url'])
+  end
+
+  ## Pull the newly created tag.
+  git_pull(only_tags: true)
+end
+
+def lookup(options, key, allowed_values, default=nil)
+  if !options[key]
+    return default
+  else
+    value = options[key]
+    if allowed_values.include? value
+      return value
+    else
+      UI.user_error! "Error! Can't accept value for #{key}. Accepted values are #{allowed_values.join ', '}."
+    end
+  end
+end
+
+def new_tag_and_version(previous_version, prefix, version_bump=nil)
+  # Parse the last tag and retrieve each component.
+  major, minor, patch = previous_version.match(/([0-9]+)\.([0-9]+)\.([0-9]+)/).captures
+
+  # Map some of the version components to integers.
+  major = major.to_i
+  minor = minor.to_i
+  patch = patch.to_i
+
+  # Bump version, if needed.
+  # This will reset the release type.
+  case version_bump
+  when "major"
+    major += 1
+    minor = 0
+    patch = 0
+  when "minor"
+    minor += 1
+    patch = 0
+  when "patch"
+    patch += 1
+  end
+
+  return "#{prefix}#{major}.#{minor}.#{patch}", "#{major}.#{minor}.#{patch}"
+end
+
+def verify_branch(branch)
+  # Check if already on branch.
+  current_branch = git_branch
+  if current_branch == branch
+    UI.success "On '#{branch}' branch"
+    return branch
+  else
+    if !UI.confirm "Not on '#{branch}' branch, are you sure you know what you are doing?"
+      UI.user_error! "Not on '#{branch}' branch"
+    end
+    UI.important "On '#{current_branch}' not '#{branch}' branch!\n"
+    return git_branch
+  end
+end
+
+def ensure_tag_is_unique(tag)
+  if git_tag_exists(tag: tag, remote: true)
+    UI.user_error! "Tag '#{tag}' already exists! Check github for the full list of tags. Bump the version if necessary."
+  end
+end
+
+def create_github_release(reponame, title, tag, branch, github_token)
+  return set_github_release(
+    repository_name: "finn-no/#{reponame}",
+    name: title,
+    tag_name: tag,
+    api_token: github_token,
+    commitish: branch,
+    description: "No changelog provided. Edit me!"
+  )
+end
+
+def verify_and_get_github_token
+  return verify_env_var("FINN_GITHUB_COM_ACCESS_TOKEN", "No GitHub token found! Go to https://github.com/settings/tokens to create a new token.")
+end
+
+def verify_env_var(envVar, errorMessage)
+  if ENV[envVar].nil?
+    UI.user_error! "#{errorMessage} Place this within an envvar called '#{envVar}'"
+  else
+    return ENV[envVar]
+  end
+end
