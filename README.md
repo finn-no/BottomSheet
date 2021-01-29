@@ -76,6 +76,10 @@ bottomSheetView.present(in: viewController.view, targetIndex: 0)
 
 ## Known limitations
 
-Using `.bottomSheetAutomatic`:
+### Using `.bottomSheetAutomatic`:
 
 When using `.bottomSheetAutomatic` to calculate the content height and your view is constrained using the `layoutMarginsGuide`, you must be aware that the returned content height may actually be higher than the compressed layout size of your view. Also, it may result in the transition animation freezing. This problem is avoided simply by not using the `layoutMarginsGuide`.
+
+### BottomSheetTransitioningDelegate
+
+To avoid "glitches" you might need to keep a strong reference to the transitioning delegate (`BottomSheetTransitioningDelegate`) until the bottom sheet animation is complete. 
