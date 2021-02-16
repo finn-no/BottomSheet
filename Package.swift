@@ -11,7 +11,7 @@ let package = Package(
         .library(name: "FINNBottomSheet", targets: ["FINNBottomSheet"])
     ],
     targets: [
-        .target(name: "FINNBottomSheet", path: "Sources")
+        .target(name: "FINNBottomSheet", path: "Sources", exclude: ["Info.plist"])
     ],
     swiftLanguageVersions: [.v5]
 )
