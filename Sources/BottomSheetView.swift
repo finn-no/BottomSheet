@@ -79,6 +79,7 @@ public final class BottomSheetView: UIView {
 
     private let useSafeAreaInsets: Bool
     private let stretchOnResize: Bool
+    private let showsHandleView: Bool
     private let contentView: UIView
     private let handleBackground: HandleBackground
     private var topConstraint: NSLayoutConstraint!
@@ -126,6 +127,7 @@ public final class BottomSheetView: UIView {
         draggableHeight: CGFloat? = nil,
         useSafeAreaInsets: Bool = false,
         stretchOnResize: Bool = false,
+        showsHandleView: Bool = true,
         dismissalDelegate: BottomSheetViewDismissalDelegate? = nil,
         animationDelegate: BottomSheetViewAnimationDelegate? = nil
     ) {
@@ -135,6 +137,7 @@ public final class BottomSheetView: UIView {
         self.contentHeights = contentHeights.isEmpty ? [.bottomSheetAutomatic] : contentHeights
         self.useSafeAreaInsets = useSafeAreaInsets
         self.stretchOnResize = stretchOnResize
+        self.showsHandleView = showsHandleView
         self.dismissalDelegate = dismissalDelegate
         self.animationDelegate = animationDelegate
         super.init(frame: .zero)
@@ -286,16 +289,19 @@ public final class BottomSheetView: UIView {
         layer.rasterizationScale = UIScreen.main.scale
         layer.cornerRadius = 16
         layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-
+        
         let handleBackgroundView = handleBackground.view
+        
         handleBackgroundView.layer.cornerRadius = layer.cornerRadius
         handleBackgroundView.layer.maskedCorners = layer.maskedCorners
         handleBackgroundView.clipsToBounds = true
-
-        addSubview(contentView)
+        
+        if showsHandleView {
+            addSubview(handleView)
+        }
+        
         addSubview(handleBackgroundView)
-        addSubview(handleView)
-
+        addSubview(contentView)
         handleBackgroundView.translatesAutoresizingMaskIntoConstraints = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -304,16 +310,25 @@ public final class BottomSheetView: UIView {
             handleBackgroundView.leadingAnchor.constraint(equalTo: leadingAnchor),
             handleBackgroundView.trailingAnchor.constraint(equalTo: trailingAnchor),
             handleBackgroundView.heightAnchor.constraint(equalToConstant: .handleHeight),
-
-            handleView.topAnchor.constraint(equalTo: topAnchor, constant: 8),
-            handleView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            handleView.widthAnchor.constraint(equalToConstant: 25),
-            handleView.heightAnchor.constraint(equalToConstant: 4),
-
-            contentView.topAnchor.constraint(equalTo: handleView.bottomAnchor, constant: 8),
+            
             contentView.leadingAnchor.constraint(equalTo: leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
         ]
+        
+        if showsHandleView {
+            let handleViewConstraints = [
+                handleView.topAnchor.constraint(equalTo: topAnchor, constant: 8),
+                handleView.centerXAnchor.constraint(equalTo: centerXAnchor),
+                handleView.widthAnchor.constraint(equalToConstant: 25),
+                handleView.heightAnchor.constraint(equalToConstant: 4),
+                
+                contentView.topAnchor.constraint(equalTo: handleView.bottomAnchor, constant: 8)
+            ]
+            
+            constraints.append(contentsOf: handleViewConstraints)
+        } else {
+            constraints.append(contentView.topAnchor.constraint(equalTo: handleBackgroundView.bottomAnchor))
+        }
 
         if stretchOnResize {
             constraints.append(contentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -bottomInset))
