@@ -112,11 +112,8 @@ class SpringAnimator: NSObject {
 
 private extension SpringAnimator {
     @objc func step(displayLink: CADisplayLink) {
+        // Get duration in a way that supports screens with variable refresh rates 
         let duration = displayLink.targetTimestamp - CACurrentMediaTime()
-        let delta = 0.0001
-        if abs(duration - displayLink.duration) >= delta {
-            print("@@ CADisplayLink duration is off, calc: \(duration) vs prop: \(displayLink.duration)")
-        }
         // Calculate new potision
         position += velocity * CGFloat(duration)
         let acceleration = -velocity * damping - position * stiffness
