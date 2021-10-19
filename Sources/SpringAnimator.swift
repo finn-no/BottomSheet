@@ -112,10 +112,12 @@ class SpringAnimator: NSObject {
 
 private extension SpringAnimator {
     @objc func step(displayLink: CADisplayLink) {
+        // Get duration in a way that supports screens with variable refresh rates 
+        let duration = displayLink.targetTimestamp - CACurrentMediaTime()
         // Calculate new potision
-        position += velocity * CGFloat(displayLink.duration)
+        position += velocity * CGFloat(duration)
         let acceleration = -velocity * damping - position * stiffness
-        velocity += acceleration * CGFloat(displayLink.duration)
+        velocity += acceleration * CGFloat(duration)
         // If it moves less than a pixel, animation is done
         if position < scale, velocity < scale {
             stopAnimation(false)
