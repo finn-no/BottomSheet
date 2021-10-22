@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4DB2C6ED27230B6F00C3E559 /* Array+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DB2C6EC27230B6F00C3E559 /* Array+Extensions.swift */; };
 		5D5A7BF1256BA2A900FD1820 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5D5A7BEF256BA2A900FD1820 /* Localizable.strings */; };
 		5DAC3BF4256964C60052400F /* HandleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DAC3BF3256964C60052400F /* HandleView.swift */; };
 		5DAC3BFB256966C50052400F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5DAC3BF9256966C50052400F /* Localizable.strings */; };
@@ -62,6 +63,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4DB2C6EC27230B6F00C3E559 /* Array+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extensions.swift"; sourceTree = "<group>"; };
 		5D5A7BF0256BA2A900FD1820 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Localizable.strings; sourceTree = "<group>"; };
 		5DAC3BF3256964C60052400F /* HandleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandleView.swift; sourceTree = "<group>"; };
 		5DAC3BFA256966C50052400F /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = Localizable.strings; sourceTree = "<group>"; };
@@ -144,6 +146,7 @@
 			isa = PBXGroup;
 			children = (
 				5DAC3C01256967B10052400F /* String+Localized.swift */,
+				4DB2C6EC27230B6F00C3E559 /* Array+Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -384,6 +387,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5DAC3C02256967B10052400F /* String+Localized.swift in Sources */,
+				4DB2C6ED27230B6F00C3E559 /* Array+Extensions.swift in Sources */,
 				CF1539FB2382F62A001687C1 /* BottomSheetPresentationController.swift in Sources */,
 				CF46A383238593AD00FFCB9F /* BottomSheetCalculator.swift in Sources */,
 				5DAC3BF4256964C60052400F /* HandleView.swift in Sources */,
