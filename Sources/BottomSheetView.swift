@@ -245,6 +245,7 @@ public final class BottomSheetView: UIView {
 
     public func reload(with contentHeights: [CGFloat]) {
         self.contentHeights = contentHeights
+        currentTargetOffsetIndex = 0
         reset()
     }
 
