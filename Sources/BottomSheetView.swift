@@ -244,8 +244,10 @@ public final class BottomSheetView: UIView {
     }
 
     public func reload(with contentHeights: [CGFloat]) {
+        let previousHeight = self.contentHeights.count > currentTargetOffsetIndex ? self.contentHeights[currentTargetOffsetIndex] : 0
+        let indexOfPreviousHeightInNewHeights = contentHeights.firstIndex(of: previousHeight) ?? 0
         self.contentHeights = contentHeights
-        currentTargetOffsetIndex = 0
+        currentTargetOffsetIndex = indexOfPreviousHeightInNewHeights
         reset()
     }
 
