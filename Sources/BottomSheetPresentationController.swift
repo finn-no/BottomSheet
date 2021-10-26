@@ -133,11 +133,12 @@ final class BottomSheetPresentationController: UIPresentationController {
     override var frameOfPresentedViewInContainerView: CGRect {
         guard let presentedView = presentedView else { return .zero }
         guard let containerView = containerView else { return .zero }
+        guard let height = contentHeights[safe: startTargetIndex] else { return .zero }
 
         let contentHeight = BottomSheetCalculator.contentHeight(
             for: presentedView,
             in: containerView,
-            height: contentHeights[startTargetIndex],
+            height: height,
             useSafeAreaInsets: useSafeAreaInsets
         )
 

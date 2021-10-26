@@ -163,7 +163,10 @@ public final class BottomSheetView: UIView {
     ///   - view: the container for the bottom sheet view
     ///   - completion: a closure to be executed when the animation ends
     public func present(in superview: UIView, targetIndex: Int = 0, animated: Bool = true, completion: ((Bool) -> Void)? = nil) {
-        guard self.superview != superview else { return }
+        guard
+            self.superview != superview,
+            let height = contentHeights[safe: targetIndex]
+        else { return }
 
         superview.addSubview(dimView)
         superview.addSubview(self)
@@ -174,7 +177,7 @@ public final class BottomSheetView: UIView {
         let startOffset = BottomSheetCalculator.offset(
             for: contentView,
             in: superview,
-            height: contentHeights[targetIndex],
+            height: height,
             useSafeAreaInsets: useSafeAreaInsets
         )
 
@@ -240,12 +243,17 @@ public final class BottomSheetView: UIView {
     public func reset() {
         updateTargetOffsets()
         createTranslationTargets()
-        animate(to: targetOffsets[currentTargetOffsetIndex])
+
+        if let targetOffset = targetOffsets[safe: currentTargetOffsetIndex] {
+            animate(to: targetOffset)
+        }
     }
 
     public func reload(with contentHeights: [CGFloat]) {
+        let previousHeight = self.contentHeights[safe: currentTargetOffsetIndex] ?? 0
+        let indexOfPreviousHeightInNewHeights = contentHeights.firstIndex(of: previousHeight) ?? 0
         self.contentHeights = contentHeights
-        currentTargetOffsetIndex = 0
+        currentTargetOffsetIndex = indexOfPreviousHeightInNewHeights
         reset()
     }
 
@@ -254,8 +262,7 @@ public final class BottomSheetView: UIView {
     /// - Parameters:
     ///   - index: the index of the target height
     public func transition(to index: Int) {
-        guard contentHeights.indices.contains(index) else {
-            assertionFailure("Provided index is out of bounds of the array with target heights.")
+        guard let height = contentHeights[safe: index] else {
             return
         }
 
@@ -266,7 +273,7 @@ public final class BottomSheetView: UIView {
         let offset = BottomSheetCalculator.offset(
             for: contentView,
             in: superview,
-            height: contentHeights[index],
+            height: height,
             useSafeAreaInsets: useSafeAreaInsets
         )
 
