@@ -6,7 +6,7 @@ import UIKit
 
 public final class BottomSheetTransitioningDelegate: NSObject {
     public private(set) var contentHeights: [CGFloat]
-    private let startTargetIndex: Int
+    private var startTargetIndex: Int
     private let handleBackground: BottomSheetView.HandleBackground
     private let draggableHeight: CGFloat?
     private let useSafeAreaInsets: Bool
@@ -62,8 +62,11 @@ public final class BottomSheetTransitioningDelegate: NSObject {
     }
 
     public func reload(with contentHeights: [CGFloat]) {
+        let previousHeight = self.contentHeights[safe: startTargetIndex] ?? 0
+        let indexOfPreviousHeightInNewHeights = contentHeights.firstIndex(of: previousHeight) ?? 0
         self.contentHeights = contentHeights
-        presentationController?.reload(with: contentHeights)
+        startTargetIndex = indexOfPreviousHeightInNewHeights
+        presentationController?.reload(with: contentHeights, targetIndex: startTargetIndex)
     }
 
     public func hideBackgroundOverlay() {

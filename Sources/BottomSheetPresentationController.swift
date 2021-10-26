@@ -46,7 +46,7 @@ final class BottomSheetPresentationController: UIPresentationController {
     // MARK: - Private properties
 
     private var contentHeights: [CGFloat]
-    private let startTargetIndex: Int
+    private var startTargetIndex: Int
     private let handleBackground: BottomSheetView.HandleBackground
     private let useSafeAreaInsets: Bool
     private let draggableHeight: CGFloat?
@@ -93,9 +93,12 @@ final class BottomSheetPresentationController: UIPresentationController {
         bottomSheetView?.reset()
     }
 
-    func reload(with contentHeights: [CGFloat]) {
+    func reload(with contentHeights: [CGFloat], targetIndex: Int?) {
         self.contentHeights = contentHeights
-        bottomSheetView?.reload(with: contentHeights)
+        if let targetIndex = targetIndex {
+            startTargetIndex = targetIndex
+        }
+        bottomSheetView?.reload(with: contentHeights, targetIndex: targetIndex)
     }
 
     func hideDimView() {
