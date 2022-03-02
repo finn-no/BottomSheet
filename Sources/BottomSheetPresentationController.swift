@@ -190,8 +190,14 @@ extension BottomSheetPresentationController: UIViewControllerAnimatedTransitioni
         self.transitionContext = transitionContext
 
         let completion = { [weak self] (didComplete: Bool) in
-            self?.transitionContext?.completeTransition(didComplete)
-            self?.transitionState = nil
+            guard let self = self else { return }
+            let previousTransitionState = self.transitionState
+
+            self.transitionContext?.completeTransition(didComplete)
+
+            if previousTransitionState == self.transitionState {
+                self.transitionState = nil
+            }
         }
 
         switch transitionState {
