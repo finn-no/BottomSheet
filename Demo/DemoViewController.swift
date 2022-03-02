@@ -23,22 +23,12 @@ final class DemoViewController: UIViewController {
     private func setup() {
         view.backgroundColor = .white
 
-        let buttonA = UIButton(type: .system)
-        buttonA.setTitle("Navigation View Controller", for: .normal)
-        buttonA.titleLabel?.font = .systemFont(ofSize: 18)
-        buttonA.addTarget(self, action: #selector(presentNavigationViewController), for: .touchUpInside)
-
-        let buttonB = UIButton(type: .system)
-        buttonB.setTitle("View Controller", for: .normal)
-        buttonB.titleLabel?.font = .systemFont(ofSize: 18)
-        buttonB.addTarget(self, action: #selector(presentViewController), for: .touchUpInside)
-
-        let buttonC = UIButton(type: .system)
-        buttonC.setTitle("View", for: .normal)
-        buttonC.titleLabel?.font = .systemFont(ofSize: 18)
-        buttonC.addTarget(self, action: #selector(presentView), for: .touchUpInside)
-
-        let stackView = UIStackView(arrangedSubviews: [buttonA, buttonB, buttonC])
+        let stackView = UIStackView(arrangedSubviews: [
+            createButton(title: "Navigation View Controller", selector: #selector(presentNavigationViewController)),
+            createButton(title: "View Controller", selector: #selector(presentViewController)),
+            createButton(title: "View", selector: #selector(presentView)),
+            createButton(title: "Automatic dismiss after 0.05s", selector: #selector(presentAutomaticDismiss)),
+        ])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
 
@@ -48,6 +38,14 @@ final class DemoViewController: UIViewController {
             stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
+    }
+
+    private func createButton(title: String, selector: Selector) -> UIButton {
+        let button = UIButton(type: .system)
+        button.setTitle(title, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 18)
+        button.addTarget(self, action: selector, for: .touchUpInside)
+        return button
     }
 
     // MARK: - Presentation logic
@@ -60,6 +58,20 @@ final class DemoViewController: UIViewController {
         navigationController.navigationBar.isTranslucent = false
 
         present(navigationController, animated: true)
+    }
+
+    @objc private func presentAutomaticDismiss() {
+        let viewController = ViewController(withNavigationButton: true, contentHeight: 400)
+        viewController.title = "Step 1"
+
+        let navigationController = BottomSheetNavigationController(rootViewController: viewController)
+        navigationController.navigationBar.isTranslucent = false
+
+        present(navigationController, animated: true)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: { [weak navigationController] in
+            navigationController?.dismiss(animated: true)
+        })
     }
 
     // MARK: - Presentation logic
