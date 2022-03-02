@@ -2,11 +2,11 @@ version: 2
 jobs:
   build-and-test:
     macos:
-      xcode: "11.2.1"
+      xcode: "13.2.0"
     shell: /bin/bash --login -o pipefail
     steps:
       - checkout
-      - run: xcodebuild -project BottomSheet.xcodeproj -scheme "Demo" -sdk iphonesimulator -destination 'platform=iOS Simulator,OS=13.2.2,name=iPhone 11 Pro' build test | xcpretty
+      - run: xcodebuild -project BottomSheet.xcodeproj -scheme "Demo" -sdk iphonesimulator -destination 'platform=iOS Simulator,OS=15.2,name=iPhone 13 Pro' build test | xcpretty
 
   swiftlint:
     docker:
