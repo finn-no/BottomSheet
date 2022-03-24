@@ -201,11 +201,16 @@ public final class BottomSheetView: UIView {
             self.animationDelegate?.bottomSheetView(self, didCompleteAnimation: didComplete)
         }
 
+        let bottomGreaterThanConstraint = bottomAnchor.constraint(greaterThanOrEqualTo: superview.bottomAnchor)
+        let bottomEqualConstraint = bottomAnchor.constraint(equalTo: superview.bottomAnchor)
+        bottomEqualConstraint.priority = .required - 1
+
         NSLayoutConstraint.activate([
             topConstraint,
-            bottomAnchor.constraint(greaterThanOrEqualTo: superview.bottomAnchor),
             leadingAnchor.constraint(equalTo: superview.leadingAnchor),
             trailingAnchor.constraint(equalTo: superview.trailingAnchor),
+            bottomGreaterThanConstraint,
+            bottomEqualConstraint,
             contentViewHeightConstraint
         ])
 
