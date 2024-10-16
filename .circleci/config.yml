@@ -2,11 +2,11 @@ version: 2
 jobs:
   build-and-test:
     macos:
-      xcode: "15.3.0"
+      xcode: "16.0.0"
     shell: /bin/bash --login -o pipefail
     steps:
       - checkout
-      - run: xcodebuild -project BottomSheet.xcodeproj -scheme "Demo" -sdk iphonesimulator17.4 -destination 'platform=iOS Simulator,OS=17.4,name=iPhone 15 Pro' build test | xcpretty
+      - run: xcodebuild -project BottomSheet.xcodeproj -scheme "Demo" -sdk iphonesimulator18.0 -destination 'platform=iOS Simulator,OS=18.0,name=iPhone 16 Pro' build test | xcpretty
 
   swiftlint:
     docker:
