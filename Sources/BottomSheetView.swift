@@ -87,6 +87,7 @@ public final class BottomSheetView: UIView {
     private var translationTargets = [TranslationTarget]()
     private lazy var springAnimator = SpringAnimator(dampingRatio: 0.8, frequencyResponse: 0.4)
     private lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(tapGesture:)))
+    private var previousSize: CGSize = .zero
 
     private lazy var panGesture: UIPanGestureRecognizer = {
         let gestureRecognizer = PanGestureRecognizer(target: self, action: #selector(handlePan(panGesture:)))
@@ -153,6 +154,14 @@ public final class BottomSheetView: UIView {
         // Make shadow to be on top
         let rect = CGRect(x: 0, y: 0, width: bounds.width, height: 30)
         layer.shadowPath = UIBezierPath(rect: rect).cgPath
+    }
+
+    public override func safeAreaInsetsDidChange() {
+        super.safeAreaInsetsDidChange()
+        if previousSize != .zero, bounds.size != previousSize {
+             reset()
+         }
+        previousSize = bounds.size
     }
 
     // MARK: - Public API
