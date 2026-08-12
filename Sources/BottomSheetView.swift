@@ -30,6 +30,7 @@ public protocol BottomSheetViewDismissalDelegate: AnyObject {
     func bottomSheetView(_ view: BottomSheetView, willDismissBy action: BottomSheetView.DismissAction)
 }
 
+@MainActor
 public protocol BottomSheetViewAnimationDelegate: AnyObject {
     func bottomSheetView(_ view: BottomSheetView, didAnimateToPosition position: CGPoint)
     func bottomSheetView(_ view: BottomSheetView, didCompleteAnimation complete: Bool)
