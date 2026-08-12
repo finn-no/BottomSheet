@@ -11,6 +11,7 @@ extension BottomSheetPresentationController {
     }
 }
 
+@MainActor
 public protocol BottomSheetPresentationControllerDelegate: AnyObject {
     func bottomSheetPresentationController(
         _ controller: UIPresentationController,
